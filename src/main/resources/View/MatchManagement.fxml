@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="608.0" prefWidth="806.0" stylesheets="@../CSS/Fixtures.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.MatchManagementController">
+    <children>
+
+        <AnchorPane minWidth="163.0" prefHeight="608.0" prefWidth="163.0" styleClass="menuBar" stylesheets="@../CSS/Fixtures.css">
+            <children>
+                <Pane layoutX="9.0" layoutY="23.0" prefHeight="54.0" prefWidth="150.0" styleClass="inner_pane" stylesheets="@../CSS/Fixtures.css">
+                    <children>
+                        <ImageView fitHeight="39.0" fitWidth="42.0" layoutX="7.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../icons/logo.png" />
+                            </image>
+                        </ImageView>
+                        <Text fill="#991f18" layoutX="43.0" layoutY="22.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="title" text="Football Manager" textAlignment="CENTER" wrappingWidth="101.99999999999994">
+                            <font>
+                                <Font name="Arial Black" size="14.0" />
+                            </font>
+                        </Text>
+                    </children>
+                    <cursor>
+                        <Cursor fx:constant="HAND" />
+                    </cursor>
+                    <effect>
+                        <DropShadow blurType="GAUSSIAN" height="5.0" radius="2.0" width="5.0">
+                            <color>
+                                <Color red="0.3263157904148102" green="0.3069785535335541" blue="0.3069785535335541" />
+                            </color>
+                        </DropShadow>
+                    </effect>
+                </Pane>
+                <ImageView fitHeight="102.0" fitWidth="104.0" layoutX="33.0" layoutY="263.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../icons/logo.png" />
+                    </image>
+                </ImageView>
+            </children>
+        </AnchorPane>
+        <VBox prefHeight="606.0" prefWidth="648.0">
+            <children>
+                <Pane prefHeight="114.0" prefWidth="648.0" stylesheets="@../CSS/Fixtures.css">
+                    <children>
+                        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" layoutY="14.0" prefHeight="27.0" prefWidth="236.0" styleClass="title" text="Fixtures Management">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+                        <Button layoutX="501.0" layoutY="14.0" mnemonicParsing="false" styleClass="notification" stylesheets="@../CSS/Fixtures.css">
+                            <graphic>
+                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
+                                    <image>
+                                        <Image url="@../icons/notification.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Button layoutX="561.0" layoutY="14.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="27.0" styleClass="notification">
+                            <graphic>
+                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
+                                    <image>
+                                        <Image url="@../icons/user.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <HBox layoutX="469.0" layoutY="88.0" prefHeight="21.0" prefWidth="166.0" styleClass="add_box" />
+                        <HBox layoutX="14.0" layoutY="41.0" prefHeight="58.0" prefWidth="635.0" spacing="5" styleClass="filter_box">
+                            <children>
+                                <VBox prefHeight="54.0" prefWidth="151.0" styleClass="filter_element">
+                                    <children>
+                                        <Label prefHeight="18.0" prefWidth="149.0" styleClass="filter_text" text="Filter by competition" textAlignment="CENTER" />
+                                        <ComboBox fx:id="compeFilter" prefHeight="31.0" prefWidth="140.0" style="-fx-border-color: #991f18;" />
+
+                                    </children>
+                                </VBox>
+                                <VBox layoutX="10.0" layoutY="10.0" prefHeight="54.0" prefWidth="130.0" styleClass="filter_element">
+                                    <children>
+                                        <Label prefHeight="18.0" prefWidth="113.0" styleClass="filter_text" text="Filter by club" />
+                                        <ComboBox fx:id="clubFilter" prefHeight="32.0" prefWidth="137.0" style="-fx-border-color: #991f18;" />
+                                    </children>
+                                </VBox>
+                                <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#resetFilter" prefHeight="34.0" prefWidth="117.0" styleClass="reset_button" text="Reset Filters" translateX="-10.0" translateY="16.0">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
+                                            <image>
+                                                <Image url="@../icons/undo.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+                        <Button fx:id="findBtn" mnemonicParsing="false" onAction="#find" prefHeight="32.0" prefWidth="81.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Find" translateX="31.0" translateY="17.0" />
+                            </children>
+                        </HBox>
+                    </children>
+                </Pane>
+                <VBox prefHeight="484.0" prefWidth="649.0">
+                    <children>
+                  <Pane prefHeight="247.0" prefWidth="648.0">
+                     <children>
+                        <TableView fx:id="fixtureTable" prefHeight="235.0" prefWidth="643.0">
+                          <columns>
+                              <TableColumn fx:id="idCol" prefWidth="27.200011432170868" text="ID" />
+                            <TableColumn fx:id="leagueCol" prefWidth="79.19995498657227" text="League" />
+                              <TableColumn fx:id="roundCol" prefWidth="61.5999755859375" text="Round" />
+                            <TableColumn fx:id="homeTeamCol" prefWidth="119.20005798339844" text="Home Team" />
+                              <TableColumn fx:id="awayTeamCol" prefWidth="118.60002136230469" text="Away Team" />
+                              <TableColumn fx:id="dateCol" prefWidth="89.60003662109375" text="Date" />
+                              <TableColumn fx:id="timeCol" prefWidth="55.20001220703125" text="Time" />
+                              <TableColumn fx:id="stadiumCol" prefWidth="91.2000732421875" text="Stadium" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </Pane>
+                  <AnchorPane prefHeight="199.0" prefWidth="630.0" stylesheets="@../CSS/Fixtures.css">
+                     <children>
+                        <HBox layoutX="14.0" layoutY="23.0" prefHeight="34.0" prefWidth="236.0" translateY="24.0">
+                           <children>
+                              <Label prefHeight="27.0" prefWidth="65.0" styleClass="form-label" text="League" />
+                              <ComboBox fx:id="compeForm" prefHeight="32.0" prefWidth="142.0" style="-fx-border-color: #991f18;" translateX="18.0" />
+                           </children>
+                        </HBox>
+                        <HBox layoutX="14.0" layoutY="75.0" prefHeight="35.0" prefWidth="260.0" translateY="19.0">
+                           <children>
+                              <Label prefHeight="27.0" prefWidth="84.0" styleClass="form-label" text="Home team" />
+                              <ComboBox fx:id="clbForm1" prefHeight="32.0" prefWidth="142.0" style="-fx-border-color: #991f18;" />
+                           </children>
+                        </HBox>
+                        <HBox layoutX="14.0" layoutY="124.0" prefHeight="35.0" prefWidth="260.0" translateY="19.0">
+                           <children>
+                              <Label prefHeight="27.0" prefWidth="84.0" styleClass="form-label" text="Away team" />
+                              <ComboBox fx:id="clbForm2" prefHeight="31.0" prefWidth="142.0" style="-fx-border-color: #991f18;" />
+                           </children>
+                        </HBox>
+                        <HBox layoutX="327.0" layoutY="24.0" prefHeight="37.0" prefWidth="218.0" translateY="24.0">
+                           <children>
+                              <Label prefHeight="27.0" prefWidth="72.0" styleClass="form-label" text="Date" />
+                              <DatePicker fx:id="dateForm" translateX="9.0" />
+                           </children>
+                        </HBox>
+                        <HBox layoutX="327.0" layoutY="76.0" prefHeight="37.0" prefWidth="218.0" translateY="19.0">
+                           <children>
+                              <Label prefHeight="27.0" prefWidth="56.0" styleClass="form-label" text="Time" />
+                              <Spinner fx:id="hourSpinner" editable="true" prefHeight="27.0" prefWidth="59.0" />
+                              <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="26.0" prefWidth="24.0" text=":">
+                                 <font>
+                                    <Font name="Arial Black" size="14.0" />
+                                 </font>
+                              </Label>
+                              <Spinner fx:id="minSpinner" editable="true" prefHeight="27.0" prefWidth="59.0" />
+                           </children>
+                        </HBox>
+                        <HBox layoutX="327.0" layoutY="124.0" prefHeight="38.0" prefWidth="229.0" translateY="19.0">
+                           <children>
+                              <Label prefHeight="27.0" prefWidth="72.0" styleClass="form-label" text="Stadium" />
+                              <ComboBox fx:id="staForm" prefHeight="35.0" prefWidth="163.0" translateX="-13.0" />
+                           </children>
+                        </HBox>
+                        <HBox layoutX="14.0" layoutY="4.0" prefHeight="38.0" prefWidth="229.0">
+                           <children>
+                              <Label prefHeight="27.0" prefWidth="82.0" styleClass="form-label" text="ID" />
+                              <Label fx:id="idLabel" prefHeight="34.0" prefWidth="75.0" style="-fx-border-color: #991f18; -fx-background-color: White; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-padding: 4 8 4 8;" stylesheets="@../CSS/Fixtures.css" />
+                           </children>
+                        </HBox>
+                        <HBox layoutX="324.0" layoutY="5.0" prefHeight="34.0" prefWidth="236.0">
+                           <children>
+                              <Label prefHeight="27.0" prefWidth="65.0" styleClass="form-label" text="Round" />
+                              <ComboBox fx:id="roundForm" prefHeight="35.0" prefWidth="169.0" style="-fx-border-color: #991f18;" translateX="-5.0" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </AnchorPane>
+                  <Pane prefHeight="73.0" prefWidth="630.0">
+                     <children>
+                        <Button fx:id="addBtn" layoutX="92.0" layoutY="25.0" mnemonicParsing="false" onAction="#add" prefHeight="32.0" prefWidth="70.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Add" />
+                        <Button fx:id="removeBtn" layoutX="192.0" layoutY="25.0" mnemonicParsing="false" onAction="#remove" prefHeight="32.0" prefWidth="70.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Remove" />
+                        <Button fx:id="updateBtn" layoutX="292.0" layoutY="25.0" mnemonicParsing="false" onAction="#update" prefHeight="32.0" prefWidth="70.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Update" />
+                        <Button fx:id="saveBtn" layoutX="386.0" layoutY="25.0" mnemonicParsing="false" onAction="#save" prefHeight="32.0" prefWidth="70.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Save" />
+                        <Button fx:id="cancelBtn" layoutX="486.0" layoutY="25.0" mnemonicParsing="false" onAction="#cancel" prefHeight="32.0" prefWidth="70.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Cancel" />
+                     </children>
+                  </Pane>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </children>
+</HBox>
