@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="608.0" prefWidth="806.0" stylesheets="@../CSS/Fixtures.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ResultManagementController">
+    <children>
+
+        <AnchorPane minWidth="163.0" prefHeight="608.0" prefWidth="163.0" styleClass="menuBar" stylesheets="@../CSS/Fixtures.css">
+            <children>
+                <Pane layoutX="9.0" layoutY="23.0" prefHeight="54.0" prefWidth="150.0" styleClass="inner_pane" stylesheets="@../CSS/Fixtures.css">
+                    <children>
+                        <ImageView fitHeight="39.0" fitWidth="42.0" layoutX="7.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../icons/logo.png" />
+                            </image>
+                        </ImageView>
+                        <Text fill="#991f18" layoutX="43.0" layoutY="22.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="title" text="Football Manager" textAlignment="CENTER" wrappingWidth="101.99999999999994">
+                            <font>
+                                <Font name="Arial Black" size="14.0" />
+                            </font>
+                        </Text>
+                    </children>
+                    <cursor>
+                        <Cursor fx:constant="HAND" />
+                    </cursor>
+                    <effect>
+                        <DropShadow blurType="GAUSSIAN" height="5.0" radius="2.0" width="5.0">
+                            <color>
+                                <Color red="0.3263157904148102" green="0.3069785535335541" blue="0.3069785535335541" />
+                            </color>
+                        </DropShadow>
+                    </effect>
+                </Pane>
+                <ImageView fitHeight="102.0" fitWidth="104.0" layoutX="33.0" layoutY="263.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../icons/logo.png" />
+                    </image>
+                </ImageView>
+            </children>
+        </AnchorPane>
+        <VBox prefHeight="606.0" prefWidth="643.0">
+            <children>
+                <Pane prefHeight="105.0" prefWidth="643.0" stylesheets="@../CSS/Fixtures.css">
+                    <children>
+                        <Label contentDisplay="CENTER" layoutX="14.0" layoutY="15.0" prefHeight="27.0" prefWidth="230.0" styleClass="title" text="Results Management">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+                        <Button layoutX="501.0" layoutY="14.0" mnemonicParsing="false" styleClass="notification" stylesheets="@../CSS/Fixtures.css">
+                            <graphic>
+                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
+                                    <image>
+                                        <Image url="@../icons/notification.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <Button layoutX="561.0" layoutY="14.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="27.0" styleClass="notification">
+                            <graphic>
+                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
+                                    <image>
+                                        <Image url="@../icons/user.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Button>
+                        <HBox layoutX="469.0" layoutY="88.0" prefHeight="21.0" prefWidth="166.0" styleClass="add_box" />
+                        <HBox layoutX="14.0" layoutY="41.0" prefHeight="58.0" prefWidth="635.0" spacing="5" styleClass="filter_box">
+                            <children>
+                                <VBox prefHeight="54.0" prefWidth="151.0" styleClass="filter_element">
+                                    <children>
+                                        <Label prefHeight="18.0" prefWidth="149.0" styleClass="filter_text" text="Filter by competition" textAlignment="CENTER" />
+                                        <ComboBox fx:id="compeFilter" prefHeight="31.0" prefWidth="140.0" style="-fx-border-color: #991f18;" />
+
+                                    </children>
+                                </VBox>
+                                <VBox layoutX="10.0" layoutY="10.0" prefHeight="54.0" prefWidth="130.0" styleClass="filter_element">
+                                    <children>
+                                        <Label prefHeight="18.0" prefWidth="113.0" styleClass="filter_text" text="Filter by club" />
+                                        <ComboBox fx:id="clubFilter" prefHeight="32.0" prefWidth="137.0" style="-fx-border-color: #991f18;" />
+                                    </children>
+                                </VBox>
+                                <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#resetFilter" prefHeight="34.0" prefWidth="117.0" styleClass="reset_button" text="Reset Filters" translateX="-10.0" translateY="16.0">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
+                                            <image>
+                                                <Image url="@../icons/undo.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+                                <Button fx:id="findBtn" mnemonicParsing="false" onAction="#find" prefHeight="32.0" prefWidth="81.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Find" translateX="31.0" translateY="17.0" />
+                            </children>
+                        </HBox>
+                    </children>
+                </Pane>
+                <VBox prefHeight="502.0" prefWidth="643.0">
+                    <children>
+                        <Pane prefHeight="167.0" prefWidth="643.0">
+                            <children>
+                                <TableView fx:id="resultTable" layoutY="32.0" prefHeight="134.0" prefWidth="643.0">
+                                    <columns>
+                                        <TableColumn fx:id="idCol" prefWidth="27.200011432170868" text="ID" />
+                                        <TableColumn fx:id="leagueCol" prefWidth="71.99994277954102" text="League" />
+                                        <TableColumn fx:id="roundCol" prefWidth="68.800048828125" text="Round" />
+                                        <TableColumn fx:id="homeTeamCol" prefWidth="119.20005798339844" text="Home Team" />
+                                        <TableColumn fx:id="awayTeamCol" prefWidth="118.60002136230469" text="Away Team" />
+                                        <TableColumn fx:id="dateCol" prefWidth="91.20001220703125" text="Date" />
+                                        <TableColumn fx:id="scoreCol1" prefWidth="69.5999755859375" text="Score1" />
+                                        <TableColumn fx:id="scoreCol2" prefWidth="77.5999755859375" text="Score2" />
+                                    </columns>
+                                </TableView>
+                        <Label layoutX="14.0" layoutY="3.0" prefHeight="22.0" prefWidth="230.0" styleClass="title" text="Completed Matches">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                            </children>
+                        </Pane>
+                  <AnchorPane prefHeight="190.0" prefWidth="643.0">
+                     <children>
+                        <Label layoutX="14.0" layoutY="14.0" prefHeight="22.0" prefWidth="230.0" styleClass="title" text="Pending Matches">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <TableView fx:id="fixtureTable" layoutY="45.0" prefHeight="134.0" prefWidth="643.0">
+                           <columns>
+                              <TableColumn fx:id="idCol1" prefWidth="27.200011432170868" text="ID" />
+                              <TableColumn fx:id="leagueCol1" prefWidth="79.19995498657227" text="League" />
+                              <TableColumn fx:id="roundCol1" prefWidth="61.5999755859375" text="Round" />
+                              <TableColumn fx:id="homeTeamCol1" prefWidth="119.20005798339844" text="Home Team" />
+                              <TableColumn fx:id="awayTeamCol1" prefWidth="118.60002136230469" text="Away Team" />
+                              <TableColumn fx:id="dateCol1" prefWidth="89.60003662109375" text="Date" />
+                              <TableColumn fx:id="timeCol" prefWidth="55.20001220703125" text="Time" />
+                              <TableColumn fx:id="stadiumCol" prefWidth="91.2000732421875" text="Stadium" />
+                           </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+                        <AnchorPane prefHeight="71.0" prefWidth="643.0" stylesheets="@../CSS/Fixtures.css">
+                            <children>
+                                <HBox layoutX="29.0" layoutY="16.0" prefHeight="38.0" prefWidth="118.0">
+                                    <children>
+                                        <Label prefHeight="40.0" prefWidth="30.0" styleClass="form-label" text="ID" />
+                                        <Label fx:id="idLabel" prefHeight="34.0" prefWidth="46.0" style="-fx-border-color: #991f18; -fx-background-color: White; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-padding: 4 8 4 8;" stylesheets="@../CSS/Fixtures.css" />
+                                    </children>
+                                </HBox>
+                        <HBox layoutX="191.0" layoutY="16.0" prefHeight="38.0" prefWidth="173.0">
+                           <children>
+                              <Label prefHeight="38.0" prefWidth="138.0" styleClass="form-label" text="Score1(Home Team)" />
+                              <TextField fx:id="score1Form" prefHeight="38.0" prefWidth="35.0" />
+                           </children>
+                        </HBox>
+                        <HBox layoutX="412.0" layoutY="16.0" prefHeight="38.0" prefWidth="173.0">
+                           <children>
+                              <Label prefHeight="38.0" prefWidth="138.0" styleClass="form-label" text="Score2(Away Team)" />
+                              <TextField fx:id="score2Form" prefHeight="38.0" prefWidth="34.0" />
+                           </children>
+                        </HBox>
+                        <Line endX="502.199951171875" endY="1.1444091796875E-5" layoutX="139.0" layoutY="-1.0" startX="-138.00001525878906" startY="1.1444091796875E-5" />
+                            </children>
+                        </AnchorPane>
+                        <Pane prefHeight="68.0" prefWidth="643.0">
+                            <children>
+                                <Button fx:id="removeBtn" layoutX="330.0" layoutY="18.0" mnemonicParsing="false" onAction="#remove" prefHeight="32.0" prefWidth="70.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Remove" />
+                                <Button fx:id="updateBtn" layoutX="108.0" layoutY="18.0" mnemonicParsing="false" onAction="#update" prefHeight="32.0" prefWidth="70.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Update" />
+                                <Button fx:id="saveBtn" layoutX="218.0" layoutY="18.0" mnemonicParsing="false" onAction="#save" prefHeight="32.0" prefWidth="70.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Save" />
+                                <Button fx:id="cancelBtn" layoutX="446.0" layoutY="18.0" mnemonicParsing="false" onAction="#cancel" prefHeight="32.0" prefWidth="70.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Cancel" />
+                            </children>
+                        </Pane>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </children>
+</HBox>

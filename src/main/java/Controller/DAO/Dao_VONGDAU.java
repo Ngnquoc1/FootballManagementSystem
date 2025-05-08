@@ -26,7 +26,7 @@ public class Dao_VONGDAU implements DAOInterface<MODEL_VONGDAU> {
     }
 
     @Override
-    public ArrayList<MODEL_VONGDAU> getFromRs(ResultSet rs) throws Exception {
+    public MODEL_VONGDAU getFromRs(ResultSet rs) throws Exception {
         return null;
     }
 

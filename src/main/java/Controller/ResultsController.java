@@ -8,20 +8,19 @@ import Model.MODEL_MUAGIAI;
 import Model.Match;
 import Model.Session;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -29,30 +28,31 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class FixtureController implements Initializable {
+public class ResultsController implements Initializable {
     @FXML
     private Button resetBtn,addBtn;
     @FXML
     private ScrollPane Calendar;
     @FXML
     private ComboBox<String> compeFilter, clubFilter;
-
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Session session = Session.getInstance();
         String role = session.getRole();
-        System.out.println(role);
-        addBtn.setVisible(Objects.equals(role, "A"));
-        setFilter();
+
+        if (Objects.equals(role, "A")) {
+            // Add any specific initialization for admin role here
+        }
         Map<LocalDate, List<Match>> matchesByDate = null;
         try {
-            matchesByDate = DAO_Match.getUpcomingMatchs();
+            matchesByDate = DAO_Match.getResultedMatchs();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         createFullMatch(matchesByDate);
+        setFilter();
     }
+
     private void setFilter(){
 
         DAO_MUAGIAI daoMG= new DAO_MUAGIAI();
@@ -137,9 +137,11 @@ public class FixtureController implements Initializable {
         homeGroup.getStyleClass().add("team-group");
 
 
-        // Kick-off time
-        Label timeLabel = new Label(match.getFormattedGioThiDau());
-        timeLabel.getStyleClass().add("time-label");
+        // SCore
+        String score1 = String.valueOf(match.getScoreCLB1());
+        String score2 = String.valueOf(match.getScoreCLB2());
+        Label scoreLabel =new Label(score1 + " - " + score2);
+        scoreLabel.getStyleClass().add("time-label");
 
         Label roundLabel=new Label(match.getTenVongDau());
         roundLabel.getStyleClass().add("round-label");
@@ -178,7 +180,7 @@ public class FixtureController implements Initializable {
 
         HBox info = new HBox(5);
         info.setAlignment(Pos.CENTER_LEFT);
-        info.getChildren().addAll(homeGroup, timeLabel, awayGroup);
+        info.getChildren().addAll(homeGroup, scoreLabel, awayGroup);
 
         HBox venueBox = new HBox(5);
         venueBox.setAlignment(Pos.CENTER_LEFT);
@@ -196,7 +198,7 @@ public class FixtureController implements Initializable {
     @FXML
     public void filterByCLB() throws SQLException {
         String selectedCLB = clubFilter.getSelectionModel().getSelectedItem();
-        Map<LocalDate,List<Match>> matchesByDate = new DAO_Match().getUpcomingMatchs();
+        Map<LocalDate,List<Match>> matchesByDate = DAO_Match.getResultedMatchs();
 
         Map<LocalDate,List<Match>> filteredMatches = new HashMap<>();
 
@@ -212,37 +214,16 @@ public class FixtureController implements Initializable {
     }
     @FXML
     private void resetFilter() throws SQLException {
-        Map<LocalDate, List<Match>> matchesByDate = new DAO_Match().getUpcomingMatchs();
+        Map<LocalDate, List<Match>> matchesByDate = new DAO_Match().getResultedMatchs();
         clubFilter.getSelectionModel().clearSelection();
         compeFilter.getSelectionModel().selectFirst();
         createFullMatch(matchesByDate);
 
     }
     @FXML
-    private void controlFixture() throws SQLException {
-        try {
-            // Tải file FXML của cửa sổ mới
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/MatchManagement.fxml"));
-            Parent root = loader.load();
+    public void controlResult(){
 
-            // Tạo một Stage mới
-            Stage stage = new Stage();
-            stage.setTitle("Add Match");
-            stage.setScene(new Scene(root));
-            stage.initOwner(addBtn.getScene().getWindow()); // Đặt chủ sở hữu là cửa sổ hiện tại
-            stage.setResizable(false);
-            stage.show();
-            stage.setOnCloseRequest(event -> {
-                // Khi cửa sổ đóng, gọi lại phương thức resetFilter() để làm mới dữ liệu
-                try {
-                    resetFilter();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
+
 
 }

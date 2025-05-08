@@ -14,7 +14,7 @@ public interface DAOInterface<T> {
 
     public int deleteDB(T t) throws SQLException;
 
-    public ArrayList<T> getFromRs(ResultSet rs) throws Exception;
+    public T getFromRs(ResultSet rs) throws Exception;
 
     public ArrayList<T> selectAllDB();
 

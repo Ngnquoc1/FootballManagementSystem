@@ -40,7 +40,7 @@
     -fx-cursor: hand;
 }
 
-.menuBtn:hover{
+.menuBtn:hover, menuBtn:pressed{
     -fx-border-width: 0 0 0 4px;
     -fx-border-color: #e32b19;
     -fx-background-color: #f1eae4;
@@ -166,7 +166,6 @@
     -fx-effect: innershadow(gaussian, #ff8c00, 100, 0.8, 0, 0);
 }
 
-
 /*Management View*/
 .ManagementBtn {
     -fx-background-color: white;
@@ -195,3 +194,9 @@
     -fx-font-weight: 600;
     -fx-label-padding: 0 10 0 0; /* padding right */
 }
+
+/*.selected-button {*/
+/*    -fx-background-color: #ff8c00; !* Màu nền khi được chọn *!*/
+/*    -fx-border-color: #ffffff; !* Viền trắng *!*/
+/*    -fx-border-width: 2px;*/
+/*}*/

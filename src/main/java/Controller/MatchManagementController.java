@@ -61,6 +61,11 @@ public class MatchManagementController implements Initializable {
         hourSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 23, 0));
         minSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59, 0));
     }
+    private void loadFixtureData(List<Match> matches) {
+        // Chuyển đổi sang ObservableList và gán vào TableView
+        ObservableList<Match> matchList = FXCollections.observableArrayList(matches);
+        fixtureTable.setItems(matchList);
+    }
     private void setCombobox() {
 
         DAO_MUAGIAI daoMG = new DAO_MUAGIAI();
@@ -94,11 +99,7 @@ public class MatchManagementController implements Initializable {
         clubFilter.getItems().addAll(dsCLB);
         staForm.getItems().addAll(dsSan);
     }
-    private void loadFixtureData(List<Match> matches) {
-        // Chuyển đổi sang ObservableList và gán vào TableView
-        ObservableList<Match> matchList = FXCollections.observableArrayList(matches);
-        fixtureTable.setItems(matchList);
-    }
+
     private void showErrorAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");

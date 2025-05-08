@@ -27,17 +27,14 @@ public class DAO_SAN implements DAOInterface<MODEL_SAN> {
     }
 
     @Override
-    public java.util.ArrayList<MODEL_SAN> getFromRs(java.sql.ResultSet rs) throws Exception {
-        ArrayList<MODEL_SAN> ds = new ArrayList<>();
-        while (rs.next()) {
+    public MODEL_SAN getFromRs(java.sql.ResultSet rs) throws Exception {
             MODEL_SAN SAN = new MODEL_SAN();
             SAN.setMaSan(rs.getInt("MaSan"));
             SAN.setTenSan(rs.getString("TenSAN"));
             SAN.setDiaChi(rs.getString("DiaChi"));
             SAN.setSucChua(rs.getInt("SucChua"));
-            ds.add(SAN);
-        }
-        return ds;
+
+        return SAN;
     }
 
     @Override
@@ -56,7 +53,10 @@ public class DAO_SAN implements DAOInterface<MODEL_SAN> {
 
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
-            ds =getFromRs(rs);
+            while (rs.next())
+            {
+                ds.add(getFromRs(rs));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (Exception e) {

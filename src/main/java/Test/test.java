@@ -16,7 +16,7 @@ public class test extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/View/LoginFrame.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/View/ResultManagement" +".fxml"));
         Scene scene = new Scene(root);
         primaryStage.setResizable(false);
         primaryStage.setTitle("My Test Application");

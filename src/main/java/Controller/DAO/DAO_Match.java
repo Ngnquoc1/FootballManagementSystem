@@ -3,6 +3,7 @@ package Controller.DAO;
 import Controller.Connection.DatabaseConnection;
 
 import Model.Match;
+import oracle.jdbc.OracleTypes;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -15,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 public class DAO_Match implements DAOInterface<Match> {
+
+
 
     @Override
     public void insertDB(Match model) throws SQLException {
@@ -122,9 +125,7 @@ public class DAO_Match implements DAOInterface<Match> {
     }
 
     @Override
-    public ArrayList<Match> getFromRs(java.sql.ResultSet rs) throws Exception {
-        ArrayList<Match> ds = new ArrayList<>();
-        while (rs.next()) {
+    public Match getFromRs(ResultSet rs) throws Exception {
             int maTD = rs.getInt("ID");
             String tenCLB1 = rs.getString("TenCLB1");
             String logoCLB1 = rs.getString("LogoCLB1");
@@ -137,13 +138,11 @@ public class DAO_Match implements DAOInterface<Match> {
             Timestamp timestamp = rs.getTimestamp("ThoiGian");
             LocalDate ngayThiDau = timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             LocalTime gioThiDau = timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+            int scoreCLB1 = rs.getInt("Score1");
+            int scoreCLB2 = rs.getInt("Score2");
 
-            Match match = new Match(maTD,tenMuaGiai,tenVD, tenCLB1, tenCLB2, gioThiDau, ngayThiDau, sanThiDau, logoCLB1, logoCLB2, null, null);
-            ds.add(match);
-        }
-        return ds;
+        return new Match(maTD,tenMuaGiai,tenVD, tenCLB1, tenCLB2, gioThiDau, ngayThiDau, sanThiDau, logoCLB1, logoCLB2, scoreCLB1, scoreCLB2);
     }
-
     @Override
     public java.util.ArrayList<Match> selectAllDB(){
         return null;
@@ -168,7 +167,7 @@ public class DAO_Match implements DAOInterface<Match> {
             conn = db.getConnectionn();
 
             // Gọi procedure
-            String sql = "{call GetMatchesByCondition(?, ?)}";
+            String sql = "{call GetUpComingMatchesByCondition(?, ?)}";
             cstmt = conn.prepareCall(sql);
             // Nếu không có điều kiện, truyền NULL
             if (condition == null || condition.trim().isEmpty()) {
@@ -181,7 +180,10 @@ public class DAO_Match implements DAOInterface<Match> {
 
             // Lấy ResultSet từ cursor
             rs = (ResultSet) cstmt.getObject(2);
-            ds = getFromRs(rs);
+            while(rs.next())
+            {
+                ds.add(getFromRs(rs));
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -194,68 +196,109 @@ public class DAO_Match implements DAOInterface<Match> {
         return ds;
     }
 
-    private static final String SQL_GET_MATCHES_WITHOUT_RESULTS =
-            "SELECT " +
-                    "    td.MaTD AS ID, " +
-                    "    v.TenVD AS TenVD, " +
-                    "    c1.TenCLB AS TenCLB1, " +
-                    "    c1.LogoCLB AS LogoCLB1, " +
-                    "    c2.TenCLB AS TenCLB2, " +
-                    "    c2.LogoCLB AS LogoCLB2, " +
-                    "    td.ThoiGian AS ThoiGian, " + // Lấy trực tiếp ThoiGian
-                    "    s.TenSan AS SanThiDau, " +
-                    "    m.TenMG AS TenMuaGiai " +
-                    "FROM TranDau td " +
-                    "JOIN VongDau v ON td.MaVD = v.MaVD " +
-                    "JOIN CLB c1 ON td.MaCLB1 = c1.MaCLB " +
-                    "JOIN CLB c2 ON td.MaCLB2 = c2.MaCLB " +
-                    "JOIN SAN s ON td.MaSan = s.MaSan " +
-                    "JOIN MuaGiai m ON v.MaMG = m.MaMG " +
-                    "LEFT JOIN KetQuaTD kq ON td.MaTD = kq.MaTD " +
-                    "WHERE kq.MaTD IS NULL " +
-                    "ORDER BY td.ThoiGian";
-
     public static Map<LocalDate, List<Match>> getUpcomingMatchs() throws SQLException {
         Map<LocalDate, List<Match>> matchesByDate = new HashMap<>();
         Connection conn = null;
-        PreparedStatement stmt = null;
+        CallableStatement cstmt = null;
         ResultSet rs = null;
-
+        DAO_Match daoMatch = new DAO_Match();
         try {
             // Kết nối tới cơ sở dữ liệu
-            DatabaseConnection db= DatabaseConnection.getInstance();
+            DatabaseConnection db = DatabaseConnection.getInstance();
             conn = db.getConnectionn();
-            stmt = conn.prepareStatement(SQL_GET_MATCHES_WITHOUT_RESULTS);
-            rs = stmt.executeQuery();
-            // Duyệt qua kết quả và nhóm theo ngày
-            while (rs.next()) {
+            cstmt = conn.prepareCall("{call GetUpcomingMatches(?)}");
+            cstmt.registerOutParameter(1, OracleTypes.CURSOR); // Đăng ký tham số đầu ra là cursor
+            cstmt.execute();
 
-                int maTD = rs.getInt("ID");
-                String tenCLB1 = rs.getString("TenCLB1");
-                String logoCLB1 = rs.getString("LogoCLB1");
-                String tenCLB2 = rs.getString("TenCLB2");
-                String logoCLB2 = rs.getString("LogoCLB2");
-                String sanThiDau = rs.getString("SanThiDau");
-                String tenMuaGiai = rs.getString("TenMuaGiai");
-                String tenVD = rs.getString("TenVD");
+            // Lấy ResultSet từ cursor
+            rs = (ResultSet) cstmt.getObject(1);
+
+            while (rs.next()) {
                 Timestamp timestamp = rs.getTimestamp("ThoiGian");
                 LocalDate ngayThiDau = timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                LocalTime gioThiDau = timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
-
-                Match match = new Match(maTD,tenMuaGiai,tenVD,tenCLB1, tenCLB2, gioThiDau, ngayThiDau, sanThiDau, logoCLB1, logoCLB2, null, null);
-                // Nhóm theo ngày thi đấu
+                Match match = daoMatch.getFromRs(rs);
                 matchesByDate.computeIfAbsent(ngayThiDau, k -> new ArrayList<>()).add(match);
             }
 
         } catch (SQLException e) {
             System.err.println("Lỗi SQL: " + e.getMessage());
             throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         } finally {
-            // Đóng các tài nguyên
-            if (rs != null) rs.close();
-            if (stmt != null) stmt.close();
+            if (rs != null) try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (cstmt != null) try { cstmt.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
 
         return matchesByDate;
+    }
+
+    public static List<Match> getResultedMatchList() throws SQLException {
+        List<Match> matchList = new ArrayList<>();
+        Connection conn = null;
+        CallableStatement cstmt = null;
+        ResultSet rs = null;
+        DAO_Match daoMatch = new DAO_Match();
+        try {
+            DatabaseConnection db = DatabaseConnection.getInstance();
+            conn = db.getConnectionn();
+            cstmt = conn.prepareCall("{call GetResultedMatches(?)}");
+            cstmt.registerOutParameter(1, OracleTypes.CURSOR);
+            cstmt.execute();
+
+            rs = (ResultSet) cstmt.getObject(1);
+            while (rs.next()) {
+                Match match = daoMatch.getFromRs(rs);
+                matchList.add(match);
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi SQL: " + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (rs != null) try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (cstmt != null) try { cstmt.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
+        return matchList;
+    }
+
+    public static Map<LocalDate, List<Match>> getResultedMatchs() throws SQLException {
+        Map<LocalDate, List<Match>> matchesByDate = new HashMap<>();
+        List<Match> matchList = getResultedMatchList(); // Gọi lại hàm đầu tiên
+        for (Match match : matchList) {
+            LocalDate ngayThiDau = match.getNgayThiDau();
+            matchesByDate.computeIfAbsent(ngayThiDau, k -> new ArrayList<>()).add(match);
+        }
+        return matchesByDate;
+    }
+    public static List<Match> getPendingMatchList() throws SQLException {
+        List<Match> matchList = new ArrayList<>();
+        Connection conn = null;
+        CallableStatement cstmt = null;
+        ResultSet rs = null;
+        DAO_Match daoMatch = new DAO_Match();
+        try {
+            DatabaseConnection db = DatabaseConnection.getInstance();
+            conn = db.getConnectionn();
+            cstmt = conn.prepareCall("{call GetPendingMatches(?)}");
+            cstmt.registerOutParameter(1, OracleTypes.CURSOR);
+            cstmt.execute();
+
+            rs = (ResultSet) cstmt.getObject(1);
+            while (rs.next()) {
+                Match match = daoMatch.getFromRs(rs);
+                matchList.add(match);
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi SQL: " + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (rs != null) try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (cstmt != null) try { cstmt.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
+        return matchList;
     }
 }

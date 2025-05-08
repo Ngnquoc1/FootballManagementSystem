@@ -25,17 +25,15 @@ public class DAOCauThu implements DAOInterface<MODEL_CAUTHU>{
     }
 
     @Override
-    public ArrayList<MODEL_CAUTHU> getFromRs(ResultSet rs) throws Exception {
-        ArrayList<MODEL_CAUTHU> dsCauThu = new ArrayList<>();
-        while (rs.next()) {
+    public MODEL_CAUTHU getFromRs(ResultSet rs) throws Exception {
+
             MODEL_CAUTHU ct = new MODEL_CAUTHU();
             ct.setMaCT(Integer.parseInt(rs.getString("MaCT")));
             ct.setTenCT(rs.getString("TenCT"));
             ct.setNgaysinh(rs.getDate("NgaySinh"));
             ct.setLoaiCT(Integer.parseInt(rs.getString("LoaiCT")));
-            dsCauThu.add(ct);
-        }
-        return dsCauThu;
+
+        return ct;
     }
 
     @Override
@@ -54,7 +52,9 @@ public class DAOCauThu implements DAOInterface<MODEL_CAUTHU>{
 
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
-            dsCauThu =getFromRs(rs);
+            while (rs.next()) {
+                dsCauThu.add(getFromRs(rs));
+            }
             System.out.println(dsCauThu);
         } catch (SQLException e) {
             e.printStackTrace();

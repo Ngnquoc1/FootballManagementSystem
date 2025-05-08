@@ -27,17 +27,13 @@ public class DAO_MUAGIAI implements DAOInterface<MODEL_MUAGIAI>{
     }
 
     @Override
-    public ArrayList<MODEL_MUAGIAI> getFromRs(ResultSet rs) throws Exception {
-        ArrayList<MODEL_MUAGIAI> ds = new ArrayList<>();
-        while (rs.next()) {
+    public MODEL_MUAGIAI getFromRs(ResultSet rs) throws Exception {
             MODEL_MUAGIAI clb = new MODEL_MUAGIAI();
             clb.setMaMG(Integer.parseInt(rs.getString("MaMG")));
             clb.setTenMG(rs.getString("TenMG"));
             clb.setNgayBD(rs.getDate("NgayKhaiMac"));
             clb.setNgayKT(rs.getDate("NgayBeMac"));
-            ds.add(clb);
-        }
-        return ds;
+        return clb;
     }
 
     @Override
@@ -56,7 +52,10 @@ public class DAO_MUAGIAI implements DAOInterface<MODEL_MUAGIAI>{
 
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
-            ds =getFromRs(rs);
+            while (rs.next())
+            {
+                ds.add(getFromRs(rs));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (Exception e) {

@@ -2,6 +2,7 @@ package Controller;
 
 import Controller.DAO.DAO_User;
 import Model.MODEL_USER;
+import Model.Session;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -42,7 +43,9 @@ public class LoginController {
         String password = passText.getText();
         user = DAO_User.Login(username, password);
         if (user != null) {
-            System.out.println("Login Successful");
+            Session session = Session.getInstance();
+            session.setUsername(user.getUserName());
+            session.setRole(user.getVaiTro());
             if ("A".equals(user.getVaiTro())) {
                 switchScene(event,"FixtureFrame");
             }

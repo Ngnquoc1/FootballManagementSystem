@@ -27,17 +27,14 @@ public class DAO_CLB implements DAOInterface<MODEL_CLB> {
     }
 
     @Override
-    public java.util.ArrayList<MODEL_CLB> getFromRs(java.sql.ResultSet rs) throws Exception {
-        ArrayList<MODEL_CLB> ds = new ArrayList<>();
-        while (rs.next()) {
+    public MODEL_CLB getFromRs(java.sql.ResultSet rs) throws Exception {
+
             MODEL_CLB clb = new MODEL_CLB();
             clb.setMaCLB(Integer.parseInt(rs.getString("MaCLB")));
             clb.setTenCLB(rs.getString("TenCLB"));
             clb.setMaSan(Integer.parseInt(rs.getString("SanNha")));
             clb.setLogoCLB(rs.getString("LogoCLB"));
-            ds.add(clb);
-        }
-        return ds;
+        return clb;
     }
 
     @Override
@@ -56,7 +53,9 @@ public class DAO_CLB implements DAOInterface<MODEL_CLB> {
 
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
-            ds =getFromRs(rs);
+            while (rs.next()) {
+                ds.add(getFromRs(rs));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (Exception e) {
