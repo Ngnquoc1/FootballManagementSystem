@@ -2,8 +2,29 @@ package Model;
 
 public class MODEL_CLB {
     private int maCLB,maSan;
-    private String tenCLB,logoCLB;
+    private String tenCLB,logoCLB,tenHLV,Email;
     public MODEL_CLB() {
+    }
+
+    public MODEL_CLB(String email, String tenHLV, String logoCLB, String tenCLB, int maSan, int maCLB) {
+        Email = email;
+        this.tenHLV = tenHLV;
+        this.logoCLB = logoCLB;
+        this.tenCLB = tenCLB;
+        this.maSan = maSan;
+        this.maCLB = maCLB;
+    }
+    public String getEmail() {
+        return Email;
+    }
+    public void setEmail(String email) {
+        Email = email;
+    }
+    public String getTenHLV() {
+        return tenHLV;
+    }
+    public void setTenHLV(String tenHLV) {
+        this.tenHLV = tenHLV;
     }
 
     public int getMaCLB() {

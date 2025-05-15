@@ -1,8 +1,8 @@
 package Controller;
 
-import Controller.DAO.DAO_CLB;
-import Controller.DAO.DAO_MUAGIAI;
-import Controller.DAO.DAO_Match;
+import Service.Service;
+import DAO.DAO_CLB;
+import DAO.DAO_MUAGIAI;
 import Model.MODEL_CLB;
 import Model.MODEL_MUAGIAI;
 import Model.Match;
@@ -36,24 +36,27 @@ public class FixtureController implements Initializable {
     private ScrollPane Calendar;
     @FXML
     private ComboBox<String> compeFilter, clubFilter;
-
+    private Service service = new Service();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Session session = Session.getInstance();
         String role = session.getRole();
-        System.out.println(role);
-        addBtn.setVisible(Objects.equals(role, "A"));
-        setFilter();
+//        addBtn.setVisible(Objects.equals(role, "A"));
+        try {
+            setFilter();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         Map<LocalDate, List<Match>> matchesByDate = null;
         try {
-            matchesByDate = DAO_Match.getUpcomingMatchs();
+            matchesByDate = service.getUpcomingMatchs();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         createFullMatch(matchesByDate);
     }
-    private void setFilter(){
+    private void setFilter() throws SQLException {
 
         DAO_MUAGIAI daoMG= new DAO_MUAGIAI();
         ArrayList<MODEL_MUAGIAI> ds1 = daoMG.selectAllDB();
@@ -196,7 +199,7 @@ public class FixtureController implements Initializable {
     @FXML
     public void filterByCLB() throws SQLException {
         String selectedCLB = clubFilter.getSelectionModel().getSelectedItem();
-        Map<LocalDate,List<Match>> matchesByDate = new DAO_Match().getUpcomingMatchs();
+        Map<LocalDate,List<Match>> matchesByDate = service.getUpcomingMatchs();
 
         Map<LocalDate,List<Match>> filteredMatches = new HashMap<>();
 
@@ -212,17 +215,16 @@ public class FixtureController implements Initializable {
     }
     @FXML
     private void resetFilter() throws SQLException {
-        Map<LocalDate, List<Match>> matchesByDate = new DAO_Match().getUpcomingMatchs();
+        Map<LocalDate, List<Match>> matchesByDate = service.getUpcomingMatchs();
         clubFilter.getSelectionModel().clearSelection();
         compeFilter.getSelectionModel().selectFirst();
         createFullMatch(matchesByDate);
-
     }
     @FXML
     private void controlFixture() throws SQLException {
         try {
             // Tải file FXML của cửa sổ mới
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/MatchManagement.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/MatchManagementFrame.fxml"));
             Parent root = loader.load();
 
             // Tạo một Stage mới

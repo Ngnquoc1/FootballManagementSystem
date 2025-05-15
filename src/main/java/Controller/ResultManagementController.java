@@ -1,43 +1,38 @@
 package Controller;
 
-import Controller.DAO.DAO_CLB;
-import Controller.DAO.DAO_MUAGIAI;
-import Controller.DAO.DAO_Match;
-import Controller.DAO.DAO_SAN;
-import Model.MODEL_CLB;
-import Model.MODEL_MUAGIAI;
-import Model.MODEL_SAN;
-import Model.Match;
+import DAO.*;
+import Model.*;
+import Service.Service;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class ResultManagementController implements Initializable {
     @FXML
-    private TableView<Match> fixtureTable,resultTable;
+    private TableView<Match> fixtureTable, resultTable;
     @FXML
-    private TableColumn<Match, String> idCol, leagueCol,roundCol, homeTeamCol, awayTeamCol, idCol1, leagueCol1,roundCol1, homeTeamCol1, awayTeamCol1,dateCol,dateCol1, timeCol,stadiumCol,scoreCol1, scoreCol2;
+    private TableColumn<Match, String> idCol, leagueCol, roundCol, homeTeamCol, awayTeamCol, idCol1, leagueCol1, roundCol1, homeTeamCol1, awayTeamCol1, dateCol, dateCol1, timeCol, stadiumCol, scoreCol1, scoreCol2;
     @FXML
-    private Button findBtn, removeBtn, updateBtn, saveBtn, cancelBtn, resetBtn;
+    private Button findBtn, removeBtn, updateBtn, resetBtn;
     @FXML
     private ComboBox<String> compeFilter, clubFilter;
     @FXML
     private Label idLabel;
     @FXML
-    private TextField score1Form,score2Form;
-
+    private Service service= new Service();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -60,7 +55,7 @@ public class ResultManagementController implements Initializable {
         stadiumCol.setCellValueFactory(new PropertyValueFactory<>("sanThiDau"));
         // Tải dữ liệu vào bảng
         try {
-            List<Match> matches1 = DAO_Match.getResultedMatchList();
+            List<Match> matches1 = service.getResultedMatchList();
             List<Match> matches2 = DAO_Match.getPendingMatchList();
             loadCompletedMatchData(matches1);
             loadFixtureData(matches2);
@@ -68,18 +63,37 @@ public class ResultManagementController implements Initializable {
             throw new RuntimeException(e);
         }
 
+        fixtureTable.setOnMouseClicked(event -> {
+            if (!fixtureTable.getSelectionModel().isEmpty()) {
+                resultTable.getSelectionModel().clearSelection();
+            }
+        });
+        // Đảm bảo chỉ chọn một dòng trong hai bảng
+        resultTable.setOnMouseClicked(event -> {
+            if (!resultTable.getSelectionModel().isEmpty()) {
+                fixtureTable.getSelectionModel().clearSelection();
+            }
+        });
+        try {
+            setCombobox();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
+
     private void loadCompletedMatchData(List<Match> matches) {
         // Chuyển đổi sang ObservableList và gán vào TableView
         ObservableList<Match> matchList = FXCollections.observableArrayList(matches);
         resultTable.setItems(matchList);
     }
+
     private void loadFixtureData(List<Match> matches) {
         // Chuyển đổi sang ObservableList và gán vào TableView
         ObservableList<Match> matchList = FXCollections.observableArrayList(matches);
         fixtureTable.setItems(matchList);
     }
-    private void setCombobox() {
+
+    private void setCombobox() throws SQLException {
 
         DAO_MUAGIAI daoMG = new DAO_MUAGIAI();
         ArrayList<MODEL_MUAGIAI> ds1 = daoMG.selectAllDB();
@@ -97,13 +111,6 @@ public class ResultManagementController implements Initializable {
         for (MODEL_CLB clb : ds2) {
             dsCLB.add(clb.getTenCLB());
         }
-
-        DAO_SAN daoSan = new DAO_SAN();
-        ArrayList<MODEL_SAN> ds3 = daoSan.selectAllDB();
-        ArrayList<String> dsSan = new ArrayList<>();
-        for (MODEL_SAN san : ds3) {
-            dsSan.add(san.getTenSan());
-        }
         clubFilter.getItems().addAll(dsCLB);
     }
 
@@ -114,38 +121,23 @@ public class ResultManagementController implements Initializable {
         alert.setContentText(message);
         alert.showAndWait();
     }
-    private void showInfoAlert(String title,String message) {
+
+    private void showInfoAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
     }
-    private Match collectFormData() {
-        // Validate required fields
-        if (score1Form.getText() == null || score1Form.getText().isEmpty()) {
-            showErrorAlert("Score1(Home team) field is required.");
-            return null;
-        }
-        if (score2Form.getText() == null || score2Form.getText().isEmpty()) {
-            showErrorAlert("Score2(Away team) field is required.");
-            return null;
-        }
-        return null;
-    }
+
     @FXML
     private void resetFilter() throws SQLException {
-        Map<LocalDate, List<Match>> matchesByDate = new DAO_Match().getUpcomingMatchs();
+        Map<LocalDate, List<Match>> matchesByDate = service.getUpcomingMatchs();
         clubFilter.getSelectionModel().clearSelection();
         compeFilter.getSelectionModel().selectFirst();
         find();
     }
-    @FXML
-    public void resetForm() {
-        idLabel.setText("");
-        score1Form.setText("");
-        score2Form.setText("");
-    }
+
 
     @FXML
     public void find() {
@@ -153,13 +145,35 @@ public class ResultManagementController implements Initializable {
         String compe = compeFilter.getValue();
         String clb = clubFilter.getValue();
 
-        String sql = "m.TenMG= '" + compe + "'";
-        if (clb!=null) {
-            sql += " and (c1.TenCLB='" + clb + "' or c2.TenCLB= '" + clb + "')";
-        }
         try {
-            List<Match> matches1 = DAO_Match.getResultedMatchList();
-            loadCompletedMatchData(matches1);
+            List<Match> matches1 = service.getResultedMatchList();
+            List<Match> matches1F = new ArrayList<>();
+            for (Match match : matches1) {
+                if (Objects.equals(match.getTenMuaGiai(), compe)) {
+                    if (clb != null) {
+                        if (Objects.equals(match.getTenCLB1(), clb) ||
+                                Objects.equals(match.getTenCLB2(), clb)) {
+                            matches1F.add(match);
+                        }
+                    } else {
+                        matches1F.add(match);
+                    }
+                }
+            }
+            List<Match> matches2 = DAO_Match.getPendingMatchList();
+            List<Match> matches2F = new ArrayList<>();
+            for (Match match : matches2) {
+                if (Objects.equals(match.getTenMuaGiai(), compe)) {
+                    if (clb != null) {
+                        if (Objects.equals(match.getTenCLB1(), clb) ||
+                                Objects.equals(match.getTenCLB2(), clb)) {
+                            matches2F.add(match);
+                        }
+                    } else matches2F.add(match);
+                }
+            }
+            loadCompletedMatchData(matches1F);
+            loadFixtureData(matches2F);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -167,17 +181,103 @@ public class ResultManagementController implements Initializable {
 
 
     @FXML
-    public void remove() {}
+    public void remove() {
+        Match selectedMatch1 = resultTable.getSelectionModel().getSelectedItem();
+        Match selectedMatch2 = fixtureTable.getSelectionModel().getSelectedItem();
+        if (selectedMatch1 != null && selectedMatch2 != null) {
+            if (selectedMatch1.getId() != selectedMatch2.getId()) {
+                showErrorAlert("Please just select ONE match to remove.");
+            }
+        } else {
+            Match selectedMatch = selectedMatch1 != null ? selectedMatch1 : selectedMatch2;
+            if (selectedMatch != null) {
+                //Xác nhận xóa
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Xác nhận xóa");
+                alert.setHeaderText("Bạn có chắc chắn muốn xóa kết quả trận đấu này không?");
+                alert.setContentText("Kết quả trận đấu sẽ bị xóa vĩnh viễn.");
+                ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+                ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+                alert.getButtonTypes().setAll(okButton, cancelButton);
+
+                alert.showAndWait().ifPresent(response -> {
+                    if (response == okButton) {
+                        try {
+                            // Xóa trận đấu
+                            DAO_KQUATRANDAU daoKq = new DAO_KQUATRANDAU();
+                            MODEL_KETQUATD model = new MODEL_KETQUATD(selectedMatch.getId(), selectedMatch.getScoreCLB1(), selectedMatch.getScoreCLB2());
+                            int result = daoKq.deleteDB(model);
+                            if (result == 1) {
+                                // Tải lại dữ liệu với bộ lọc hiện tại
+                                find();
+                                // Thông báo thành công
+                                showInfoAlert("Success", "Xóa trận đấu thành công!");
+                            }
+                        } catch (SQLException e) {
+                            showErrorAlert("Vui lòng chọn 1 tận đu để xóa" + e.getMessage());
+                        }
+                    }
+                });
+            } else {
+                showErrorAlert("Vui lòng chọn 1 tận đu để xóa");
+            }
+        }
+    }
 
     @FXML
-    public void update() {}
+    public void update() {
+        Match selectedMatch1 = resultTable.getSelectionModel().getSelectedItem();
+        Match selectedMatch2 = fixtureTable.getSelectionModel().getSelectedItem();
+        if (selectedMatch1 != null && selectedMatch2 != null) {
+            if (selectedMatch1.getId() != selectedMatch2.getId()) {
+                showErrorAlert("Please just select ONE match to update.");
+            }
+        } else {
+            Match selectedMatch = selectedMatch1 != null ? selectedMatch1 : selectedMatch2;
+            if (selectedMatch != null) {
+                try {
+                    // Load GoalFrame
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/GoalFrame.fxml"));
+                    Parent root = loader.load();
 
-    @FXML
-    public void save() {}
+                    // Get GoalManagementController1 and pass the idLabel value
+                    GoalManagementController controller = loader.getController();
+                    controller.setMatchId(selectedMatch.getId()); // Pass the match ID
+                    controller.setResultManagementController(this); // Pass the current controller
 
-    @FXML
-    public void cancel() {
-        resetForm();
+                    // Open the GoalFrame
+                    Stage stage = new Stage();
+                    stage.setTitle("Goal Management");
+                    stage.setScene(new Scene(root));
+                    stage.initOwner(updateBtn.getScene().getWindow());
+                    stage.show();
+                } catch (IOException | SQLException e) {
+                    e.printStackTrace();
+                    showErrorAlert("Error loading GoalFrame: " + e.getMessage());
+                }
+            } else {
+                showErrorAlert("Please select a match to update.");
+            }
+        }
+    }
+
+    public void save(int id,int score1,int score2) throws SQLException {
+        MODEL_KETQUATD model = new MODEL_KETQUATD(id,score1,score2);
+
+        DAO_KQUATRANDAU daoKq = new DAO_KQUATRANDAU();
+        DAO_BXH_CLB daoBxhClb = new DAO_BXH_CLB();
+        if (daoKq.selectByID(model.getMaTD()) == null) {
+            daoKq.insertDB(model);
+
+            showInfoAlert("Success", "Thêm kết quả thành công!");
+
+        } else {
+            daoKq.updateDB(model);
+            showInfoAlert("Success", "Cập nhật kết quả thành công!");
+        }
+        // Cập nhật BXH
+        service.updateRanking(model.getMaTD());
+        find();
     }
 
 }

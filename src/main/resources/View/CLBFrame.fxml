@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="625.0" prefWidth="800.0" spacing="15.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ClbController">
+   <children>
+      <HBox alignment="CENTER_LEFT" prefHeight="123.0" prefWidth="800.0" styleClass="header" stylesheets="@../CSS/Fixtures.css">
+         <children>
+            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="149.0" styleClass="title" text="Clubs">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="42.0" prefWidth="450.0" styleClass="search-container" stylesheets="@../CSS/Fixtures.css">
+               <children>
+                  <Button mnemonicParsing="false" prefHeight="31.0" prefWidth="28.0" stylesheets="@../CSS/Fixtures.css">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
+                           <image>
+                              <Image url="@../icons/search.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <styleClass>
+                        <String fx:value="search-btn" />
+                        <String fx:value="button_effect" />
+                     </styleClass>
+                  </Button>
+                  <TextField fx:id="searchField" prefHeight="40.0" prefWidth="428.0" promptText="Search" style="-fx-background-color: #f5f5f5;" styleClass="search-field" stylesheets="@../CSS/Fixtures.css" />
+               </children>
+               <HBox.margin>
+                  <Insets right="50.0" />
+               </HBox.margin>
+            </HBox>
+            <Button mnemonicParsing="false" prefHeight="28.0" prefWidth="27.0" styleClass="notification">
+               <graphic>
+                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
+                     <image>
+                        <Image url="@../icons/user.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+         </children>
+      </HBox>
+      <VBox prefHeight="484.0" prefWidth="649.0" stylesheets="@../CSS/Fixtures.css">
+         <children>
+            <HBox prefHeight="58.0" prefWidth="787.0" spacing="5">
+               <children>
+                  <VBox prefHeight="54.0" prefWidth="228.0">
+                     <children>
+                        <Label prefHeight="18.0" prefWidth="149.0" styleClass="filter_text" text="Filter by competition" textAlignment="CENTER" />
+                        <ComboBox fx:id="compeFilter" prefHeight="27.0" prefWidth="197.0" style="-fx-border-color: #991f18;" styleClass="menu-button" />
+                     </children>
+                  </VBox>
+                  <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#resetFilter" prefHeight="54.0" prefWidth="110.0" styleClass="reset_button" text="Reset Filters" translateX="-10.0">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
+                           <image>
+                              <Image url="@../icons/undo.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <Button fx:id="addBtn" mnemonicParsing="false" onAction="#controlClub" prefHeight="60.0" prefWidth="168.0" styleClass="reset_button" text="Club Management" translateX="116.0">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
+                           <image>
+                              <Image url="@../icons/appointment.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="44.0" right="5.0" />
+               </padding>
+            </HBox>
+            <ScrollPane prefHeight="402.0" prefWidth="648.0">
+               <content>
+                  <GridPane fx:id="team_container" prefHeight="403.0" prefWidth="784.0" styleClass="grid-pane">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                  </GridPane>
+               </content>
+            </ScrollPane>
+         </children>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+         <padding>
+            <Insets top="5.0" />
+         </padding>
+      </VBox>
+   </children>
+</VBox>

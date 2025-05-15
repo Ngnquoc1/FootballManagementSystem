@@ -2,7 +2,11 @@ package Model;
 
 public class MODEL_KETQUATD {
     private int maTD,diemCLB1,diemCLB2;
-    MODEL_KETQUATD() {}
+    public MODEL_KETQUATD(int maTD,int diem1,int diem2) {
+        this.maTD=maTD;
+        this.diemCLB1=diem1;
+        this.diemCLB2=diem2;
+    }
 
     public int getMaTD() {
         return maTD;

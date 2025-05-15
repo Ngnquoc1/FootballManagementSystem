@@ -1,13 +1,9 @@
-package Controller.DAO;
+package DAO;
 
 import Controller.Connection.DatabaseConnection;
 import Model.MODEL_SAN;
-import Model.Match;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class DAO_SAN implements DAOInterface<MODEL_SAN> {
@@ -69,7 +65,18 @@ public class DAO_SAN implements DAOInterface<MODEL_SAN> {
     }
 
     @Override
-    public Match selectByID(int id) {
+    public MODEL_SAN selectByID(int id) throws SQLException {
+        Connection conn = DatabaseConnection.getInstance().getConnectionn();
+        String sql = "SELECT * FROM SAN WHERE MaSan = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return getFromRs(rs);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
     }
 

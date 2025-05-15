@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.web.WebView?>
+
+<BorderPane fx:id="mainContainer" prefHeight="625.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ClubsDetailController">
+    <top>
+        <!-- Header with background image -->
+        <StackPane>
+            <children>
+                <!-- Background image (stadium) -->
+                <ImageView fx:id="headerBackgroundImage" fitHeight="200.0" fitWidth="900.0" pickOnBounds="true">
+                    <image>
+                        <Image url="@../Image/stadium_BG.jpg" />
+                    </image>
+                </ImageView>
+
+                <!-- Dark overlay for better text visibility -->
+                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#00000080" height="200.0" stroke="TRANSPARENT" strokeType="INSIDE" width="900.0" />
+
+                <!-- Header content -->
+                <BorderPane>
+                    <center>
+                        <HBox alignment="CENTER" spacing="30.0">
+                            <children>
+                                <!-- Club logo with circular clip and glow effect -->
+                                <StackPane>
+                                    <children>
+                                        <!-- Background circle for logo -->
+                                        <Rectangle arcHeight="150.0" arcWidth="150.0" fill="WHITE" height="150.0" stroke="#991f18" strokeWidth="3.0" width="150.0">
+                                            <effect>
+                                                <DropShadow color="#00000080" height="20.0" radius="9.5" width="20.0" />
+                                            </effect>
+                                        </Rectangle>
+
+                                        <!-- Club logo -->
+                                        <ImageView fx:id="clubLogoImageView" fitHeight="130.0" fitWidth="130.0" pickOnBounds="true" preserveRatio="true" />
+                                    </children>
+                                </StackPane>
+
+                                <!-- Club name and info -->
+                                <VBox alignment="CENTER_LEFT">
+                                    <children>
+                                        <Label fx:id="clubNameLabel" style="-fx-text-fill: white;" text="MANCHESTER UNITED">
+                                            <font>
+                                                <Font name="System Bold" size="36.0" />
+                                            </font>
+                                            <effect>
+                                                <DropShadow />
+                                            </effect>
+                                        </Label>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+                    </center>
+                </BorderPane>
+            </children>
+        </StackPane>
+    </top>
+    <bottom>
+        <HBox alignment="CENTER" style="-fx-background-color: #991f18;" BorderPane.alignment="CENTER">
+            <children>
+                <Label style="-fx-text-fill: white;" text="© 2023 Football Manager System">
+                    <font>
+                        <Font size="12.0" />
+                    </font>
+                </Label>
+            </children>
+            <padding>
+                <Insets bottom="10.0" top="10.0" />
+            </padding>
+        </HBox>
+    </bottom>
+   <right>
+        <ScrollPane fitToWidth="true" pannable="true" style="-fx-background: transparent; -fx-background-color: transparent;" BorderPane.alignment="CENTER">
+            <content>
+                <VBox spacing="20.0" style="-fx-background-color: #f5f5f5;">
+                    <padding>
+                        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+                    </padding>
+                    <children>
+                        <!-- Club Information Card -->
+                        <VBox spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);">
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
+                            <children>
+                                <!-- Card Header -->
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <children>
+                                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#991f18" height="25.0" stroke="TRANSPARENT" strokeType="INSIDE" width="5.0" />
+                                        <Label style="-fx-text-fill: #991f18;" text="THÔNG TIN CÂU LẠC BỘ">
+                                            <font>
+                                                <Font name="System Bold" size="18.0" />
+                                            </font>
+                                        </Label>
+                                    </children>
+                                </HBox>
+      
+                                <Separator />
+      
+                                <!-- Club Details -->
+                                <HBox spacing="50.0">
+                                    <children>
+                                        <!-- Left Column -->
+                                        <VBox spacing="15.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                                    <children>
+                                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                                            <image>
+                                                                <Image url="@../icons/IdClub.png" />
+                                                            </image>
+                                                        </ImageView>
+                                                        <Label style="-fx-text-fill: black;" text="Mã CLB:">
+                                                            <font>
+                                                                <Font name="System Bold" size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <Label fx:id="clubIdLabel" prefHeight="20.0" prefWidth="22.0" style="-fx-text-fill: black;" text="1">
+                                                            <font>
+                                                                <Font size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                    </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                                    <children>
+                                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                                            <image>
+                                                                <Image url="@../icons/worldwide.png" />
+                                                            </image>
+                                                        </ImageView>
+                                                        <Label style="-fx-text-fill: black;" text="Quốc gia:">
+                                                            <font>
+                                                                <Font name="System Bold" size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <Label fx:id="countryLabel" style="-fx-text-fill: black;" text="Anh">
+                                                            <font>
+                                                                <Font size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                    </children>
+                                                </HBox>
+                                            </children>
+                                        </VBox>
+      
+                                        <!-- Right Column -->
+                                        <VBox spacing="15.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                                    <children>
+                                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                                            <image>
+                                                                <Image url="@../icons/user.png" />
+                                                            </image>
+                                                        </ImageView>
+                                                        <Label style="-fx-text-fill: black;" text="HLV:">
+                                                            <font>
+                                                                <Font name="System Bold" size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <Label fx:id="coachLabel" style="-fx-text-fill: black;" text="Erik ten Hag">
+                                                            <font>
+                                                                <Font size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                    </children>
+                                                </HBox>
+                                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                       <children>
+                                          <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../icons/worldwide.png" />
+                                             </image>
+                                          </ImageView>
+                                          <Label style="-fx-text-fill: black;" text="Email:">
+                                             <font>
+                                                <Font name="System Bold" size="14.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="websiteLabel" style="-fx-text-fill: black;" text="Anh">
+                                             <font>
+                                                <Font size="14.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </HBox>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+      
+                        <!-- Stadium Information Card -->
+                        <VBox spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);">
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
+                            <children>
+                                <!-- Card Header -->
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <children>
+                                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#991f18" height="25.0" stroke="TRANSPARENT" strokeType="INSIDE" width="5.0" />
+                                        <Label style="-fx-text-fill: #991f18;" text="SÂN VẬN ĐỘNG">
+                                            <font>
+                                                <Font name="System Bold" size="18.0" />
+                                            </font>
+                                        </Label>
+                                    </children>
+                                </HBox>
+      
+                                <Separator />
+      
+                                <!-- Stadium Image and Info -->
+                                <HBox spacing="20.0">
+                                    <children>
+                                        <!-- Stadium Image -->
+                                        <StackPane>
+                                            <children>
+                                                <WebView fx:id="mapWebView" prefHeight="202.0" prefWidth="374.0" />
+                                            </children>
+                                            <effect>
+                                                <DropShadow height="10.0" radius="4.5" width="10.0" />
+                                            </effect>
+                                        </StackPane>
+      
+                                        <!-- Stadium Details -->
+                                        <VBox spacing="15.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                                    <children>
+                                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                                            <image>
+                                                                <Image url="@../icons/stadium.png" />
+                                                            </image>
+                                                        </ImageView>
+                                                        <Label style="-fx-text-fill: black;" text="Tên sân:" textFill="#0d0d0d">
+                                                            <font>
+                                                                <Font name="System Bold" size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <Label fx:id="stadiumNameLabel" prefHeight="20.0" prefWidth="155.0" style="-fx-text-fill: black;" text="Old Trafford">
+                                                            <font>
+                                                                <Font size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                    </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                                    <children>
+                                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                                            <image>
+                                                                <Image url="@../icons/appointment.png" />
+                                                            </image>
+                                                        </ImageView>
+                                                        <Label style="-fx-text-fill: black;" text="Mã sân:">
+                                                            <font>
+                                                                <Font name="System Bold" size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <Label fx:id="stadiumIdLabel" style="-fx-text-fill: black;" text="1">
+                                                            <font>
+                                                                <Font size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                    </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                                    <children>
+                                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                                            <image>
+                                                                <Image url="@../icons/location.png" />
+                                                            </image>
+                                                        </ImageView>
+                                                        <Label style="-fx-text-fill: black;" text="Địa chỉ:">
+                                                            <font>
+                                                                <Font name="System Bold" size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <Label fx:id="addressLabel" style="-fx-text-fill: black;" text="Sir Matt Busby Way, Manchester M16 0RA, UK" wrapText="true">
+                                                            <font>
+                                                                <Font size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                    </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                                    <children>
+                                                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                                            <image>
+                                                                <Image url="@../icons/spectator.png" />
+                                                            </image>
+                                                        </ImageView>
+                                                        <Label style="-fx-text-fill: black;" text="Sức chứa:">
+                                                            <font>
+                                                                <Font name="System Bold" size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <Label fx:id="capacityLabel" style="-fx-text-fill: black;" text="74,140 người">
+                                                            <font>
+                                                                <Font size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                    </children>
+                                                </HBox>
+      
+                                                <!-- Capacity Visualization -->
+                                                <VBox spacing="5.0">
+                                                    <children>
+                                                        <Label style="-fx-text-fill: black;" text="Sức chứa so với các sân khác:">
+                                                            <font>
+                                                                <Font name="System Bold" size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <StackPane>
+                                                            <children>
+                                                                <Rectangle arcHeight="10.0" arcWidth="10.0" fill="#e0e0e0" height="20.0" stroke="TRANSPARENT" strokeType="INSIDE" width="400.0" />
+                                                                <Rectangle fx:id="capacityBar" arcHeight="10.0" arcWidth="10.0" fill="#991f18" height="20.0" stroke="TRANSPARENT" strokeType="INSIDE" width="320.0" AnchorPane.leftAnchor="0.0" />
+                                                                <Label fx:id="capacityPercentLabel" style="-fx-text-fill: white;" text="80%" AnchorPane.leftAnchor="10.0">
+                                                                    <font>
+                                                                        <Font name="System Bold" size="12.0" />
+                                                                    </font>
+                                                                </Label>
+                                                            </children>
+                                                        </StackPane>
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+   </right>
+</BorderPane>

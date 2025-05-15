@@ -1,9 +1,10 @@
 package Controller;
 
-import Controller.DAO.DAO_CLB;
-import Controller.DAO.DAO_MUAGIAI;
-import Controller.DAO.DAO_Match;
-import Controller.DAO.DAO_SAN;
+import Service.Service;
+import DAO.DAO_CLB;
+import DAO.DAO_MUAGIAI;
+import DAO.DAO_Match;
+import DAO.DAO_SAN;
 import Model.MODEL_CLB;
 import Model.MODEL_MUAGIAI;
 import Model.MODEL_SAN;
@@ -16,15 +17,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class MatchManagementController implements Initializable {
     @FXML
@@ -34,14 +31,14 @@ public class MatchManagementController implements Initializable {
     @FXML
     private Spinner<Integer> hourSpinner, minSpinner;
     @FXML
-    private Button addBtn, findBtn, removeBtn, updateBtn, saveBtn, cancelBtn, resetBtn;
+    private Button addBtn, findBtn, removeBtn, updateBtn, saveBtn, cancelBtn, resetBtn,closeBtn;
     @FXML
     private ComboBox<String> compeFilter, clubFilter, compeForm, clbForm1, clbForm2, staForm,roundForm;
     @FXML
     private Label idLabel;
     @FXML
     private DatePicker dateForm;
-
+    private Service service = new Service();
     @Override
     public void initialize(java.net.URL location, java.util.ResourceBundle resources) {
         // Ánh xạ các cột với thuộc tính của lớp Match
@@ -57,7 +54,11 @@ public class MatchManagementController implements Initializable {
         // Tải dữ liệu vào bảng
         List<Match> matches = new DAO_Match().selectByCondition("");
         loadFixtureData(matches);
-        setCombobox();
+        try {
+            setCombobox();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         hourSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 23, 0));
         minSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59, 0));
     }
@@ -66,7 +67,7 @@ public class MatchManagementController implements Initializable {
         ObservableList<Match> matchList = FXCollections.observableArrayList(matches);
         fixtureTable.setItems(matchList);
     }
-    private void setCombobox() {
+    private void setCombobox() throws SQLException {
 
         DAO_MUAGIAI daoMG = new DAO_MUAGIAI();
         ArrayList<MODEL_MUAGIAI> ds1 = daoMG.selectAllDB();
@@ -155,7 +156,7 @@ public class MatchManagementController implements Initializable {
 
     @FXML
     private void resetFilter() throws SQLException {
-        Map<LocalDate, List<Match>> matchesByDate = new DAO_Match().getUpcomingMatchs();
+        Map<LocalDate, List<Match>> matchesByDate = service.getUpcomingMatchs();
         clubFilter.getSelectionModel().clearSelection();
         compeFilter.getSelectionModel().selectFirst();
         find();
@@ -301,4 +302,11 @@ public class MatchManagementController implements Initializable {
         resetForm();
     }
 
+    @FXML
+    public void closeBtn(){
+        // Đóng cửa sổ hiện tại
+        if (closeBtn.getScene().getWindow() != null) {
+            closeBtn.getScene().getWindow().hide();
+        }
+    }
 }

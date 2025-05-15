@@ -1,8 +1,9 @@
-package Controller.DAO;
+package DAO;
 
 import Controller.Connection.DatabaseConnection;
 
 import Model.Match;
+import Service.Service;
 import oracle.jdbc.OracleTypes;
 
 import java.sql.*;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 public class DAO_Match implements DAOInterface<Match> {
-
+    private static Service service = new Service();
 
 
     @Override
@@ -143,6 +144,7 @@ public class DAO_Match implements DAOInterface<Match> {
 
         return new Match(maTD,tenMuaGiai,tenVD, tenCLB1, tenCLB2, gioThiDau, ngayThiDau, sanThiDau, logoCLB1, logoCLB2, scoreCLB1, scoreCLB2);
     }
+
     @Override
     public java.util.ArrayList<Match> selectAllDB(){
         return null;
@@ -196,82 +198,18 @@ public class DAO_Match implements DAOInterface<Match> {
         return ds;
     }
 
-    public static Map<LocalDate, List<Match>> getUpcomingMatchs() throws SQLException {
-        Map<LocalDate, List<Match>> matchesByDate = new HashMap<>();
-        Connection conn = null;
-        CallableStatement cstmt = null;
-        ResultSet rs = null;
-        DAO_Match daoMatch = new DAO_Match();
-        try {
-            // Kết nối tới cơ sở dữ liệu
-            DatabaseConnection db = DatabaseConnection.getInstance();
-            conn = db.getConnectionn();
-            cstmt = conn.prepareCall("{call GetUpcomingMatches(?)}");
-            cstmt.registerOutParameter(1, OracleTypes.CURSOR); // Đăng ký tham số đầu ra là cursor
-            cstmt.execute();
 
-            // Lấy ResultSet từ cursor
-            rs = (ResultSet) cstmt.getObject(1);
-
-            while (rs.next()) {
-                Timestamp timestamp = rs.getTimestamp("ThoiGian");
-                LocalDate ngayThiDau = timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                Match match = daoMatch.getFromRs(rs);
-                matchesByDate.computeIfAbsent(ngayThiDau, k -> new ArrayList<>()).add(match);
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Lỗi SQL: " + e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (rs != null) try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if (cstmt != null) try { cstmt.close(); } catch (SQLException e) { e.printStackTrace(); }
-        }
-
-        return matchesByDate;
-    }
-
-    public static List<Match> getResultedMatchList() throws SQLException {
-        List<Match> matchList = new ArrayList<>();
-        Connection conn = null;
-        CallableStatement cstmt = null;
-        ResultSet rs = null;
-        DAO_Match daoMatch = new DAO_Match();
-        try {
-            DatabaseConnection db = DatabaseConnection.getInstance();
-            conn = db.getConnectionn();
-            cstmt = conn.prepareCall("{call GetResultedMatches(?)}");
-            cstmt.registerOutParameter(1, OracleTypes.CURSOR);
-            cstmt.execute();
-
-            rs = (ResultSet) cstmt.getObject(1);
-            while (rs.next()) {
-                Match match = daoMatch.getFromRs(rs);
-                matchList.add(match);
-            }
-        } catch (SQLException e) {
-            System.err.println("Lỗi SQL: " + e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (rs != null) try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if (cstmt != null) try { cstmt.close(); } catch (SQLException e) { e.printStackTrace(); }
-        }
-        return matchList;
-    }
 
     public static Map<LocalDate, List<Match>> getResultedMatchs() throws SQLException {
         Map<LocalDate, List<Match>> matchesByDate = new HashMap<>();
-        List<Match> matchList = getResultedMatchList(); // Gọi lại hàm đầu tiên
+        List<Match> matchList = service.getResultedMatchList(); // Gọi lại hàm đầu tiên
         for (Match match : matchList) {
             LocalDate ngayThiDau = match.getNgayThiDau();
             matchesByDate.computeIfAbsent(ngayThiDau, k -> new ArrayList<>()).add(match);
         }
         return matchesByDate;
     }
+
     public static List<Match> getPendingMatchList() throws SQLException {
         List<Match> matchList = new ArrayList<>();
         Connection conn = null;

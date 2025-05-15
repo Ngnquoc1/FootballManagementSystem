@@ -1,7 +1,6 @@
-package Controller.DAO;
+package DAO;
 
 import Model.MODEL_VONGDAU;
-import Model.Match;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,7 +35,7 @@ public class Dao_VONGDAU implements DAOInterface<MODEL_VONGDAU> {
     }
 
     @Override
-    public Match selectByID(int id) {
+    public MODEL_VONGDAU selectByID(int id) {
         return null;
     }
 

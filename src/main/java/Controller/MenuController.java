@@ -29,7 +29,13 @@ public class MenuController {
         VBox view = fxmlLoader.getPane("FixtureFrame");
         mainContent.setCenter(view);
     }
-
+    @FXML
+    public void clickOnTableBtn() {
+        resetButtonStyle();
+        FxmlLoader fxmlLoader = new FxmlLoader();
+        VBox view = fxmlLoader.getPane("TableFrame");
+        mainContent.setCenter(view);
+    }
     public void resetButtonStyle() {
         resultMenuBtn.getStyleClass().remove("selected-button");
         fixtureMenuBtn.getStyleClass().remove("selected-button");

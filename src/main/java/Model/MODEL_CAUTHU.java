@@ -10,6 +10,13 @@ public class MODEL_CAUTHU {
     public MODEL_CAUTHU() {
     }
 
+    public MODEL_CAUTHU(int maCT, int loaiCT, String tenCT, Date ngaysinh) {
+        this.maCT = maCT;
+        this.loaiCT = loaiCT;
+        this.tenCT = tenCT;
+        this.ngaysinh = ngaysinh;
+    }
+
     public int getMaCT() {
         return maCT;
     }
@@ -41,4 +48,5 @@ public class MODEL_CAUTHU {
     public void setNgaysinh(Date ngaysinh) {
         this.ngaysinh = ngaysinh;
     }
+
 }

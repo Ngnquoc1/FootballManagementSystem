@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="606.0" prefWidth="648.0" stylesheets="@../CSS/Fixtures.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ResultsController">
+<VBox prefHeight="625.0" prefWidth="800.0" stylesheets="@../CSS/Fixtures.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ResultsController">
    <children>
    <Pane prefHeight="114.0" prefWidth="648.0" stylesheets="@../CSS/Fixtures.css">
       <children>
@@ -20,16 +20,7 @@
                <Font name="System Bold" size="18.0" />
             </font>
          </Label>
-         <Button layoutX="501.0" layoutY="14.0" mnemonicParsing="false" styleClass="notification" stylesheets="@../CSS/Fixtures.css">
-            <graphic>
-               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
-                  <image>
-                     <Image url="@../icons/notification.png" />
-                  </image>
-               </ImageView>
-            </graphic>
-         </Button>
-         <Button layoutX="561.0" layoutY="14.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="27.0" styleClass="notification">
+         <Button layoutX="561.0" layoutY="14.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="27.0" styleClass="notification" translateX="150.0">
             <graphic>
                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                   <image>
@@ -39,18 +30,18 @@
             </graphic>
          </Button>
          <HBox layoutX="469.0" layoutY="88.0" prefHeight="21.0" prefWidth="166.0" styleClass="add_box" />
-         <HBox layoutX="14.0" layoutY="41.0" prefHeight="58.0" prefWidth="635.0" spacing="5" styleClass="filter_box">
+         <HBox layoutX="14.0" layoutY="41.0" prefHeight="58.0" prefWidth="786.0" spacing="5" styleClass="filter_box">
             <children>
-               <VBox prefHeight="54.0" prefWidth="151.0" styleClass="filter_element">
+               <VBox prefHeight="58.0" prefWidth="205.0" styleClass="filter_element">
                   <children>
                      <Label prefHeight="18.0" prefWidth="149.0" styleClass="filter_text" text="Filter by competition" textAlignment="CENTER" />
-                     <ComboBox fx:id="compeFilter" prefHeight="31.0" prefWidth="140.0" style="-fx-border-color: #991f18;" styleClass="menu-button" />
+                     <ComboBox fx:id="compeFilter" prefHeight="17.0" prefWidth="180.0" style="-fx-border-color: #991f18;" styleClass="menu-button" />
                   </children>
                </VBox>
-               <VBox layoutX="10.0" layoutY="10.0" prefHeight="54.0" prefWidth="130.0" styleClass="filter_element">
+               <VBox layoutX="10.0" layoutY="10.0" prefHeight="58.0" prefWidth="226.0" styleClass="filter_element">
                   <children>
                      <Label prefHeight="18.0" prefWidth="113.0" styleClass="filter_text" text="Filter by club" />
-                     <ComboBox fx:id="clubFilter" onAction="#filterByCLB" prefHeight="32.0" prefWidth="137.0" style="-fx-border-color: #991f18;" styleClass="menu-button" />
+                     <ComboBox fx:id="clubFilter" onAction="#filterByCLB" prefHeight="14.0" prefWidth="180.0" style="-fx-border-color: #991f18;" styleClass="menu-button" />
                   </children>
                </VBox>
                <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#resetFilter" prefHeight="34.0" prefWidth="117.0" styleClass="reset_button" text="Reset Filters" translateX="-10.0" translateY="16.0">

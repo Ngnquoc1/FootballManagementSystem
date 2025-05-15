@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox fx:id="mainContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="800.0" spacing="15.0" style="-fx-background-color: white; -fx-border-color: #991f18; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.GoalManagementController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+    <children>
+        <!-- Tiêu đề chức năng -->
+        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" style="-fx-text-fill: #991f18;" text="QUẢN LÝ BÀN THẮNG TRẬN ĐẤU">
+            <font>
+                <Font name="System Bold" size="18.0" />
+            </font>
+        </Label>
+
+        <!-- Thông tin trận đấu -->
+        <HBox alignment="CENTER" spacing="10.0">
+            <children>
+                <Label text="Trận đấu:">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Label>
+                <Label fx:id="matchInfoLabel" text="Manchester United vs Liverpool - 12/05/2023">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <Label text="Tỉ số:">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                    <HBox.margin>
+                        <Insets left="20.0" />
+                    </HBox.margin>
+                </Label>
+                <Label fx:id="scoreLabel" text="2 - 1">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+            </children>
+        </HBox>
+
+        <Separator />
+
+        <!-- Danh sách bàn thắng -->
+        <Label text="Danh sách bàn thắng:">
+            <font>
+                <Font name="System Bold" size="14.0" />
+            </font>
+        </Label>
+
+        <TableView fx:id="goalsTableView" prefHeight="200.0" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="timeColumn" prefWidth="75.0" text="Phút" />
+                <TableColumn fx:id="playerColumn" prefWidth="200.0" text="Cầu thủ" />
+                <TableColumn fx:id="teamColumn" prefWidth="150.0" text="Đội" />
+                <TableColumn fx:id="typeColumn" prefWidth="150.0" text="Loại bàn thắng" />
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+        </TableView>
+
+        <!-- Các nút thao tác với danh sách -->
+        <HBox alignment="CENTER" spacing="10.0">
+            <children>
+                <Button fx:id="addButton" mnemonicParsing="false" onAction="#handleAddGoal" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #991f18; -fx-text-fill: white;" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Thêm" />
+                <Button fx:id="editButton" mnemonicParsing="false" onAction="#handleEditGoal" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #991f18; -fx-text-fill: white;" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Sửa" />
+                <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#handleDeleteGoal" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #991f18; -fx-text-fill: white;" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Xóa" />
+            </children>
+        </HBox>
+
+        <Separator />
+
+        <!-- Form nhập thông tin bàn thắng -->
+        <Label text="Thông tin bàn thắng:">
+            <font>
+                <Font name="System Bold" size="14.0" />
+            </font>
+        </Label>
+
+        <VBox spacing="10.0" style="-fx-background-color: #f5f5f5; -fx-padding: 15; -fx-background-radius: 5;">
+            <children>
+                <HBox prefHeight="32.0" prefWidth="725.0" spacing="15.0">
+                    <children>
+                        <VBox prefWidth="200.0" spacing="5.0">
+                            <children>
+                                <Label text="Phút" />
+                                <TextField fx:id="timeField" prefHeight="4.0" prefWidth="200.0" promptText="Nhập phút ghi bàn" stylesheets="@../CSS/Fixtures.css" />
+                            </children>
+                        </VBox>
+                        <VBox prefWidth="200.0" spacing="5.0">
+                            <children>
+                                <Label text="Loại bàn thắng" />
+                                <ComboBox fx:id="goalTypeComboBox" prefHeight="419.0" prefWidth="200.0" promptText="Chọn loại bàn thắng" stylesheets="@../CSS/Fixtures.css" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <HBox spacing="15.0">
+                    <children>
+                        <VBox prefWidth="200.0" spacing="5.0">
+                            <children>
+                                <Label text="Đội" />
+                                <ComboBox fx:id="teamComboBox" prefWidth="200.0" promptText="Chọn đội" stylesheets="@../CSS/Fixtures.css" />
+                            </children>
+                        </VBox>
+                        <VBox prefWidth="200.0" spacing="5.0">
+                            <children>
+                                <Label text="Cầu thủ ghi bàn" />
+                                <ComboBox fx:id="playerComboBox" prefWidth="200.0" promptText="Chọn cầu thủ" stylesheets="@../CSS/Fixtures.css" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                    <children>
+                        <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#handleCancel" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #666666; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-border-radius: 5;" stylesheets="@../CSS/Fixtures.css" text="Hủy">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Button>
+                        <Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSave" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #991f18; -fx-text-fill: white;" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Lưu" />
+                    </children>
+                    <VBox.margin>
+                        <Insets top="10.0" />
+                    </VBox.margin>
+                </HBox>
+            </children>
+        </VBox>
+
+        <!-- Nút hoàn thành -->
+        <HBox alignment="CENTER_RIGHT">
+            <children>
+                <Button fx:id="finishButton" mnemonicParsing="false" onAction="#handleFinish" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #991f18; -fx-text-fill: white; -fx-font-weight: bold;" stylesheets="@../CSS/Fixtures.css" text="HOÀN THÀNH" />
+            </children>
+        </HBox>
+    </children>
+</VBox>

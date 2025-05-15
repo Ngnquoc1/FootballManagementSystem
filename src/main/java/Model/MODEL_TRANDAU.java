@@ -5,8 +5,15 @@ import java.sql.Date;
 public class MODEL_TRANDAU {
     private int maTD,maCLB1,maCLB2,maVD,maSan;
     private Date thoiGian;
-
     public MODEL_TRANDAU() {}
+    public MODEL_TRANDAU(int maTD, int maCLB1, int maCLB2, int maVD, int maSan, Date thoiGian) {
+        this.maTD = maTD;
+        this.maCLB1 = maCLB1;
+        this.maCLB2 = maCLB2;
+        this.maVD = maVD;
+        this.maSan = maSan;
+        this.thoiGian = thoiGian;
+    }
 
     public int getMaTD() {
         return maTD;

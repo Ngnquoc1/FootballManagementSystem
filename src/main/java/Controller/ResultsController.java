@@ -1,16 +1,19 @@
 package Controller;
 
-import Controller.DAO.DAO_CLB;
-import Controller.DAO.DAO_MUAGIAI;
-import Controller.DAO.DAO_Match;
+import DAO.DAO_CLB;
+import DAO.DAO_MUAGIAI;
+import DAO.DAO_Match;
 import Model.MODEL_CLB;
 import Model.MODEL_MUAGIAI;
 import Model.Match;
 import Model.Session;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -21,6 +24,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -50,10 +54,14 @@ public class ResultsController implements Initializable {
             throw new RuntimeException(e);
         }
         createFullMatch(matchesByDate);
-        setFilter();
+        try {
+            setFilter();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private void setFilter(){
+    private void setFilter() throws SQLException {
 
         DAO_MUAGIAI daoMG= new DAO_MUAGIAI();
         ArrayList<MODEL_MUAGIAI> ds1 = daoMG.selectAllDB();
@@ -222,7 +230,29 @@ public class ResultsController implements Initializable {
     }
     @FXML
     public void controlResult(){
+        try {
+            // Tải file FXML của cửa sổ mới
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/ResultManagementFrame.fxml"));
+            Parent root = loader.load();
 
+            // Tạo một Stage mới
+            Stage stage = new Stage();
+            stage.setTitle("Result Management");
+            stage.setScene(new Scene(root));
+            stage.initOwner(addBtn.getScene().getWindow()); // Đặt chủ sở hữu là cửa sổ hiện tại
+            stage.setResizable(false);
+            stage.show();
+            stage.setOnCloseRequest(event -> {
+                // Khi cửa sổ đóng, gọi lại phương thức resetFilter() để làm mới dữ liệu
+                try {
+                    resetFilter();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

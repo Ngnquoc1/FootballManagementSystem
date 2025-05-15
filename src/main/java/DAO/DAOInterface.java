@@ -1,7 +1,5 @@
-package Controller.DAO;
+package DAO;
 
-
-import Model.Match;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,9 +14,9 @@ public interface DAOInterface<T> {
 
     public T getFromRs(ResultSet rs) throws Exception;
 
-    public ArrayList<T> selectAllDB();
+    public ArrayList<T> selectAllDB() throws SQLException;
 
-    public Match selectByID(int id);
+    public T selectByID(int id) throws SQLException;
 
-    public ArrayList<T> selectByCondition(String Condition);
+    public ArrayList<T> selectByCondition(String Condition) throws SQLException;
 }

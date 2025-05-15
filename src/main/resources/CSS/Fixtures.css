@@ -61,7 +61,7 @@
 }
 
 .title{
-    -fx-text-fill: linear-gradient(from 50% 50% to 100% 100%, #991f18, #ff8c00);
+    -fx-text-fill:  #991f18;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 1);
     -fx-font-family: "Arial Black";
 }
@@ -92,6 +92,7 @@
 }
 
 /*Main*/
+
 #Match_result{
     -fx-background-color: #fff;
 }
@@ -168,25 +169,25 @@
 
 /*Management View*/
 .ManagementBtn {
-    -fx-background-color: white;
+
     -fx-border-color: #991f18;
-    -fx-border-radius: 10px;
-    -fx-background-radius: 10px;
-    -fx-text-fill: #991f18;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
     -fx-font-weight: bold;
-    -fx-cursor: hand;
     -fx-effect: dropshadow(three-pass-box, rgba(153,31,24,0.2), 5, 0, 0, 1);
-}
-.ManagementBtn:hover {
     -fx-background-color: #991f18;
     -fx-text-fill: white;
+}
+.ManagementBtn:hover {
+    -fx-background-color: white;
+    -fx-text-fill: #991f18;
+    -fx-cursor: hand;
 }
 .combo-box, .text-field, .date-picker {
     -fx-background-color: white;
     -fx-border-color: #991f18;
     -fx-border-radius: 6px;
     -fx-background-radius: 6px;
-    -fx-padding: 4 8 4 8;
 }
 .form-label {
     -fx-font-size: 14px;
@@ -195,8 +196,68 @@
     -fx-label-padding: 0 10 0 0; /* padding right */
 }
 
-/*.selected-button {*/
-/*    -fx-background-color: #ff8c00; !* Màu nền khi được chọn *!*/
-/*    -fx-border-color: #ffffff; !* Viền trắng *!*/
-/*    -fx-border-width: 2px;*/
-/*}*/
+
+/*Club*/
+.header {
+    -fx-background-color: linear-gradient(to right bottom, #ff8c00, #991f18);
+}
+.search-container {
+    -fx-background-color: #f5f5f5;
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1px;
+    -fx-padding: 5px;
+    -fx-spacing: 5px;
+}
+.search-field {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-prompt-text-fill: #999;
+    -fx-font-size: 14px;
+}
+.logo-view {
+    -fx-fit-height: 80;
+    -fx-fit-width: 80;
+}
+.team-card{
+    -fx-background-color: transparent;
+    -fx-background-radius: 10px;
+    -fx-border-width: none;
+    -fx-alignment: CENTER-LEFT;
+    -fx-pref-width:200px ;
+}
+.team-card:hover {
+    -fx-background-color: linear-gradient(to right bottom, #feb47b, #ff7e5f);
+}
+.team-card:hover .team-name,
+.team-card:hover .arrow-club-icon{
+    -fx-text-fill: white;
+}
+.team-name{
+    -fx-font-weight: bold;
+    -fx-text-fill: Black;
+    -fx-font-size: 14px;
+    -fx-max-width: 170px;
+    -fx-pref-width: 130px;
+}
+.color-bar{
+    -fx-background-color: #991f18;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-pref-width: 3px;
+    -fx-pref-height: 3px;
+}
+.arrow-club-icon{
+    -fx-text-fill: ff8c00;
+    -fx-font-size: 20px;
+}
+.search-btn {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-cursor: hand;
+}
+
+.grid-pane{
+    -fx-background-color: white;
+}

@@ -2,8 +2,15 @@ package Model;
 
 public class MODEL_BANTHANG {
     private int maBT,maCT,maTD,phutGhiBan;
-    private String loaiBT;
-    MODEL_BANTHANG() {}
+    private int maLoaiBT;
+    public MODEL_BANTHANG() {}
+    public MODEL_BANTHANG(int maBT, int maCT, int maTD, int phutGhiBan, int loaiBT) {
+        this.maBT = maBT;
+        this.maCT = maCT;
+        this.maTD = maTD;
+        this.phutGhiBan = phutGhiBan;
+        this.maLoaiBT = loaiBT;
+    }
     public int getMaBT() {
         return maBT;
     }
@@ -34,11 +41,11 @@ public class MODEL_BANTHANG {
         this.phutGhiBan = phutGhiBan;
     }
 
-    public String getLoaiBT() {
-        return loaiBT;
+    public int getmaLoaiBT() {
+        return maLoaiBT;
     }
 
-    public void setLoaiBT(String loaiBT) {
-        this.loaiBT = loaiBT;
+    public void setmaLoaiBT(int loaiBT) {
+        this.maLoaiBT = loaiBT;
     }
 }

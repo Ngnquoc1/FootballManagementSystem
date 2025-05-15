@@ -1,8 +1,8 @@
 package Controller;
 
-import Controller.DAO.DAO_User;
 import Model.MODEL_USER;
 import Model.Session;
+import Service.Service;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,7 +25,7 @@ public class LoginController {
     private TextField userText;
     @FXML
     private PasswordField passText;
-
+    private Service service= new Service();
     @FXML
     public void switchScene(ActionEvent event, String view) throws IOException {
         // Logic to switch to MyTest.fxml
@@ -41,7 +41,7 @@ public class LoginController {
         MODEL_USER user = new MODEL_USER();
         String username = userText.getText();
         String password = passText.getText();
-        user = DAO_User.Login(username, password);
+        user = service.Login(username, password);
         if (user != null) {
             Session session = Session.getInstance();
             session.setUsername(user.getUserName());
