@@ -7,7 +7,7 @@ import javafx.scene.layout.VBox;
 
 public class MenuController {
     @FXML
-    private Button resultMenuBtn,fixtureMenuBtn;
+    private Button resultMenuBtn,fixtureMenuBtn,tableMenuBtn,clubMenuBtn,playerMenuBtn,leagueMenuBtn;
     @FXML
     private BorderPane mainContent;
 
@@ -15,7 +15,7 @@ public class MenuController {
     @FXML
     public void clickOnResultBtn() {
         resetButtonStyle();
-        resultMenuBtn.getStyleClass().add("selected-button");
+        resultMenuBtn.getStyleClass().add("selectedBtn");
         FxmlLoader fxmlLoader = new FxmlLoader();
         VBox view = fxmlLoader.getPane("ResultFrame");
         mainContent.setCenter(view);
@@ -24,7 +24,7 @@ public class MenuController {
     @FXML
     public void clickOnFixtureBtn() {
         resetButtonStyle();
-        fixtureMenuBtn.getStyleClass().add("selected-button");
+        fixtureMenuBtn.getStyleClass().add("selectedBtn");
         FxmlLoader fxmlLoader = new FxmlLoader();
         VBox view = fxmlLoader.getPane("FixtureFrame");
         mainContent.setCenter(view);
@@ -32,12 +32,34 @@ public class MenuController {
     @FXML
     public void clickOnTableBtn() {
         resetButtonStyle();
+        tableMenuBtn.getStyleClass().add("selectedBtn");
         FxmlLoader fxmlLoader = new FxmlLoader();
         VBox view = fxmlLoader.getPane("TableFrame");
         mainContent.setCenter(view);
     }
-    public void resetButtonStyle() {
-        resultMenuBtn.getStyleClass().remove("selected-button");
-        fixtureMenuBtn.getStyleClass().remove("selected-button");
+    @FXML
+    public void clickOnClubBtn(){
+        resetButtonStyle();
+        clubMenuBtn.getStyleClass().add("selectedBtn");
+        FxmlLoader fxmlLoader = new FxmlLoader();
+        VBox view = fxmlLoader.getPane("CLBFrame");
+        mainContent.setCenter(view);
     }
+    @FXML
+    public void clickOnLeagueBtn(){
+        resetButtonStyle();
+        leagueMenuBtn.getStyleClass().add("selectedBtn");
+        FxmlLoader fxmlLoader = new FxmlLoader();
+        VBox view = fxmlLoader.getPane("TournamentFrame");
+        mainContent.setCenter(view);
+    }
+    public void resetButtonStyle() {
+        resultMenuBtn.getStyleClass().remove("selectedBtn");
+        fixtureMenuBtn.getStyleClass().remove("selectedBtn");
+        tableMenuBtn.getStyleClass().remove("selectedBtn");
+        clubMenuBtn.getStyleClass().remove("selectedBtn");
+        playerMenuBtn.getStyleClass().remove("selectedBtn");
+        leagueMenuBtn.getStyleClass().remove("selectedBtn");
+    }
+
 }

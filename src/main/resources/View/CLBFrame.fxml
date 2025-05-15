@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="625.0" prefWidth="800.0" spacing="15.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ClbController">
+<VBox prefHeight="625.0" prefWidth="800.0" style="-fx-border-color: #991f18; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ClbController">
    <children>
       <HBox alignment="CENTER_LEFT" prefHeight="123.0" prefWidth="800.0" styleClass="header" stylesheets="@../CSS/Fixtures.css">
          <children>
@@ -59,12 +59,12 @@
       </HBox>
       <VBox prefHeight="484.0" prefWidth="649.0" stylesheets="@../CSS/Fixtures.css">
          <children>
-            <HBox prefHeight="58.0" prefWidth="787.0" spacing="5">
+            <HBox prefHeight="78.0" prefWidth="795.0" spacing="5">
                <children>
                   <VBox prefHeight="54.0" prefWidth="228.0">
                      <children>
                         <Label prefHeight="18.0" prefWidth="149.0" styleClass="filter_text" text="Filter by competition" textAlignment="CENTER" />
-                        <ComboBox fx:id="compeFilter" prefHeight="27.0" prefWidth="197.0" style="-fx-border-color: #991f18;" styleClass="menu-button" />
+                        <ComboBox fx:id="compeFilter" prefHeight="27.0" prefWidth="197.0" promptText="Choose your League" style="-fx-border-color: #991f18;" styleClass="menu-button" />
                      </children>
                   </VBox>
                   <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#resetFilter" prefHeight="54.0" prefWidth="110.0" styleClass="reset_button" text="Reset Filters" translateX="-10.0">
@@ -87,12 +87,12 @@
                   </Button>
                </children>
                <padding>
-                  <Insets bottom="5.0" left="44.0" right="5.0" />
+                  <Insets bottom="10.0" left="44.0" right="5.0" top="10.0" />
                </padding>
             </HBox>
-            <ScrollPane prefHeight="402.0" prefWidth="648.0">
+            <ScrollPane prefHeight="438.0" prefWidth="795.0">
                <content>
-                  <GridPane fx:id="team_container" prefHeight="403.0" prefWidth="784.0" styleClass="grid-pane">
+                  <GridPane fx:id="team_container" prefHeight="407.0" prefWidth="784.0" styleClass="grid-pane">
                      <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -114,5 +114,13 @@
             <Insets top="5.0" />
          </padding>
       </VBox>
+      <HBox alignment="CENTER" prefHeight="38.0" prefWidth="900.0" style="-fx-background-color: #991f18;">
+         <children>
+            <Label style="-fx-text-fill: white;" text="© 2023 Football Manager System" />
+         </children>
+         <padding>
+            <Insets bottom="10.0" top="10.0" />
+         </padding>
+      </HBox>
    </children>
 </VBox>

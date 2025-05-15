@@ -86,7 +86,7 @@
                               <Font name="Arial Black" size="11.0" />
                            </font>
                         </Button>
-                        <Button mnemonicParsing="false" onAction="#clickOnTableBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="Tables">
+                        <Button fx:id="tableMenuBtn" mnemonicParsing="false" onAction="#clickOnTableBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="Tables">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                  <image>
@@ -98,7 +98,7 @@
                               <Font name="Arial Black" size="11.0" />
                            </font>
                         </Button>
-                        <Button mnemonicParsing="false" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="Clubs">
+                        <Button fx:id="clubMenuBtn" mnemonicParsing="false" onAction="#clickOnClubBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="Clubs">
                            <font>
                               <Font name="Arial Black" size="11.0" />
                            </font>
@@ -110,7 +110,7 @@
                               </ImageView>
                            </graphic>
                         </Button>
-                        <Button mnemonicParsing="false" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="Players">
+                        <Button fx:id="playerMenuBtn" mnemonicParsing="false" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="Players">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                  <image>
@@ -122,7 +122,7 @@
                               <Font name="Arial Black" size="11.0" />
                            </font>
                         </Button>
-                        <Button mnemonicParsing="false" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="League ">
+                        <Button fx:id="leagueMenuBtn" mnemonicParsing="false" onAction="#clickOnLeagueBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="League ">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                  <image>

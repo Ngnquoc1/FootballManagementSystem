@@ -14,15 +14,15 @@
 <?import javafx.scene.text.Font?>
 
 <VBox fx:id="mainContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="630.0" prefWidth="800.0" spacing="15.0" style="-fx-background-color: white; -fx-border-color: #991f18; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.TableController">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-    </padding>
     <children>
         <!-- Tiêu đề chức năng -->
         <Label alignment="CENTER" maxWidth="1.7976931348623157E308" style="-fx-text-fill: #991f18;" text="BẢNG XẾP HẠNG">
             <font>
                 <Font name="System Bold" size="18.0" />
             </font>
+         <VBox.margin>
+            <Insets left="20.0" right="20.0" />
+         </VBox.margin>
         </Label>
 
         <!-- Bộ lọc -->
@@ -51,9 +51,15 @@
                     </HBox.margin>
                 </Button>
             </children>
+         <VBox.margin>
+            <Insets left="20.0" right="20.0" />
+         </VBox.margin>
         </HBox>
 
-        <Separator />
+        <Separator>
+         <VBox.margin>
+            <Insets left="20.0" right="20.0" />
+         </VBox.margin></Separator>
 
         <!-- Nội dung bảng xếp hạng -->
         <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
@@ -77,7 +83,7 @@
                                 </HBox>
 
                                 <!-- Bảng xếp hạng CLB -->
-                                <TableView fx:id="clubTableView" VBox.vgrow="ALWAYS">
+                                <TableView fx:id="clubTableView" prefHeight="273.0" prefWidth="751.0" VBox.vgrow="ALWAYS">
                                     <columns>
                                         <TableColumn fx:id="clubRankColumn" prefWidth="50.0" text="Hạng" />
                                         <TableColumn fx:id="clubNameColumn" prefWidth="200.0" text="Câu lạc bộ" />
@@ -106,7 +112,7 @@
                                 </HBox>
                             </children>
                             <padding>
-                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                <Insets bottom="10.0" top="10.0" />
                             </padding>
                         </VBox>
                     </content>
@@ -204,6 +210,9 @@
                     </content>
                 </Tab>
             </tabs>
+         <VBox.margin>
+            <Insets left="20.0" right="20.0" />
+         </VBox.margin>
         </TabPane>
 
         <!-- Nút xuất báo cáo -->
@@ -212,6 +221,23 @@
                 <Button fx:id="exportButton" mnemonicParsing="false" onAction="#handleExport" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #991f18; -fx-text-fill: white;" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Xuất báo cáo" />
                 <Button fx:id="closeButton" mnemonicParsing="false" onAction="#handleClose" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #666666; -fx-text-fill: white; -fx-font-weight: bold;" text="Đóng" />
             </children>
+         <VBox.margin>
+            <Insets left="20.0" right="20.0" />
+         </VBox.margin>
         </HBox>
+      <HBox alignment="CENTER" style="-fx-background-color: #991f18;">
+         <children>
+            <Label style="-fx-text-fill: white;" text="© 2023 Football Manager System" />
+         </children>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+         <padding>
+            <Insets bottom="10.0" top="10.0" />
+         </padding>
+      </HBox>
     </children>
+   <padding>
+      <Insets top="20.0" />
+   </padding>
 </VBox>

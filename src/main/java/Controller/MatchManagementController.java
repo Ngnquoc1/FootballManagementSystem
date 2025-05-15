@@ -1,14 +1,11 @@
 package Controller;
 
+import Model.*;
 import Service.Service;
 import DAO.DAO_CLB;
 import DAO.DAO_MUAGIAI;
 import DAO.DAO_Match;
 import DAO.DAO_SAN;
-import Model.MODEL_CLB;
-import Model.MODEL_MUAGIAI;
-import Model.MODEL_SAN;
-import Model.Match;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -92,8 +89,7 @@ public class MatchManagementController implements Initializable {
         for (MODEL_SAN san : ds3) {
             dsSan.add(san.getTenSan());
         }
-
-        roundForm.getItems().addAll("LUOT DI", "LUOT VE");
+        roundForm.getItems().addAll("Lượt đi", "Lượt về");
         compeForm.getItems().addAll(dsMG);
         clbForm1.getItems().addAll(dsCLB);
         clbForm2.getItems().addAll(dsCLB);

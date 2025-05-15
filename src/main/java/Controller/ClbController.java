@@ -234,7 +234,7 @@ public class ClbController implements Initializable {
 
     private void handleClubClick(MODEL_CLB club) {
         // Xử lý khi người dùng nhấp vào câu lạc bộ
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/ClubsDetail1.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/ClubsDetail.fxml"));
         Parent root = null;
         try {
             root = loader.load();
@@ -254,10 +254,6 @@ public class ClbController implements Initializable {
             alert.setContentText("An error occurred while trying to display the club details.");
             alert.showAndWait();
         }
-        // Ở đây bạn có thể mở một cửa sổ mới để hiển thị chi tiết câu lạc bộ
-        // hoặc chuyển đến một màn hình khác
-
-
     }
     @FXML
     public void controlClub(){

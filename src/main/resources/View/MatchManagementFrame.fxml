@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="837.0" prefWidth="722.0" spacing="15.0" style="-fx-background-color: White; -fx-border-color: #991f18; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="728.0" prefWidth="776.0" spacing="10.0" style="-fx-background-color: White; -fx-border-color: #991f18; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.MatchManagementController">
    <children>
       <HBox prefHeight="26.0" prefWidth="755.0" stylesheets="@../CSS/Fixtures.css">
          <children>
@@ -119,7 +119,7 @@
                   <Font name="System Bold" size="14.0" />
                </font>
             </Label>
-            <VBox minHeight="-Infinity" prefHeight="232.0" prefWidth="638.0" spacing="8.0" style="-fx-background-color: #f5f5f5; -fx-padding: 15; -fx-background-radius: 8;" stylesheets="@../CSS/Fixtures.css">
+            <VBox minHeight="-Infinity" prefHeight="232.0" prefWidth="722.0" spacing="8.0" style="-fx-background-color: #f5f5f5; -fx-padding: 15; -fx-background-radius: 8;" stylesheets="@../CSS/Fixtures.css">
                <children>
                   <HBox prefHeight="106.0" prefWidth="608.0" spacing="40.0">
                      <children>
@@ -130,7 +130,7 @@
                                     <Font size="11.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="idLabel" prefHeight="27.0" prefWidth="38.0" style="-fx-border-color: #991f18; -fx-background-color: White; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-padding: 4 8 4 8;" stylesheets="@../CSS/Fixtures.css" />
+                              <Label fx:id="idLabel" prefHeight="12.0" prefWidth="38.0" style="-fx-border-color: #991f18; -fx-background-color: White; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-padding: 4 8 4 8;" stylesheets="@../CSS/Fixtures.css" />
                            </children>
                         </VBox>
                         <VBox prefHeight="46.0" prefWidth="166.0">
@@ -140,7 +140,7 @@
                                     <Font size="11.0" />
                                  </font>
                               </Label>
-                              <ComboBox fx:id="compeForm" minHeight="-Infinity" prefHeight="25.0" prefWidth="166.0" promptText="Leaugue Name" />
+                              <ComboBox fx:id="compeForm" minHeight="-Infinity" prefHeight="25.0" prefWidth="218.0" promptText="Leaugue Name" />
                            </children>
                         </VBox>
                      </children>
@@ -239,7 +239,7 @@
                </children>
             </VBox>
             <Pane prefHeight="73.0" prefWidth="630.0" />
-            <HBox alignment="CENTER_RIGHT" prefHeight="70.0" prefWidth="638.0">
+            <HBox alignment="CENTER_RIGHT" prefHeight="0.0" prefWidth="668.0">
                <children>
                   <Button fx:id="closeBtn" minHeight="-Infinity" mnemonicParsing="false" onAction="#closeBtn" prefHeight="40.0" prefWidth="150.0" style="-fx-border-color: #991f18; -fx-background-color: #991f18; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-border-radius: 5;" styleClass="ManagementBtn" text="Complete" />
                </children>
