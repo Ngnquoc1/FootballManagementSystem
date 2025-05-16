@@ -564,25 +564,25 @@ AS
 BEGIN
     -- Xây dựng truy vấn cơ bản
     v_sql := 'SELECT 
-                 td.MaTD as ID,
-                 c1.TenCLB AS TenCLB1,
-                 c1.LogoCLB AS LogoCLB1,
-                 c2.TenCLB AS TenCLB2,
-                 c2.LogoCLB AS LogoCLB2,
-                 td.ThoiGian AS ThoiGian,
-                 s.TenSan AS SanThiDau,
-                 m.TenMG AS TenMuaGiai,
-                 v.TENVD AS TenVD,
-                 kq.DiemCLB1 as Score1,
-                 kq.DiemCLB2 as Score2
-              FROM TranDau td
-              JOIN VongDau v ON td.MaVD = v.MaVD
-              JOIN CLB c1 ON td.MaCLB1 = c1.MaCLB
-              JOIN CLB c2 ON td.MaCLB2 = c2.MaCLB
-              JOIN SAN s ON td.MaSan = s.MaSan
-              JOIN MuaGiai m ON v.MaMG = m.MaMG
-              LEFT JOIN KetQuaTD kq ON td.MaTD = kq.MaTD
-              WHERE td.ThoiGian >= TRUNC(SYSDATE)';
+            td.MaTD AS ID,
+            v.TenVD AS TenVD,
+            c1.TenCLB AS TenCLB1,
+            c1.LogoCLB AS LogoCLB1,
+            c2.TenCLB AS TenCLB2,
+            c2.LogoCLB AS LogoCLB2,
+            td.ThoiGian AS ThoiGian,
+            s.TenSan AS SanThiDau,
+            m.TenMG AS TenMuaGiai,
+            kq.DiemCLB1 as Score1,
+            kq.DiemCLB2 as Score2
+        FROM TranDau td
+        JOIN VongDau v ON td.MaVD = v.MaVD
+        JOIN CLB c1 ON td.MaCLB1 = c1.MaCLB
+        JOIN CLB c2 ON td.MaCLB2 = c2.MaCLB
+        JOIN SAN s ON td.MaSan = s.MaSan
+        JOIN MuaGiai m ON v.MaMG = m.MaMG
+        LEFT JOIN KetQuaTD kq ON td.MaTD = kq.MaTD
+        WHERE td.ThoiGian >= TRUNC(SYSDATE)';
 
     -- Thêm điều kiện nếu có
     IF p_condition IS NOT NULL THEN
@@ -598,6 +598,7 @@ EXCEPTION
     WHEN OTHERS THEN
         RAISE_APPLICATION_ERROR(-20020, 'Lỗi khi thực thi procedure: ' || SQLERRM);
 END GetUpComingMatchesByCondition;
+--commit;
 ----------------GetUpComingMatches---------
 CREATE OR REPLACE PROCEDURE GetUpcomingMatches(
     p_result OUT SYS_REFCURSOR
@@ -608,11 +609,16 @@ BEGIN
     OPEN p_result FOR
         SELECT 
             td.MaTD AS ID,
-            td.MaVD AS maVD,
+            v.TenVD AS TenVD,
+            c1.TenCLB AS TenCLB1,
+            c1.LogoCLB AS LogoCLB1,
+            c2.TenCLB AS TenCLB2,
+            c2.LogoCLB AS LogoCLB2,
             td.ThoiGian AS ThoiGian,
-            td.MaCLB1 AS maCLB1,
-            td.MaCLB2 AS maCLB2,
-            td.MaSan AS maSan
+            s.TenSan AS SanThiDau,
+            m.TenMG AS TenMuaGiai,
+            kq.DiemCLB1 as Score1,
+            kq.DiemCLB2 as Score2
         FROM TranDau td
         JOIN VongDau v ON td.MaVD = v.MaVD
         JOIN CLB c1 ON td.MaCLB1 = c1.MaCLB
@@ -622,8 +628,8 @@ BEGIN
         LEFT JOIN KetQuaTD kq ON td.MaTD = kq.MaTD
         WHERE td.ThoiGian >= TRUNC(SYSDATE)-- Lấy các trận từ ngày hiện tại trở đi
         ORDER BY td.ThoiGian;
-
 END GetUpcomingMatches;
+commit;
 ----------------GetResultedMatches---------
 CREATE OR REPLACE PROCEDURE GetResultedMatches(
     p_result OUT SYS_REFCURSOR

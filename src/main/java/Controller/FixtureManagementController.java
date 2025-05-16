@@ -9,9 +9,11 @@ import DAO.DAO_SAN;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -20,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class MatchManagementController implements Initializable {
+public class FixtureManagementController implements Initializable {
     @FXML
     private TableView<Match> fixtureTable;
     @FXML
@@ -35,7 +37,12 @@ public class MatchManagementController implements Initializable {
     private Label idLabel;
     @FXML
     private DatePicker dateForm;
+
     private Service service = new Service();
+    private FixtureController fixtureController = new FixtureController();
+    public void setFixtureController(FixtureController controller) {
+        this.fixtureController = controller;
+    }
     @Override
     public void initialize(java.net.URL location, java.util.ResourceBundle resources) {
         // Ánh xạ các cột với thuộc tính của lớp Match
@@ -300,9 +307,15 @@ public class MatchManagementController implements Initializable {
 
     @FXML
     public void closeBtn(){
-        // Đóng cửa sổ hiện tại
-        if (closeBtn.getScene().getWindow() != null) {
-            closeBtn.getScene().getWindow().hide();
+        Stage currentStage = (Stage) closeBtn.getScene().getWindow();
+
+        try {
+            fixtureController.resetFilter();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        // Đóng cửa sổ hiện tại
+        currentStage.close();
+
     }
 }

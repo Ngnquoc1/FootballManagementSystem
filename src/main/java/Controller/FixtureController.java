@@ -214,7 +214,7 @@ public class FixtureController implements Initializable {
         createFullMatch(filteredMatches);
     }
     @FXML
-    private void resetFilter() throws SQLException {
+    public void resetFilter() throws SQLException {
         Map<LocalDate, List<Match>> matchesByDate = service.getUpcomingMatchs();
         clubFilter.getSelectionModel().clearSelection();
         compeFilter.getSelectionModel().selectFirst();
@@ -226,7 +226,8 @@ public class FixtureController implements Initializable {
             // Tải file FXML của cửa sổ mới
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/MatchManagementFrame.fxml"));
             Parent root = loader.load();
-
+            FixtureManagementController fixtureManagementController = loader.getController();
+            fixtureManagementController.setFixtureController(this);
             // Tạo một Stage mới
             Stage stage = new Stage();
             stage.setTitle("Add Match");
@@ -237,7 +238,7 @@ public class FixtureController implements Initializable {
             stage.setOnCloseRequest(event -> {
                 // Khi cửa sổ đóng, gọi lại phương thức resetFilter() để làm mới dữ liệu
                 try {
-                    resetFilter();
+                    this.resetFilter();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }

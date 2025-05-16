@@ -57,6 +57,7 @@ public class Service {
             }
         }
     }
+
     public int selectCLBIDFromGoal(int maCT,int maTD) throws SQLException {
         Connection conn = DatabaseConnection.getInstance().getConnectionn();
         String sql = "SELECT cclb.MaCLB " +
@@ -77,6 +78,7 @@ public class Service {
             }
         }
     }
+
     public  Map<LocalDate, List<Match>> getUpcomingMatchs() throws SQLException {
         Map<LocalDate, List<Match>> matchesByDate = new HashMap<>();
         Connection conn = null;
@@ -87,7 +89,7 @@ public class Service {
             // Kết nối tới cơ sở dữ liệu
             DatabaseConnection db = DatabaseConnection.getInstance();
             conn = db.getConnectionn();
-            cstmt = conn.prepareCall("{call GetUpcomingMatches(?)}");
+            cstmt = conn.prepareCall("{call GetUpComingMatches(?)}");
             cstmt.registerOutParameter(1, OracleTypes.CURSOR); // Đăng ký tham số đầu ra là cursor
             cstmt.execute();
 
@@ -142,6 +144,16 @@ public class Service {
         }
         return matchList;
     }
+    public Map<LocalDate, List<Match>> getResultedMatchs() throws SQLException {
+        Map<LocalDate, List<Match>> matchesByDate = new HashMap<>();
+        List<Match> matchList = this.getResultedMatchList(); // Gọi lại hàm đầu tiên
+        for (Match match : matchList) {
+            LocalDate ngayThiDau = match.getNgayThiDau();
+            matchesByDate.computeIfAbsent(ngayThiDau, k -> new ArrayList<>()).add(match);
+        }
+        return matchesByDate;
+    }
+
     public void InsertInitialRanking(int MaMG,int MaCLB) throws SQLException{
         Connection conn = DatabaseConnection.getInstance().getConnectionn();
         String sql = "{call InsertInitialRanking(?, ?)}";
@@ -160,6 +172,35 @@ public class Service {
         }
     }
 
+    public static List<Match> getPendingMatchList() throws SQLException {
+        List<Match> matchList = new ArrayList<>();
+        Connection conn = null;
+        CallableStatement cstmt = null;
+        ResultSet rs = null;
+        DAO_Match daoMatch = new DAO_Match();
+        try {
+            DatabaseConnection db = DatabaseConnection.getInstance();
+            conn = db.getConnectionn();
+            cstmt = conn.prepareCall("{call GetPendingMatches(?)}");
+            cstmt.registerOutParameter(1, OracleTypes.CURSOR);
+            cstmt.execute();
+
+            rs = (ResultSet) cstmt.getObject(1);
+            while (rs.next()) {
+                Match match = daoMatch.getFromRs(rs);
+                matchList.add(match);
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi SQL: " + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (rs != null) try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (cstmt != null) try { cstmt.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
+        return matchList;
+    }
     public List<MODEL_MUAGIAI> selectAllTournament() throws SQLException {
         Connection conn = DatabaseConnection.getInstance().getConnectionn();
         return new DAO_MUAGIAI().selectAllDB();

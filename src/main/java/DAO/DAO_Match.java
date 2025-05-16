@@ -17,9 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 public class DAO_Match implements DAOInterface<Match> {
-    private static Service service = new Service();
-
-
     @Override
     public void insertDB(Match model) throws SQLException {
         int maTD = model.getId();
@@ -198,45 +195,4 @@ public class DAO_Match implements DAOInterface<Match> {
         return ds;
     }
 
-
-
-    public static Map<LocalDate, List<Match>> getResultedMatchs() throws SQLException {
-        Map<LocalDate, List<Match>> matchesByDate = new HashMap<>();
-        List<Match> matchList = service.getResultedMatchList(); // Gọi lại hàm đầu tiên
-        for (Match match : matchList) {
-            LocalDate ngayThiDau = match.getNgayThiDau();
-            matchesByDate.computeIfAbsent(ngayThiDau, k -> new ArrayList<>()).add(match);
-        }
-        return matchesByDate;
-    }
-
-    public static List<Match> getPendingMatchList() throws SQLException {
-        List<Match> matchList = new ArrayList<>();
-        Connection conn = null;
-        CallableStatement cstmt = null;
-        ResultSet rs = null;
-        DAO_Match daoMatch = new DAO_Match();
-        try {
-            DatabaseConnection db = DatabaseConnection.getInstance();
-            conn = db.getConnectionn();
-            cstmt = conn.prepareCall("{call GetPendingMatches(?)}");
-            cstmt.registerOutParameter(1, OracleTypes.CURSOR);
-            cstmt.execute();
-
-            rs = (ResultSet) cstmt.getObject(1);
-            while (rs.next()) {
-                Match match = daoMatch.getFromRs(rs);
-                matchList.add(match);
-            }
-        } catch (SQLException e) {
-            System.err.println("Lỗi SQL: " + e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (rs != null) try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if (cstmt != null) try { cstmt.close(); } catch (SQLException e) { e.printStackTrace(); }
-        }
-        return matchList;
-    }
 }

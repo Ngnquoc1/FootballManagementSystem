@@ -7,6 +7,7 @@ import Model.MODEL_CLB;
 import Model.MODEL_MUAGIAI;
 import Model.Match;
 import Model.Session;
+import Service.Service;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -39,6 +40,8 @@ public class ResultsController implements Initializable {
     private ScrollPane Calendar;
     @FXML
     private ComboBox<String> compeFilter, clubFilter;
+
+    private Service service = new Service();
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Session session = Session.getInstance();
@@ -49,7 +52,7 @@ public class ResultsController implements Initializable {
         }
         Map<LocalDate, List<Match>> matchesByDate = null;
         try {
-            matchesByDate = DAO_Match.getResultedMatchs();
+            matchesByDate = service.getResultedMatchs();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -206,7 +209,7 @@ public class ResultsController implements Initializable {
     @FXML
     public void filterByCLB() throws SQLException {
         String selectedCLB = clubFilter.getSelectionModel().getSelectedItem();
-        Map<LocalDate,List<Match>> matchesByDate = DAO_Match.getResultedMatchs();
+        Map<LocalDate,List<Match>> matchesByDate = service.getResultedMatchs();
 
         Map<LocalDate,List<Match>> filteredMatches = new HashMap<>();
 
@@ -222,7 +225,7 @@ public class ResultsController implements Initializable {
     }
     @FXML
     private void resetFilter() throws SQLException {
-        Map<LocalDate, List<Match>> matchesByDate = new DAO_Match().getResultedMatchs();
+        Map<LocalDate, List<Match>> matchesByDate = service.getResultedMatchs();
         clubFilter.getSelectionModel().clearSelection();
         compeFilter.getSelectionModel().selectFirst();
         createFullMatch(matchesByDate);

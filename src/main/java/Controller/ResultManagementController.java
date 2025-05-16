@@ -56,7 +56,7 @@ public class ResultManagementController implements Initializable {
         // Tải dữ liệu vào bảng
         try {
             List<Match> matches1 = service.getResultedMatchList();
-            List<Match> matches2 = DAO_Match.getPendingMatchList();
+            List<Match> matches2 = service.getPendingMatchList();
             loadCompletedMatchData(matches1);
             loadFixtureData(matches2);
         } catch (SQLException e) {
@@ -160,7 +160,7 @@ public class ResultManagementController implements Initializable {
                     }
                 }
             }
-            List<Match> matches2 = DAO_Match.getPendingMatchList();
+            List<Match> matches2 = service.getPendingMatchList();
             List<Match> matches2F = new ArrayList<>();
             for (Match match : matches2) {
                 if (Objects.equals(match.getTenMuaGiai(), compe)) {
