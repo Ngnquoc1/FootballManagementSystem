@@ -143,8 +143,6 @@
                                         <TableColumn fx:id="scorerClubColumn" prefWidth="200.0" text="Câu lạc bộ" />
                                         <TableColumn fx:id="scorerGoalsColumn" prefWidth="100.0" text="Số bàn thắng" />
                                         <TableColumn fx:id="scorerPenaltyColumn" prefWidth="100.0" text="Phạt đền" />
-                                        <TableColumn fx:id="scorerMatchesColumn" prefWidth="100.0" text="Số trận" />
-                                        <TableColumn fx:id="scorerMinutesColumn" prefWidth="100.0" text="Số phút" />
                                     </columns>
                                     <columnResizePolicy>
                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

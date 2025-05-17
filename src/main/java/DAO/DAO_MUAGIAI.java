@@ -103,6 +103,33 @@ public class DAO_MUAGIAI implements DAOInterface<MODEL_MUAGIAI>{
 
     @Override
     public ArrayList<MODEL_MUAGIAI> selectByCondition(String Condition) {
-        return null;
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        DatabaseConnection db = null;
+        ArrayList<MODEL_MUAGIAI> ds = new ArrayList<>();
+
+        try {
+            db = DatabaseConnection.getInstance();
+            conn = db.getConnectionn();
+
+            String sql = "SELECT * FROM MUAGIAI WHERE " + Condition;
+
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+            while (rs.next())
+            {
+                ds.add(getFromRs(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (rs != null) try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (stmt != null) try { stmt.close(); } catch (SQLException e) { e.printStackTrace(); }
+//            if(conn!=null) try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
+        return ds;
     }
 }

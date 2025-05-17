@@ -67,11 +67,11 @@ public class DAO_CAUTHU_CLB implements DAOInterface<MODEL_CAUTHUTHAMGIACLB> {
     }
 
     @Override
-    public MODEL_CAUTHUTHAMGIACLB selectByID(int id) throws SQLException {
+    public MODEL_CAUTHUTHAMGIACLB selectByID(int idMG) throws SQLException {
         Connection conn = DatabaseConnection.getInstance().getConnectionn();
         String sql = "SELECT * FROM CAUTHU_CLB WHERE MaMG = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
+            ps.setInt(1, idMG);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return getFromRs(rs);

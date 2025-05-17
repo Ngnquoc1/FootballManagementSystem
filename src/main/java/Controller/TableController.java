@@ -1,11 +1,9 @@
 package Controller;
 
-import DAO.DAO_BXH_CLB;
-import DAO.DAO_CLB;
-import DAO.DAO_MUAGIAI;
+import DAO.*;
 import Model.MODEL_BXH_CLB;
 import Model.MODEL_MUAGIAI;
-import Model.ScorerRanking;
+import Model.MODEL_BXH_BANTHANG;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -53,14 +51,14 @@ public class TableController {
     @FXML private HBox clubLegendBox;
 
     // Bảng xếp hạng Vua phá lưới
-    @FXML private TableView<ScorerRanking> scorerTableView;
-    @FXML private TableColumn<ScorerRanking, Integer> scorerRankColumn;
-    @FXML private TableColumn<ScorerRanking, String> scorerNameColumn;
-    @FXML private TableColumn<ScorerRanking, String> scorerClubColumn;
-    @FXML private TableColumn<ScorerRanking, Integer> scorerGoalsColumn;
-    @FXML private TableColumn<ScorerRanking, Integer> scorerPenaltyColumn;
-    @FXML private TableColumn<ScorerRanking, Integer> scorerMatchesColumn;
-    @FXML private TableColumn<ScorerRanking, Integer> scorerMinutesColumn;
+    @FXML private TableView<MODEL_BXH_BANTHANG> scorerTableView;
+    @FXML private TableColumn<MODEL_BXH_BANTHANG, Integer> scorerRankColumn;
+    @FXML private TableColumn<MODEL_BXH_BANTHANG, String> scorerNameColumn;
+    @FXML private TableColumn<MODEL_BXH_BANTHANG, String> scorerClubColumn;
+    @FXML private TableColumn<MODEL_BXH_BANTHANG, Integer> scorerGoalsColumn;
+    @FXML private TableColumn<MODEL_BXH_BANTHANG, Integer> scorerPenaltyColumn;
+    @FXML private TableColumn<MODEL_BXH_BANTHANG, Integer> scorerMatchesColumn;
+    @FXML private TableColumn<MODEL_BXH_BANTHANG, Integer> scorerMinutesColumn;
 
     // Bảng xếp hạng theo nhánh
     @FXML private ComboBox<String> bracketComboBox;
@@ -83,8 +81,8 @@ public class TableController {
     // Dữ liệu
     private ObservableList<MODEL_BXH_CLB> vleagueClubRankings = FXCollections.observableArrayList();
     private ObservableList<MODEL_BXH_CLB> nationalCupClubRankings = FXCollections.observableArrayList();
-    private ObservableList<ScorerRanking> vleagueScorerRankings = FXCollections.observableArrayList();
-    private ObservableList<ScorerRanking> nationalCupScorerRankings = FXCollections.observableArrayList();
+    private ObservableList<MODEL_BXH_BANTHANG> vleagueScorerRankings = FXCollections.observableArrayList();
+    private ObservableList<MODEL_BXH_BANTHANG> nationalCupScorerRankings = FXCollections.observableArrayList();
     private ObservableList<MODEL_BXH_CLB> bracketARankings = FXCollections.observableArrayList();
     private ObservableList<MODEL_BXH_CLB> bracketBRankings = FXCollections.observableArrayList();
 
@@ -107,8 +105,8 @@ public class TableController {
         setupClubTableColumns();
 
         // Thiết lập các cột cho bảng xếp hạng Vua phá lưới
-//        setupScorerTableColumns();
-
+        setupScorerTableColumns();
+//
         // Thiết lập các cột cho bảng xếp hạng theo nhánh
 //        setupBracketTableColumns();
 
@@ -136,6 +134,14 @@ public class TableController {
     }
 
     private void setupClubTableColumns() throws SQLException {
+        String condition="TenMG = '"+compeFilter.getValue()+"'";
+        List<MODEL_MUAGIAI> musimList = new DAO_MUAGIAI().selectByCondition(condition);
+
+        if (musimList == null || musimList.isEmpty()) {
+            throw new RuntimeException("No matching season found for condition: " + condition);
+        }
+
+        int maMG = musimList.get(0).getMaMG();
         clubRankColumn.setCellValueFactory(new PropertyValueFactory<>("Hang"));
         clubNameColumn.setCellValueFactory(cellData -> {
             try {
@@ -155,7 +161,8 @@ public class TableController {
         clubPointsColumn.setCellValueFactory(new PropertyValueFactory<>("Diem"));
 
         clubTableView.setItems(vleagueClubRankings);
-        List<MODEL_BXH_CLB> modelList=new DAO_BXH_CLB().selectAllDB();
+        String condition1="MaMG = "+maMG;
+        List<MODEL_BXH_CLB> modelList=new DAO_BXH_CLB().selectByCondition(condition1);
         vleagueClubRankings.addAll(modelList);
         // Thiết lập màu nền cho các hàng dựa trên thứ hạng
         clubTableView.setRowFactory(tv -> new TableRow<MODEL_BXH_CLB>() {
@@ -179,37 +186,62 @@ public class TableController {
         });
     }
 
-//    private void setupScorerTableColumns() {
-//        scorerRankColumn.setCellValueFactory(new PropertyValueFactory<>("rank"));
-//        scorerNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-//        scorerClubColumn.setCellValueFactory(new PropertyValueFactory<>("club"));
-//        scorerGoalsColumn.setCellValueFactory(new PropertyValueFactory<>("goals"));
-//        scorerPenaltyColumn.setCellValueFactory(new PropertyValueFactory<>("penalty"));
-//        scorerMatchesColumn.setCellValueFactory(new PropertyValueFactory<>("matches"));
-//        scorerMinutesColumn.setCellValueFactory(new PropertyValueFactory<>("minutes"));
-//
-//        // Thiết lập màu nền cho top 3 cầu thủ ghi bàn nhiều nhất
-//        scorerTableView.setRowFactory(tv -> new TableRow<ScorerRanking>() {
-//            @Override
-//            protected void updateItem(ScorerRanking item, boolean empty) {
-//                super.updateItem(item, empty);
-//                if (item == null || empty) {
-//                    setStyle("");
-//                } else {
-//                    if (item.getHang() == 1) {
-//                        setStyle("-fx-background-color: rgba(255, 215, 0, 0.2);"); // Gold
-//                    } else if (item.getHang() == 2) {
-//                        setStyle("-fx-background-color: rgba(192, 192, 192, 0.2);"); // Silver
-//                    } else if (item.getHang() == 3) {
-//                        setStyle("-fx-background-color: rgba(205, 127, 50, 0.2);"); // Bronze
-//                    } else {
-//                        setStyle("");
-//                    }
-//                }
-//            }
-//        });
-//    }
-//
+    private void setupScorerTableColumns() throws SQLException {
+        String condition="TenMG = '"+compeFilter.getValue()+"'";
+        int maMG = new DAO_MUAGIAI().selectByCondition(condition).get(0).getMaMG();
+
+        scorerRankColumn.setCellValueFactory(new PropertyValueFactory<>("Hang"));
+        scorerNameColumn.setCellValueFactory(cellData -> {;
+            try {
+                DAO_CAUTHU daoCauthu = new DAO_CAUTHU();
+                int maCauThu = cellData.getValue().getMaCT();
+                String playerName = daoCauthu.selectByID(maCauThu).getTenCT();
+                return new SimpleStringProperty(playerName != null ? playerName : "Unknown");
+            } catch (Exception e) {
+                return new SimpleStringProperty("Error");
+            }
+        });
+        scorerClubColumn.setCellValueFactory(cellData -> {;
+            try {
+                DAO_CLB daoClb = new DAO_CLB();
+                DAO_CAUTHU_CLB daoCauthuClb = new DAO_CAUTHU_CLB();
+                int maCT = cellData.getValue().getMaCT();
+                String condition1 = "MaCT = " + maCT + " AND MaMG = " + maMG;
+                int maCLB = daoCauthuClb.selectByCondition(condition1).get(0).getMaCLB();
+                String clubName = daoClb.selectByID(maCLB).getTenCLB();
+                return new SimpleStringProperty(clubName != null ? clubName : "Unknown");
+            } catch (Exception e) {
+                return new SimpleStringProperty("Error");
+            }
+        });
+        scorerGoalsColumn.setCellValueFactory(new PropertyValueFactory<>("SoBanThang"));
+        scorerPenaltyColumn.setCellValueFactory(new PropertyValueFactory<>("Penalty"));
+
+        scorerTableView.setItems(vleagueScorerRankings);
+        List<MODEL_BXH_BANTHANG> modelList=new DAO_BXH_BANTHANG().selectByCondition("MaMG = "+maMG);
+        vleagueScorerRankings.addAll(modelList);
+        // Thiết lập màu nền cho top 3 cầu thủ ghi bàn nhiều nhất
+        scorerTableView.setRowFactory(tv -> new TableRow<MODEL_BXH_BANTHANG>() {
+            @Override
+            protected void updateItem(MODEL_BXH_BANTHANG item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setStyle("");
+                } else {
+                    if (item.getHang() == 1) {
+                        setStyle("-fx-background-color: rgba(255, 215, 0, 0.2);"); // Gold
+                    } else if (item.getHang() == 2) {
+                        setStyle("-fx-background-color: rgba(192, 192, 192, 0.2);"); // Silver
+                    } else if (item.getHang() == 3) {
+                        setStyle("-fx-background-color: rgba(205, 127, 50, 0.2);"); // Bronze
+                    } else {
+                        setStyle("");
+                    }
+                }
+            }
+        });
+    }
+
 //    private void setupBracketTableColumns() {
 //        bracketRankColumn.setCellValueFactory(new PropertyValueFactory<>("rank"));
 //        bracketClubColumn.setCellValueFactory(new PropertyValueFactory<>("name"));

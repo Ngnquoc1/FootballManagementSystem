@@ -48,7 +48,6 @@ CREATE TABLE CAUTHU_CLB (
     FOREIGN KEY (MaCT) REFERENCES CauThu(MaCT),
     CONSTRAINT chk_unique_cauthu_clb UNIQUE (MaCT, MaMG) 
 );
-ALTER TABLE CAUTHU DROP COLUMN MaCLB;
 CREATE TABLE TranDau (
     MaTD NUMBER  PRIMARY KEY,
     MaCLB1 NUMBER NOT NULL,
@@ -106,6 +105,7 @@ CREATE TABLE BANGXEPHANG_BANTHANG (
     MaCT NUMBER NOT NULL,
     SoBanThang NUMBER DEFAULT 0,
     XepHang NUMBER UNIQUE,
+    Penalty NUMBER DEFAULT 0,
     PRIMARY KEY (MaMG, MaCT)
 );
 CREATE TABLE THUTU_UUTIEN (
@@ -442,7 +442,36 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20020, 'Lỗi không xác định khi kiểm tra thời điểm ghi bàn: ' || SQLERRM);
 END trg_check_phut_ghi_ban_toi_da;
 /
+---------------------UpdateBXHBanThang----------
+CREATE OR REPLACE TRIGGER trg_after_banthang
+AFTER INSERT OR UPDATE OR DELETE ON BANTHANG
+FOR EACH ROW
+DECLARE
+    v_maMG NUMBER;
+BEGIN
+    -- Xác định mã mùa giải (MaMG) dựa trên MaCT
+    IF INSERTING OR UPDATING THEN
+        -- Lấy MaMG cho bản ghi mới
+        SELECT MaMG INTO v_maMG
+        FROM CAUTHU_CLB
+        WHERE MaCT = :NEW.MaCT AND ROWNUM = 1;
+    ELSIF DELETING THEN
+        -- Lấy MaMG cho bản ghi đã xóa
+        SELECT MaMG INTO v_maMG
+        FROM CAUTHU_CLB
+        WHERE MaCT = :OLD.MaCT AND ROWNUM = 1;
+    END IF;
 
+    -- Cập nhật bảng xếp hạng
+    UpdateBXH_BanThang(v_maMG);
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        NULL; -- Bỏ qua nếu không tìm thấy MaMG
+    WHEN OTHERS THEN
+        RAISE_APPLICATION_ERROR(-20011, 'Lỗi khi cập nhật bảng xếp hạng sau thao tác trên BANTHANG: ' || SQLERRM);
+END;
+/
 ------------------INSERT---------------
 INSERT INTO TaiKhoan VALUES ('admin', 'admin123', 'A');
 
@@ -838,15 +867,19 @@ BEGIN
     IF v_count = 0 THEN
         RAISE_APPLICATION_ERROR(-20004, 'Không tìm thấy trận đấu với MaTD = ' || p_maTD);
     END IF;
-
-    -- Xóa bản ghi
-    DELETE FROM TranDau
+    
+    -- Kiểm tra và xóa kết quả trận đấu (KetQuaTD) nếu tồn tại
+    SELECT COUNT(*) INTO v_count
+    FROM KetQuaTD
     WHERE MaTD = p_maTD;
 
-    -- Kiểm tra xem có xóa thành công không
-    IF SQL%ROWCOUNT = 0 THEN
-        RAISE_APPLICATION_ERROR(-20005, 'Không thể xóa trận đấu với MaTD = ' || p_maTD);
+    IF v_count > 0 THEN
+        DeleteMatchResultAndGoals(p_maTD);
     END IF;
+    
+    -- Xóa bản ghi trong TranDau
+    DELETE FROM TranDau
+    WHERE MaTD = p_maTD;
 
     -- Commit giao dịch
     COMMIT;
@@ -857,41 +890,6 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20006, 'Lỗi khi xóa trận đấu: ' || SQLERRM);
 END DeleteMatch;
 /
-------------------DeleteMatchResult---------------------
-CREATE OR REPLACE PROCEDURE DeleteMatchResult(
-    p_maTD IN NUMBER
-)
-AS
-    v_count NUMBER;
-BEGIN
-    -- Kiểm tra xem bản ghi có tồn tại không
-    SELECT COUNT(*) INTO v_count
-    FROM KetQuaTD
-    WHERE MaTD = p_maTD;
-
-    IF v_count = 0 THEN
-        RAISE_APPLICATION_ERROR(-20001, 'Không tìm thấy kết quả trận đấu với MaTD = ' || p_maTD);
-    END IF;
-
-    -- Xóa bản ghi
-    DELETE FROM KetQuaTD
-    WHERE MaTD = p_maTD;
-
-    -- Kiểm tra xem xóa thành công không
-    IF SQL%ROWCOUNT = 0 THEN
-        RAISE_APPLICATION_ERROR(-20002, 'Không thể xóa kết quả trận đấu với MaTD = ' || p_maTD);
-    END IF;
-
-    -- Commit giao dịch
-    COMMIT;
-
-EXCEPTION
-    WHEN OTHERS THEN
-        ROLLBACK;
-        RAISE_APPLICATION_ERROR(-20003, 'Lỗi khi xóa kết quả trận đấu: ' || SQLERRM);
-END DeleteMatchResult;
-/
-
 ------------------InsertMatchResult---------------------
 CREATE OR REPLACE PROCEDURE InsertMatchResult(
     p_maTD IN NUMBER,
@@ -928,7 +926,6 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20003, 'Lỗi khi thêm kết quả trận đấu: ' || SQLERRM);
 END InsertMatchResult;
 /
-
 ------------------UpdateMatchResult---------------------
 CREATE OR REPLACE PROCEDURE UpdateMatchResult(
     p_maTD IN NUMBER,
@@ -972,6 +969,7 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20004, 'Lỗi khi cập nhật kết quả trận đấu: ' || SQLERRM);
 END UpdateMatchResult;
 /
+------------------DeleteMatchResult---------------------
 CREATE OR REPLACE PROCEDURE DeleteMatchResultAndGoals(
     p_maTD IN NUMBER
 )
@@ -1004,64 +1002,7 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20002, 'Lỗi khi xóa kết quả trận đấu và bàn thắng: ' || SQLERRM);
 END DeleteMatchResultAndGoals;
 /
------------------InsertGoal--------------
-CREATE OR REPLACE PROCEDURE InsertGoal(
-    p_maCT IN NUMBER,
-    p_maTD IN NUMBER,
-    p_phutGhiBan IN NUMBER,
-    p_maLoaiBT IN NUMBER
-)
-AS
-    v_maBT NUMBER;
-    v_count NUMBER;
-BEGIN
-    -- Sinh mã MaBT mới = MAX(MaBT) + 1
-    SELECT NVL(MAX(MaBT), 0) + 1 INTO v_maBT
-    FROM BANTHANG;
 
-    -- Kiểm tra giá trị PhutGhiBan hợp lệ (không âm, trigger sẽ kiểm tra giới hạn tối đa)
-    IF p_phutGhiBan < 0 THEN
-        RAISE_APPLICATION_ERROR(-20002, 'Thời điểm ghi bàn không được âm.');
-    END IF;
-
-    -- Kiểm tra xem MaCT, MaTD, và MaLoaiBT có tồn tại không
-    SELECT COUNT(*) INTO v_count
-    FROM CAUTHU
-    WHERE MaCT = p_maCT;
-
-    IF v_count = 0 THEN
-        RAISE_APPLICATION_ERROR(-20003, 'Mã cầu thủ (MaCT = ' || p_maCT || ') không tồn tại.');
-    END IF;
-
-    SELECT COUNT(*) INTO v_count
-    FROM TranDau
-    WHERE MaTD = p_maTD;
-
-    IF v_count = 0 THEN
-        RAISE_APPLICATION_ERROR(-20004, 'Mã trận đấu (MaTD = ' || p_maTD || ') không tồn tại.');
-    END IF;
-
-    SELECT COUNT(*) INTO v_count
-    FROM LOAIBANTHANG
-    WHERE MaLoaiBT = p_maLoaiBT;
-
-    IF v_count = 0 THEN
-        RAISE_APPLICATION_ERROR(-20005, 'Mã loại bàn thắng (MaLoaiBT = ' || p_maLoaiBT || ') không tồn tại.');
-    END IF;
-
-    -- Thêm bản ghi mới với MaBT vừa sinh
-    INSERT INTO BANTHANG (MaBT, MaCT, MaTD, PhutGhiBan, MaLoaiBT)
-    VALUES (v_maBT, p_maCT, p_maTD, p_phutGhiBan, p_maLoaiBT);
-
-    -- Commit giao dịch
-    COMMIT;
-
-EXCEPTION
-    WHEN OTHERS THEN
-        ROLLBACK;
-        RAISE_APPLICATION_ERROR(-20006, 'Lỗi khi thêm bàn thắng: ' || SQLERRM);
-END InsertGoal;
-/
 -----------------InsertInitialRanking--------------
 CREATE OR REPLACE PROCEDURE InsertInitialRanking(
     p_maMG IN NUMBER,
@@ -1112,7 +1053,6 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20010, 'Lỗi khi chèn dữ liệu vào BANGXEPHANG_CLB: ' || SQLERRM);
 END InsertInitialRanking;
 /
-Select * from BANGXEPHANG_CLB ORDER BY HANG
 -----------------UpdateRanking--------------
 CREATE OR REPLACE PROCEDURE UpdateRanking(
     p_maTD IN NUMBER
@@ -1224,6 +1164,7 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20003, 'Lỗi khi cập nhật kết quả và BXH: ' || SQLERRM);
 END UpdateRanking;
 /
+-----------------RecalculateRankingPositions----
 CREATE OR REPLACE PROCEDURE RecalculateRankingPositions(
     p_maMG IN NUMBER
 )
@@ -1347,3 +1288,174 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20004, 'Lỗi khi tính lại thứ hạng: ' || SQLERRM);
 END RecalculateRankingPositions;
 /
+-----------------InsertGoal--------------
+CREATE OR REPLACE PROCEDURE InsertGoal(
+    p_maCT IN NUMBER,
+    p_maTD IN NUMBER,
+    p_phutGhiBan IN NUMBER,
+    p_maLoaiBT IN NUMBER
+)
+AS
+    v_maBT NUMBER;
+    v_count NUMBER;
+BEGIN
+    -- Sinh mã MaBT mới = MAX(MaBT) + 1
+    SELECT NVL(MAX(MaBT), 0) + 1 INTO v_maBT
+    FROM BANTHANG;
+
+    -- Kiểm tra giá trị PhutGhiBan hợp lệ (không âm, trigger sẽ kiểm tra giới hạn tối đa)
+    IF p_phutGhiBan < 0 THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Thời điểm ghi bàn không được âm.');
+    END IF;
+
+    -- Kiểm tra xem MaCT, MaTD, và MaLoaiBT có tồn tại không
+    SELECT COUNT(*) INTO v_count
+    FROM CAUTHU
+    WHERE MaCT = p_maCT;
+
+    IF v_count = 0 THEN
+        RAISE_APPLICATION_ERROR(-20003, 'Mã cầu thủ (MaCT = ' || p_maCT || ') không tồn tại.');
+    END IF;
+
+    SELECT COUNT(*) INTO v_count
+    FROM TranDau
+    WHERE MaTD = p_maTD;
+
+    IF v_count = 0 THEN
+        RAISE_APPLICATION_ERROR(-20004, 'Mã trận đấu (MaTD = ' || p_maTD || ') không tồn tại.');
+    END IF;
+
+    SELECT COUNT(*) INTO v_count
+    FROM LOAIBANTHANG
+    WHERE MaLoaiBT = p_maLoaiBT;
+
+    IF v_count = 0 THEN
+        RAISE_APPLICATION_ERROR(-20005, 'Mã loại bàn thắng (MaLoaiBT = ' || p_maLoaiBT || ') không tồn tại.');
+    END IF;
+
+    -- Thêm bản ghi mới với MaBT vừa sinh
+    INSERT INTO BANTHANG (MaBT, MaCT, MaTD, PhutGhiBan, MaLoaiBT)
+    VALUES (v_maBT, p_maCT, p_maTD, p_phutGhiBan, p_maLoaiBT);
+
+    -- Commit giao dịch
+    COMMIT;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE_APPLICATION_ERROR(-20006, 'Lỗi khi thêm bàn thắng: ' || SQLERRM);
+END InsertGoal;
+/
+CREATE OR REPLACE PROCEDURE UpdateBXH_BanThang(
+    p_maMG IN NUMBER
+)
+AS
+BEGIN
+    -- Cập nhật số bàn thắng và bàn penalty cho từng cầu thủ
+    MERGE INTO BANGXEPHANG_BANTHANG bxh
+    USING (
+        SELECT 
+            cclb.MaMG,
+            bt.MaCT,
+            COUNT(*) AS SoBanThang, -- Đếm tổng số bàn thắng
+            SUM(CASE WHEN lbt.TenLoaiBT LIKE '%Phạt đền%' THEN 1 ELSE 0 END) AS Penalty -- Đếm bàn penalty
+        FROM BANTHANG bt
+        JOIN CAUTHU_CLB cclb ON bt.MaCT = cclb.MaCT AND cclb.MaMG = p_maMG
+        JOIN LoaiBanThang lbt ON bt.MaLoaiBT = lbt.MaLoaiBT
+        GROUP BY cclb.MaMG, bt.MaCT
+    ) src
+    ON (bxh.MaMG = src.MaMG AND bxh.MaCT = src.MaCT)
+    WHEN MATCHED THEN
+        UPDATE SET 
+            bxh.SoBanThang = src.SoBanThang,
+            bxh.Penalty = src.Penalty
+    WHEN NOT MATCHED THEN
+        INSERT (MaMG, MaCT, SoBanThang, Penalty, XepHang)
+        VALUES (src.MaMG, src.MaCT, src.SoBanThang, src.Penalty, NULL);
+
+    -- Sắp xếp lại thứ hạng dựa trên số bàn thắng
+    MERGE INTO BANGXEPHANG_BANTHANG bxh
+    USING (
+        SELECT MaMG, MaCT,
+               ROW_NUMBER() OVER (ORDER BY SoBanThang DESC, MaCT) AS new_xephang
+        FROM BANGXEPHANG_BANTHANG
+        WHERE MaMG = p_maMG
+    ) src
+    ON (bxh.MaMG = src.MaMG AND bxh.MaCT = src.MaCT)
+    WHEN MATCHED THEN
+        UPDATE SET bxh.XepHang = src.new_xephang;
+
+    -- Lưu thay đổi
+    COMMIT;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE_APPLICATION_ERROR(-20007, 'Có lỗi khi cập nhật bảng xếp hạng bàn thắng: ' || SQLERRM);
+END UpdateBXH_BanThang;
+/
+CREATE OR REPLACE PROCEDURE PopulateBXH_BanThang(
+    p_maMG IN NUMBER
+)
+AS
+BEGIN
+    -- Xóa dữ liệu cũ trong BANGXEPHANG_BANTHANG cho mùa giải này (nếu cần)
+    DELETE FROM BANGXEPHANG_BANTHANG WHERE MaMG = p_maMG;
+
+    -- Chèn dữ liệu mới từ BANTHANG
+    INSERT INTO BANGXEPHANG_BANTHANG (MaMG, MaCT, SoBanThang, Penalty, XepHang)
+    SELECT 
+        cclb.MaMG,
+        bt.MaCT,
+        COUNT(*) AS SoBanThang, -- Tổng số bàn thắng
+        SUM(CASE WHEN lbt.TenLoaiBT LIKE '%Penalty%' THEN 1 ELSE 0 END) AS Penalty, -- Số bàn penalty
+        NULL AS XepHang -- Để trống, sẽ cập nhật sau
+    FROM BANTHANG bt
+    JOIN CAUTHU_CLB cclb ON bt.MaCT = cclb.MaCT AND cclb.MaMG = p_maMG
+    JOIN LoaiBanThang lbt ON bt.MaLoaiBT = lbt.MaLoaiBT
+    GROUP BY cclb.MaMG, bt.MaCT;
+
+    -- Cập nhật thứ hạng (XepHang) dựa trên SoBanThang
+    MERGE INTO BANGXEPHANG_BANTHANG bxh
+    USING (
+        SELECT MaMG, MaCT,
+               ROW_NUMBER() OVER (ORDER BY SoBanThang DESC, MaCT) AS new_xephang
+        FROM BANGXEPHANG_BANTHANG
+        WHERE MaMG = p_maMG
+    ) src
+    ON (bxh.MaMG = src.MaMG AND bxh.MaCT = src.MaCT)
+    WHEN MATCHED THEN
+        UPDATE SET bxh.XepHang = src.new_xephang;
+
+    -- Lưu thay đổi
+    COMMIT;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE_APPLICATION_ERROR(-20012, 'Lỗi khi chèn dữ liệu vào BANGXEPHANG_BANTHANG: ' || SQLERRM);
+END PopulateBXH_BanThang;
+/
+BEGIN
+    -- Duyệt qua tất cả MaMG có trong BANTHANG (thông qua CAUTHU_CLB)
+    FOR mg_rec IN (
+        SELECT DISTINCT cclb.MaMG
+        FROM BANTHANG bt
+        JOIN CAUTHU_CLB cclb ON bt.MaCT = cclb.MaCT
+    )
+    LOOP
+        -- Gọi procedure để chèn dữ liệu cho từng MaMG
+        PopulateBXH_BanThang(mg_rec.MaMG);
+        DBMS_OUTPUT.PUT_LINE('Đã chèn dữ liệu vào BANGXEPHANG_BANTHANG cho mùa giải: ' || mg_rec.MaMG);
+    END LOOP;
+
+    -- Lưu thay đổi
+    COMMIT;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Lỗi khi chèn dữ liệu: ' || SQLERRM);
+END;
+/
+commit;

@@ -65,6 +65,19 @@ public class DAO_BXH_CLB implements DAOInterface<MODEL_BXH_CLB>{
 
     @Override
     public ArrayList<MODEL_BXH_CLB> selectByCondition(String Condition) throws SQLException {
-        return null;
+        ArrayList<MODEL_BXH_CLB> list = new ArrayList<>();
+        Connection conn = DatabaseConnection.getInstance().getConnectionn();
+        String sql = "SELECT * FROM BANGXEPHANG_CLB  WHERE " + Condition +" ORDER BY Hang";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                try {
+                    list.add(getFromRs(rs));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return list;
     }
 }
