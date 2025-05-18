@@ -261,3 +261,26 @@
 .grid-pane{
     -fx-background-color: white;
 }
+.table-view .column-header-background {
+    -fx-background-color: linear-gradient(to bottom, #d46a63, #991f18);
+}
+
+.table-view .column-header,
+.table-view .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white; /* chữ trắng */
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+}
+.table-row-cell:filled:selected {
+    -fx-background-color: #dbe9ff; /* Màu nền khi chọn */
+    -fx-text-fill: black;          /* Giữ màu chữ */
+}
+
+.table-row-cell:filled:selected .text {
+    -fx-fill: black;               /* Giữ màu chữ nếu bị ghi đè */
+}

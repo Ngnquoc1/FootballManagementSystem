@@ -63,7 +63,7 @@
             </font>
         </Label>
 
-        <TableView fx:id="goalsTableView" prefHeight="200.0" VBox.vgrow="ALWAYS">
+        <TableView fx:id="goalsTableView" prefHeight="200.0" stylesheets="@../CSS/Fixtures.css" VBox.vgrow="ALWAYS">
             <columns>
                 <TableColumn fx:id="timeColumn" prefWidth="75.0" text="Phút" />
                 <TableColumn fx:id="playerColumn" prefWidth="200.0" text="Cầu thủ" />

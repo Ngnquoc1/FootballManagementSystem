@@ -84,7 +84,7 @@
                   <Font name="System Bold" size="14.0" />
                </font>
             </Label>
-            <TableView fx:id="resultTable" prefHeight="158.0" prefWidth="678.0">
+            <TableView fx:id="resultTable" prefHeight="158.0" prefWidth="678.0" stylesheets="@../CSS/Fixtures.css">
                <columns>
                   <TableColumn fx:id="idCol" prefWidth="38.4000244140625" text="ID" />
                   <TableColumn fx:id="leagueCol" prefWidth="73.59994125366211" text="League" />
@@ -101,7 +101,7 @@
                   <Font name="System Bold" size="14.0" />
                </font>
             </Label>
-            <TableView fx:id="fixtureTable" prefHeight="158.0" prefWidth="678.0">
+            <TableView fx:id="fixtureTable" prefHeight="158.0" prefWidth="678.0" stylesheets="@../CSS/Fixtures.css">
                <columns>
                   <TableColumn fx:id="idCol1" prefWidth="37.600006103515625" text="ID" />
                   <TableColumn fx:id="leagueCol1" prefWidth="88.79998397827148" text="League" />

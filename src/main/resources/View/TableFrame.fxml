@@ -83,7 +83,7 @@
                                 </HBox>
 
                                 <!-- Bảng xếp hạng CLB -->
-                                <TableView fx:id="clubTableView" prefHeight="273.0" prefWidth="751.0" VBox.vgrow="ALWAYS">
+                                <TableView fx:id="clubTableView" prefHeight="273.0" prefWidth="751.0" stylesheets="@../CSS/Fixtures.css" VBox.vgrow="ALWAYS">
                                     <columns>
                                         <TableColumn fx:id="clubRankColumn" prefWidth="50.0" text="Hạng" />
                                         <TableColumn fx:id="clubNameColumn" prefWidth="200.0" text="Câu lạc bộ" />
