@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<VBox prefHeight="625.0" prefWidth="800.0" style="-fx-border-color: #991f18; -fx-border-width: 2;" stylesheets="@../CSS/Fixtures.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.HomeController">
+   <children>
+      <Pane prefHeight="114.0" prefWidth="648.0" style="-fx-background-color: linear-gradient(to right, #f9f3ee, #f5e8e0);" stylesheets="@../CSS/Fixtures.css">
+         <children>
+            <Label alignment="TOP_LEFT" contentDisplay="CENTER" layoutX="14.0" layoutY="14.0" prefHeight="42.0" prefWidth="280.0" styleClass="title" text="Dashboard">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" layoutY="56.0" prefHeight="24.0" prefWidth="358.0" text="Latest scores, upcoming matches, and top teams" textFill="#991f18">
+               <font>
+                  <Font name="System Italic" size="14.0" />
+               </font>
+            </Label>
+            <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="722.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../icons/user.png" />
+               </image>
+            </ImageView>
+         </children>
+      </Pane>
+      <HBox alignment="CENTER" prefHeight="230.0" prefWidth="796.0" spacing="15.0">
+         <padding>
+            <Insets bottom="5.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+         <children>
+            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="380.0" style="-fx-background-color: #f9f3ee; -fx-border-color: #991f18; -fx-border-width: 1; -fx-border-radius: 5;">
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="360.0" style="-fx-background-color: #991f18; -fx-text-fill: white; -fx-background-radius: 5;" text="Latest Result">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="10.0" />
+                     </VBox.margin>
+                  </Label>
+                  <HBox alignment="CENTER" prefHeight="150.0" prefWidth="360.0">
+                     <children>
+                        <VBox alignment="CENTER" prefHeight="150.0" prefWidth="150.0">
+                           <children>
+                              <ImageView fx:id="latestHomeImage" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" />
+                                 </VBox.margin>
+                              </ImageView>
+                              <Label fx:id="latestHomeTeam" alignment="CENTER" contentDisplay="CENTER" text="Man United" textAlignment="CENTER" wrapText="true">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER" prefHeight="150.0" prefWidth="60.0">
+                           <children>
+                              <Label fx:id="latestScore" alignment="CENTER" contentDisplay="CENTER" text="2 - 1" textAlignment="CENTER">
+                                 <font>
+                                    <Font name="System Bold" size="18.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="latestDate" alignment="CENTER" contentDisplay="CENTER" text="15 May" textAlignment="CENTER" textFill="#5e5e5e">
+                                 <font>
+                                    <Font size="12.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER" prefHeight="150.0" prefWidth="150.0">
+                           <children>
+                              <ImageView fx:id="latestAwayImage" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" />
+                                 </VBox.margin>
+                              </ImageView>
+                              <Label fx:id="latestAwayTeam" alignment="CENTER" contentDisplay="CENTER" text="Liverpool" textAlignment="CENTER" wrapText="true">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="380.0" style="-fx-background-color: #f9f3ee; -fx-border-color: #991f18; -fx-border-width: 1; -fx-border-radius: 5;">
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="360.0" style="-fx-background-color: #991f18; -fx-text-fill: white; -fx-background-radius: 5;" text="Upcoming Match">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="10.0" />
+                     </VBox.margin>
+                  </Label>
+                  <HBox alignment="CENTER" prefHeight="150.0" prefWidth="360.0">
+                     <children>
+                        <VBox alignment="CENTER" prefHeight="150.0" prefWidth="150.0">
+                           <children>
+                              <ImageView fx:id="nextHomeImage" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" />
+                                 </VBox.margin>
+                              </ImageView>
+                              <Label fx:id="nextHomeTeam" alignment="CENTER" contentDisplay="CENTER" text="Liverpool" textAlignment="CENTER" wrapText="true">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER" prefHeight="150.0" prefWidth="60.0">
+                           <children>
+                              <Label fx:id="nextTime" alignment="CENTER" contentDisplay="CENTER" text="19:45" textAlignment="CENTER">
+                                 <font>
+                                    <Font name="System Bold" size="18.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="nextDate" alignment="CENTER" contentDisplay="CENTER" text="20 May" textAlignment="CENTER" textFill="#5e5e5e">
+                                 <font>
+                                    <Font size="12.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER" prefHeight="150.0" prefWidth="150.0">
+                           <children>
+                              <ImageView fx:id="nextAwayImage" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" />
+                                 </VBox.margin>
+                              </ImageView>
+                              <Label fx:id="nextAwayTeam" alignment="CENTER" contentDisplay="CENTER" text="Arsenal" textAlignment="CENTER" wrapText="true">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <VBox alignment="TOP_CENTER" prefHeight="280.0" prefWidth="796.0">
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="5.0" />
+         </padding>
+         <children>
+            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="776.0" style="-fx-background-color: #991f18; -fx-text-fill: white; -fx-background-radius: 5;" text="Top 3 Teams">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </Label>
+            <ScrollPane fitToWidth="true" pannable="true" prefHeight="230.0" prefWidth="776.0" style="-fx-background-color: transparent; -fx-border-color: transparent;">
+               <content>
+                  <HBox alignment="CENTER" prefHeight="220.0" spacing="10.0">
+                     <children>
+                        <VBox fx:id="team1Card" alignment="TOP_CENTER" prefHeight="220.0" prefWidth="250.0" style="-fx-background-color: #f9f3ee; -fx-border-color: #991f18; -fx-border-width: 2; -fx-border-radius: 10;">
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                           <children>
+                              <ImageView fx:id="team1Image" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" />
+                                 </VBox.margin>
+                              </ImageView>
+                              <Label fx:id="team1Name" alignment="CENTER" contentDisplay="CENTER" prefWidth="200.0" text="Manchester City" textAlignment="CENTER">
+                                 <font>
+                                    <Font name="System Bold" size="16.0" />
+                                 </font>
+                              </Label>
+                              <HBox alignment="CENTER" prefHeight="30.0" prefWidth="230.0">
+                                 <children>
+                                    <VBox alignment="CENTER">
+                                       <children>
+                                          <Label text="Points" textFill="#5e5e5e">
+                                             <font>
+                                                <Font size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="team1Points" text="75">
+                                             <font>
+                                                <Font name="System Bold" size="18.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                        <VBox fx:id="team2Card" alignment="TOP_CENTER" prefHeight="220.0" prefWidth="250.0" style="-fx-background-color: #f9f3ee; -fx-border-color: #991f18; -fx-border-width: 2; -fx-border-radius: 10;">
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                           <children>
+                              <ImageView fx:id="team2Image" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" />
+                                 </VBox.margin>
+                              </ImageView>
+                              <Label fx:id="team2Name" alignment="CENTER" contentDisplay="CENTER" prefWidth="200.0" text="Arsenal" textAlignment="CENTER">
+                                 <font>
+                                    <Font name="System Bold" size="16.0" />
+                                 </font>
+                              </Label>
+                              <HBox alignment="CENTER" prefHeight="30.0" prefWidth="230.0">
+                                 <children>
+                                    <VBox alignment="CENTER">
+                                       <children>
+                                          <Label text="Points" textFill="#5e5e5e">
+                                             <font>
+                                                <Font size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="team2Points" text="71">
+                                             <font>
+                                                <Font name="System Bold" size="18.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                        <VBox fx:id="team3Card" alignment="TOP_CENTER" prefHeight="220.0" prefWidth="250.0" style="-fx-background-color: #f9f3ee; -fx-border-color: #991f18; -fx-border-width: 2; -fx-border-radius: 10;">
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                           <children>
+                              <ImageView fx:id="team3Image" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" />
+                                 </VBox.margin>
+                              </ImageView>
+                              <Label fx:id="team3Name" alignment="CENTER" contentDisplay="CENTER" prefWidth="200.0" text="Liverpool" textAlignment="CENTER">
+                                 <font>
+                                    <Font name="System Bold" size="16.0" />
+                                 </font>
+                              </Label>
+                              <HBox alignment="CENTER" prefHeight="30.0" prefWidth="230.0">
+                                 <children>
+                                    <VBox alignment="CENTER">
+                                       <children>
+                                          <Label text="Points" textFill="#5e5e5e">
+                                             <font>
+                                                <Font size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="team3Points" text="68">
+                                             <font>
+                                                <Font name="System Bold" size="18.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </content>
+            </ScrollPane>
+         </children>
+      </VBox>
+      
+      <HBox alignment="CENTER" style="-fx-background-color: #991f18;">
+         <children>
+            <Label style="-fx-text-fill: white;" text="© 2025 Football Manager System" />
+         </children>
+         <padding>
+            <Insets bottom="10.0" top="10.0" />
+         </padding>
+      </HBox>
+   </children>
+</VBox>

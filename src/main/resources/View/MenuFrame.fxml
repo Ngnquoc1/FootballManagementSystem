@@ -47,7 +47,8 @@
                   </Pane>
                   <VBox layoutX="1.0" layoutY="120.0" prefHeight="411.0" prefWidth="166.0" spacing="10.0">
                      <children>
-                        <Button id="homeMenuBtn" minWidth="144.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Home">
+                                                
+                           <Button id="homeMenuBtn" fx:id="homeMenuBtn" minWidth="144.0" mnemonicParsing="false" onAction="#clickOnHomeBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Home">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                  <image>

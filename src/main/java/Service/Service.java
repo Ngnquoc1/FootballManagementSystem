@@ -3,6 +3,7 @@ package Service;
 import Controller.Connection.DatabaseConnection;
 import DAO.DAO_MUAGIAI;
 import DAO.DAO_Match;
+import Model.MODEL_CLB;
 import Model.MODEL_MUAGIAI;
 import Model.MODEL_USER;
 import Model.Match;
@@ -171,7 +172,7 @@ public class Service {
             ps.executeUpdate();
         }
     }
-
+    
     public static List<Match> getPendingMatchList() throws SQLException {
         List<Match> matchList = new ArrayList<>();
         Connection conn = null;
@@ -204,5 +205,23 @@ public class Service {
     public List<MODEL_MUAGIAI> selectAllTournament() throws SQLException {
         Connection conn = DatabaseConnection.getInstance().getConnectionn();
         return new DAO_MUAGIAI().selectAllDB();
+    }
+    public MODEL_CLB selectCLBById(int maCLB) throws SQLException {
+        Connection conn = DatabaseConnection.getInstance().getConnectionn();
+        String sql = "SELECT * FROM CLB WHERE MaCLB = ?";
+        
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, maCLB);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                MODEL_CLB club = new MODEL_CLB();
+                club.setMaCLB(rs.getInt("MaCLB"));
+                club.setTenCLB(rs.getString("TenCLB"));
+                club.setLogoCLB(rs.getString("LogoCLB"));
+                return club;
+            }
+            return null;
+        }
     }
 }
