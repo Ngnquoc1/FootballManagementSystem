@@ -44,12 +44,27 @@ public class DatabaseConnection {
     }
 
     public Connection getConnectionn() {
+        try {
+            if (connection == null || connection.isClosed()) {
+                System.out.println("Kết nối đã đóng hoặc null, đang tạo lại kết nối...");
+                connectToDatabase();
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi kiểm tra kết nối: " + e.getMessage());
+            e.printStackTrace();
+            try {
+                connectToDatabase();
+            } catch (SQLException ex) {
+                System.err.println("Không thể tạo lại kết nối: " + ex.getMessage());
+            }
+        }
         return connection;
     }
     public void disconnect() {
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
+                connection = null;
                 System.out.println("Đã ngắt kết nối CSDL!");
             }
         } catch (SQLException e) {
