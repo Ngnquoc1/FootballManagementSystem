@@ -22,7 +22,7 @@ public class DatabaseConnection {
 
     // Kết nối tới CSDL Oracle
     private void connectToDatabase() throws SQLException {
-        final String url = "jdbc:oracle:thin:@localhost:1521:free"; // Địa chỉ CSDL
+        final String url = "jdbc:oracle:thin:@localhost:1521:orcl"; // Địa chỉ CSDL
         final String username = "c##QLDB"; // username thật
         final String password = "1"; // g mật khẩu thật
 
