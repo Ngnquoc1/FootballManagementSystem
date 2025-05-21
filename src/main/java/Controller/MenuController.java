@@ -13,9 +13,9 @@ public class MenuController {
 
     @FXML
     public void initialize() {
+        mainContent.setUserData(this);
         clickOnHomeBtn();
     }
-
 
     @FXML
     public void clickOnHomeBtn() {
@@ -34,7 +34,7 @@ public class MenuController {
         VBox view = fxmlLoader.getPane("ResultFrame");
         mainContent.setCenter(view);
     }
-    
+
     @FXML
     public void clickOnFixtureBtn() {
         resetButtonStyle();
@@ -43,7 +43,7 @@ public class MenuController {
         VBox view = fxmlLoader.getPane("FixtureFrame");
         mainContent.setCenter(view);
     }
-    
+
     @FXML
     public void clickOnTableBtn() {
         resetButtonStyle();
@@ -52,7 +52,7 @@ public class MenuController {
         VBox view = fxmlLoader.getPane("TableFrame");
         mainContent.setCenter(view);
     }
-    
+
     @FXML
     public void clickOnClubBtn() {
         resetButtonStyle();
@@ -61,7 +61,7 @@ public class MenuController {
         VBox view = fxmlLoader.getPane("CLBFrame");
         mainContent.setCenter(view);
     }
-    
+
     @FXML
     public void clickOnPlayerBtn() {
         resetButtonStyle();
@@ -79,7 +79,7 @@ public class MenuController {
         VBox view = fxmlLoader.getPane("TournamentFrame");
         mainContent.setCenter(view);
     }
-    
+
     public void resetButtonStyle() {
         homeMenuBtn.getStyleClass().remove("selectedBtn");
         resultMenuBtn.getStyleClass().remove("selectedBtn");
