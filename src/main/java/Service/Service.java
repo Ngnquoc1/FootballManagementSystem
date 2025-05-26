@@ -254,7 +254,7 @@ public class Service {
         return clubs;
     }
 
-    public int selectCLBIDFromGoal(int maCT, int maTD) throws SQLException {
+    public int getCLBIDFromGoal(int maCT, int maTD) throws SQLException {
         String sql = "SELECT cclb.MaCLB " +
                 "FROM BANTHANG bt " +
                 "JOIN TranDau td ON bt.MaTD = td.MaTD " +
@@ -287,6 +287,26 @@ public class Service {
         return false;
     }
 
+    public MODEL_CLB getCLBByID(int maCLB) {
+        String sql = "SELECT * FROM CLB WHERE MaCLB = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, maCLB);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                MODEL_CLB clb = new MODEL_CLB();
+                clb.setMaCLB(rs.getInt("MaCLB"));
+                clb.setTenCLB(rs.getString("TenCLB"));
+                clb.setLogoCLB(rs.getString("LogoCLB"));
+                clb.setTenHLV(rs.getString("TenHLV"));
+                clb.setEmail(rs.getString("Email"));
+                clb.setMaSan(rs.getInt("SanNha"));
+                return clb;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     //    Tournament
     public List<MODEL_MUAGIAI> selectAllTournament() throws SQLException {
         Connection conn = DatabaseConnection.getInstance().getConnectionn();
@@ -860,4 +880,6 @@ public class Service {
             return false;
         }
     }
+
+
 }

@@ -90,7 +90,7 @@ public class GoalManagementController {
             try {
                 int maCT = cellData.getValue().getMaCT();
                 int maTD = cellData.getValue().getMaTD();
-                int maCLB = service.selectCLBIDFromGoal(maCT, maTD);
+                int maCLB = service.getCLBIDFromGoal(maCT, maTD);
                 MODEL_CLB clb = daoClb.selectByID(maCLB);
                 return new javafx.beans.property.SimpleStringProperty(clb != null ? clb.getTenCLB() : "Unknown");
             } catch (Exception e) {
@@ -218,7 +218,7 @@ public class GoalManagementController {
             MODEL_CAUTHU cauthu = daoCauthu.selectByID(goal.getMaCT());
             MODEL_LOAIBANTHANG loaiBT = daoLoaiBT.selectByID(goal.getmaLoaiBT());
             if (cauthu != null) {
-                int maCLB = service.selectCLBIDFromGoal(cauthu.getMaCT(), goal.getMaTD());
+                int maCLB = service.getCLBIDFromGoal(cauthu.getMaCT(), goal.getMaTD());
                 MODEL_CLB clb = daoClb.selectByID(maCLB);
                 String teamName = clb != null ? clb.getTenCLB() : "";
                 boolean isOwnGoal = "Phản lưới nhà".equals(loaiBT.getTenLoaiBT());
@@ -254,7 +254,7 @@ public class GoalManagementController {
 
             MODEL_CAUTHU cauthu = daoCauthu.selectByID(selectedGoal.getMaCT());
             if (cauthu != null) {
-                int maCLB = service.selectCLBIDFromGoal(cauthu.getMaCT(), selectedGoal.getMaTD());
+                int maCLB = service.getCLBIDFromGoal(cauthu.getMaCT(), selectedGoal.getMaTD());
                 MODEL_CLB clb = daoClb.selectByID(maCLB);
                 if (clb != null) {
                     teamComboBox.setValue(clb.getTenCLB());

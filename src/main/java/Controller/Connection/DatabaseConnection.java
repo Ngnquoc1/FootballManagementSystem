@@ -64,7 +64,6 @@ public class DatabaseConnection {
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
-                connection = null;
                 System.out.println("Đã ngắt kết nối CSDL!");
             }
         } catch (SQLException e) {
