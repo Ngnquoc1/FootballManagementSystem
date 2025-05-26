@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="625.0" prefWidth="800.0" style="-fx-border-color: #991f18; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ClbController">
+<VBox prefHeight="625.0" prefWidth="800.0" style="-fx-border-color: #991f18; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ClubController">
    <children>
       <HBox alignment="CENTER_LEFT" prefHeight="123.0" prefWidth="800.0" styleClass="header" stylesheets="@../CSS/Fixtures.css">
          <children>

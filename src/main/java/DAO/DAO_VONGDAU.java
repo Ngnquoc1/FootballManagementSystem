@@ -1,14 +1,22 @@
 package DAO;
 
+import Controller.Connection.DatabaseConnection;
 import Model.MODEL_VONGDAU;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
-public class Dao_VONGDAU implements DAOInterface<MODEL_VONGDAU> {
+public class DAO_VONGDAU implements DAOInterface<MODEL_VONGDAU> {
+    private Connection conn;
 
-
+    public DAO_VONGDAU() {
+        try {
+            conn = DatabaseConnection.getInstance().getConnectionn();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
     @Override
     public void insertDB(MODEL_VONGDAU modelVongdau) throws SQLException {
 
@@ -43,4 +51,5 @@ public class Dao_VONGDAU implements DAOInterface<MODEL_VONGDAU> {
     public ArrayList<MODEL_VONGDAU> selectByCondition(String Condition) {
         return null;
     }
+
 }

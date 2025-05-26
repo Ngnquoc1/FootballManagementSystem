@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="728.0" prefWidth="776.0" spacing="10.0" style="-fx-background-color: White; -fx-border-color: #991f18; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.FixtureManagementController">
+<VBox minHeight="-Infinity" minWidth="-Infinity" prefWidth="776.0" spacing="10.0" style="-fx-background-color: White; -fx-border-color: #991f18; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.FixtureManagementController">
    <children>
       <HBox prefHeight="26.0" prefWidth="755.0" stylesheets="@../CSS/Fixtures.css">
          <children>

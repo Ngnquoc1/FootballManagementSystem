@@ -1,11 +1,11 @@
 package Controller;
 
-import DAO.DAO_CLB;
 import DAO.DAO_MUAGIAI;
 import DAO.DAO_SAN;
 import Model.MODEL_CLB;
 import Model.MODEL_MUAGIAI;
 import Model.MODEL_SAN;
+import Service.Service;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -16,19 +16,13 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -37,26 +31,23 @@ import java.util.ResourceBundle;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class ClbController implements Initializable {
+public class ClubController implements Initializable {
 
     @FXML private TextField searchField;
     @FXML private ComboBox<String> compeFilter;
-    @FXML private Button resetBtn;
+    @FXML private Button resetBtn,addBtn;
     @FXML private GridPane team_container;
 
     private ObservableList<MODEL_CLB> allClubs = FXCollections.observableArrayList();
     private ObservableList<MODEL_CLB> filteredClubs = FXCollections.observableArrayList();
 
+    private Service service = new Service();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setFilter();
-        try {
-            List<MODEL_CLB> clubs = new DAO_CLB().selectAllDB();
-            allClubs.addAll(clubs);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        List<MODEL_CLB> clubs = service.selectAllClubs();
+        allClubs.addAll(clubs);
 
         // Thiết lập sự kiện tìm kiếm
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -87,34 +78,13 @@ public class ClbController implements Initializable {
         DAO_MUAGIAI daoMG= new DAO_MUAGIAI();
         ArrayList<MODEL_MUAGIAI> ds1 = daoMG.selectAllDB();
         ArrayList<String> dsMG = new ArrayList<>();
+        dsMG.add("All CLubs");
         for (MODEL_MUAGIAI mg : ds1) {
             dsMG.add(mg.getTenMG());
         }
         compeFilter.getItems().addAll(dsMG);
         compeFilter.getSelectionModel().selectFirst();
     }
-//    private void loadSampleData() {
-//        // Tạo dữ liệu mẫu cho các câu lạc bộ
-//        String[] clubNames = {
-//                "Arsenal", "Aston Villa", "Bournemouth", "Brentford",
-//                "Brighton & Hove Albion", "Chelsea", "Crystal Palace", "Everton",
-//                "Fulham", "Liverpool", "Manchester City", "Manchester United",
-//                "Newcastle United", "Nottingham Forest", "Southampton", "Tottenham Hotspur",
-//                "West Ham United", "Wolverhampton"
-//        };
-//
-//        for (int i = 0; i < clubNames.length; i++) {
-//            MODEL_CLB club = new MODEL_CLB();
-//            club.setMaCLB(i + 1);
-//            club.setMaSan(i + 100);
-//            club.setTenCLB(clubNames[i]);
-//            club.setLogoCLB("/Image/ClubLogo/" + clubNames[i].toLowerCase().replace(" ", "_") + ".png");
-//            allClubs.add(club);
-//        }
-//
-//        filteredClubs.addAll(allClubs);
-//    }
-
     private void filterClubs() throws SQLException {
         String searchText = searchField.getText().toLowerCase();
         System.out.println(searchText);
@@ -124,7 +94,6 @@ public class ClbController implements Initializable {
         Predicate<MODEL_CLB> searchFilter = club ->
                 searchText.isEmpty() || club.getTenCLB().toLowerCase().contains(searchText);
 
-        // Trong thực tế, bạn có thể thêm lọc theo mùa giải ở đây
 
         filteredClubs.clear();
         filteredClubs.addAll(allClubs.stream()
@@ -256,8 +225,26 @@ public class ClbController implements Initializable {
         }
     }
     @FXML
-    public void controlClub(){
+    public void controlClub() {
+        try {
+            // Tải file FXML của cửa sổ mới
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/ClubManagementFrame.fxml"));
+            Parent root = loader.load();
 
+            // Tạo một Stage mới
+            Stage stage = new Stage();
+            stage.setTitle("Result Management");
+            stage.setScene(new Scene(root));
+            stage.initOwner(addBtn.getScene().getWindow()); // Đặt chủ sở hữu là cửa sổ hiện tại
+            stage.setResizable(false);
+            stage.show();
+            stage.setOnCloseRequest(event -> {
+                // Khi cửa sổ đóng, gọi lại phương thức resetFilter() để làm mới dữ liệu
+                resetFilter();
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
