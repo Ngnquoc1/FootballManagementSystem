@@ -3,7 +3,6 @@
 <?import java.net.URL?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -45,9 +44,9 @@
                         </DropShadow>
                      </effect>
                   </Pane>
-                  <VBox layoutY="96.0" prefHeight="411.0" prefWidth="166.0" spacing="5.0">
+                  <VBox layoutX="1.0" layoutY="120.0" prefHeight="411.0" prefWidth="166.0" spacing="10.0">
                      <children>
-                        <Button id="homeMenuBtn" fx:id="homeMenuBtn" minWidth="144.0" mnemonicParsing="false" onAction="#clickOnHomeBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Home">
+                        <Button id="homeMenuBtn" minWidth="144.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Home">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                  <image>
@@ -171,15 +170,7 @@
       </VBox>
    </left>
    <center>
-      <Pane minHeight="-Infinity" minWidth="-Infinity" prefHeight="625.0" prefWidth="800.0" BorderPane.alignment="CENTER">
-         <children>
-            <Label layoutX="146.0" layoutY="250.0" prefHeight="54.0" prefWidth="468.0" text="WELCOME !!!!!!!!!!!!!!">
-               <font>
-                  <Font size="37.0" />
-               </font>
-            </Label>
-         </children>
-      </Pane>
+      <Pane minHeight="-Infinity" minWidth="-Infinity" prefHeight="625.0" prefWidth="800.0" BorderPane.alignment="CENTER" />
    </center>
    <stylesheets>
       <URL value="@../CSS/Result.css" />

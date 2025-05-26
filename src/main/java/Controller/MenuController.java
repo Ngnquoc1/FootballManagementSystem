@@ -1,6 +1,5 @@
 package Controller;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
@@ -12,9 +11,14 @@ public class MenuController {
     @FXML
     private BorderPane mainContent;
 
+    @FXML
+    public void initialize() {
+        mainContent.setUserData(this);
+        clickOnHomeBtn();
+    }
 
     @FXML
-    public void clickOnHomeBtn(ActionEvent event) {
+    public void clickOnHomeBtn() {
         resetButtonStyle();
         homeMenuBtn.getStyleClass().add("selectedBtn");
         FxmlLoader fxmlLoader = new FxmlLoader();
@@ -31,6 +35,7 @@ public class MenuController {
         mainContent.setCenter(view);
 
     }
+
     @FXML
     public void clickOnFixtureBtn() {
         resetButtonStyle();
@@ -39,6 +44,7 @@ public class MenuController {
         VBox view = fxmlLoader.getPane("FixtureFrame");
         mainContent.setCenter(view);
     }
+
     @FXML
     public void clickOnTableBtn() {
         resetButtonStyle();
@@ -47,6 +53,7 @@ public class MenuController {
         VBox view = fxmlLoader.getPane("TableFrame");
         mainContent.setCenter(view);
     }
+
     @FXML
     public void clickOnClubBtn(){
         resetButtonStyle();
@@ -96,6 +103,5 @@ public class MenuController {
         rulesMenuBtn.getStyleClass().remove("selectedBtn");
         registryMenuBtn.getStyleClass().remove("selectedBtn");
     }
-
 
 }
