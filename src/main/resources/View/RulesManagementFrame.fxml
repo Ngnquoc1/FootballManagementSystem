@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="625.0" prefWidth="800.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.RulesManagementController">
+    <children>
+        <!-- Header -->
+        <HBox alignment="CENTER_LEFT" style="-fx-border-color: #cccccc; -fx-border-width: 0 0 1 0; -fx-padding: 10 20 10 20;">
+            <children>
+                <Label prefHeight="35.0" prefWidth="332.0" text="Regulations Management" textFill="#9e1b1b">
+                    <font>
+                        <Font name="System Bold" size="24.0" />
+                    </font>
+                </Label>
+                <Pane HBox.hgrow="ALWAYS" />
+                <Button mnemonicParsing="false" style="-fx-background-color: transparent;">
+                    <graphic>
+                        <Region prefHeight="25.0" prefWidth="25.0" style="-fx-background-color: #9e1b1b; -fx-shape: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z';" />
+                    </graphic>
+                </Button>
+            </children>
+        </HBox>
+
+        <!-- Selection Section -->
+        <VBox spacing="15.0" style="-fx-border-color: #cccccc; -fx-border-width: 0 0 1 0; -fx-padding: 20;">
+            <children>
+                <Label text="Select Tournament" textFill="#333333">
+                    <font>
+                        <Font name="System Bold" size="16.0" />
+                    </font>
+                </Label>
+                <HBox alignment="CENTER_LEFT" spacing="15.0">
+                    <children>
+                        <ComboBox fx:id="cboMuaGiai" onAction="#chonMuaGiai" prefHeight="31.0" prefWidth="362.0" promptText="Chọn mùa giải để xem/chỉnh sửa quy định" style="-fx-border-radius: 3; -fx-font-size: 14px;" stylesheets="@../CSS/Fixtures.css" />
+                        <Label fx:id="lblTrangThaiMuaGiai" text="" textFill="#666666">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+                        <Pane HBox.hgrow="ALWAYS" />
+                        <Label fx:id="lblTrangThaiQuyDinh" text="" textFill="#666666">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+
+        <!-- Form Section -->
+        <VBox spacing="20.0" style="-fx-background-color: #f8f8f8; -fx-padding: 25;" VBox.vgrow="ALWAYS">
+            <children>
+                <Label text="Tournament's Regulations" textFill="#333333">
+                    <font>
+                        <Font name="System Bold" size="16.0" />
+                    </font>
+                </Label>
+
+                <!-- Age Rules -->
+                <VBox spacing="15.0" style="-fx-background-color: white; -fx-padding: 20; -fx-border-color: #e0e0e0; -fx-border-radius: 5;" stylesheets="@../CSS/Fixtures.css">
+                    <children>
+                        <Label text="Quy định về tuổi cầu thủ" textFill="#9e1b1b">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+                        <GridPane hgap="20.0" vgap="15.0">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            </rowConstraints>
+                            <children>
+                                <Label text="Tuổi tối thiểu:" textFill="#333333" />
+                                <Spinner fx:id="spnTuoiToiThieu" editable="true" initialValue="16" max="50" min="10" prefWidth="150.0" GridPane.columnIndex="1" />
+
+                                <Label text="Tuổi tối đa:" textFill="#333333" GridPane.columnIndex="2" />
+                                <Spinner fx:id="spnTuoiToiDa" editable="true" initialValue="40" max="60" min="20" prefWidth="150.0" GridPane.columnIndex="3" />
+                            </children>
+                        </GridPane>
+                    </children>
+                </VBox>
+
+                <!-- Player Count Rules -->
+                <VBox spacing="15.0" style="-fx-background-color: white; -fx-padding: 20; -fx-border-color: #e0e0e0; -fx-border-radius: 5;" stylesheets="@../CSS/Fixtures.css">
+                    <children>
+                        <Label text="Quy định về số lượng cầu thủ" textFill="#9e1b1b">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+                        <GridPane hgap="20.0" vgap="15.0">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            </rowConstraints>
+                            <children>
+                                <Label text="Số CT tối thiểu:" textFill="#333333" />
+                                <Spinner fx:id="spnSoCTToiThieu" editable="true" initialValue="15" max="30" min="10" prefWidth="150.0" GridPane.columnIndex="1" />
+
+                                <Label text="Số CT tối đa:" textFill="#333333" GridPane.columnIndex="2" />
+                                <Spinner fx:id="spnSoCTToiDa" editable="true" initialValue="22" max="50" min="15" prefWidth="150.0" GridPane.columnIndex="3" />
+
+                                <Label text="CT nước ngoài tối đa:" textFill="#333333" GridPane.rowIndex="1" />
+                                <Spinner fx:id="spnSoCTNuocNgoaiToiDa" editable="true" initialValue="3" max="10" min="0" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                                <Label text="Phút ghi bàn tối đa:" textFill="#333333" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                                <Spinner fx:id="spnPhutGhiBanToiDa" editable="true" initialValue="90" max="120" min="60" prefWidth="150.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                            </children>
+                        </GridPane>
+                    </children>
+                </VBox>
+
+                <!-- Action Buttons -->
+                <HBox alignment="CENTER" spacing="20.0" style="-fx-padding: 20 0 0 0;" stylesheets="@../CSS/Fixtures.css">
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#apDungMacDinh" prefWidth="150.0" style="-fx-background-color: #4caf50; -fx-text-fill: white; -fx-font-size: 14px;" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Áp dụng mặc định" />
+                        <Button mnemonicParsing="false" onAction="#capNhatQuyDinh" prefWidth="150.0" style="-fx-background-color: #9e1b1b; -fx-text-fill: white; -fx-font-size: 14px;" styleClass="ManagementBtn" text="Cập nhật quy định" />
+                        <Button mnemonicParsing="false" onAction="#lamMoi" prefWidth="150.0" style="-fx-background-color: #666666; -fx-text-fill: white; -fx-font-size: 14px;" styleClass="ManagementBtn" text="Làm mới" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</VBox>

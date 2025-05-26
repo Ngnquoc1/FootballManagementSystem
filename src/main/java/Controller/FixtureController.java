@@ -224,7 +224,7 @@ public class FixtureController implements Initializable {
     private void controlFixture() throws SQLException {
         try {
             // Tải file FXML của cửa sổ mới
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/MatchManagementFrame.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/FixtureManagementFrame.fxml"));
             Parent root = loader.load();
             FixtureManagementController fixtureManagementController = loader.getController();
             fixtureManagementController.setFixtureController(this);

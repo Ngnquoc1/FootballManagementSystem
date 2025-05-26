@@ -4,11 +4,15 @@ import DAO.DAO_CLB;
 import DAO.DAO_MUAGIAI;
 import Model.MODEL_CLB;
 import Model.MODEL_MUAGIAI;
+import Model.MODEL_VONGDAU;
 import Service.Service;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -16,6 +20,7 @@ import javafx.scene.image.ImageView;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -162,6 +167,7 @@ public class TournamentManagementController {
                 viewDetailsButton.setDisable(false);
             }
         });
+        createLogoDirectory();
     }
     private void setFilter() throws SQLException {
 
@@ -298,26 +304,11 @@ public class TournamentManagementController {
         }
     }
 
-    private String saveLogo(File logoFile, int tournamentId) {
-        if (logoFile == null) return null;
-
-        try {
-            String fileExtension = getFileExtension(logoFile.getName());
-            String newFileName = "tournament_" + tournamentId + fileExtension;
-            Path targetPath = Paths.get(LOGO_DIRECTORY, newFileName);
-
-            Files.copy(logoFile.toPath(), (java.nio.file.Path) targetPath, StandardCopyOption.REPLACE_EXISTING);
-            return targetPath.toString();
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể lưu logo", e.getMessage());
-            return null;
-        }
-    }
-
     @FXML
     private void handleViewDetails() {
         MODEL_MUAGIAI selectedTournament = tournamentsTableView.getSelectionModel().getSelectedItem();
         if (selectedTournament != null) {
+            List<MODEL_VONGDAU> listVD= service.selectAllByTournament(selectedTournament.getMaMG());
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Chi tiết giải đấu");
             alert.setHeaderText(selectedTournament.getTenMG());
@@ -335,12 +326,20 @@ public class TournamentManagementController {
                 dialogPane.setGraphic(logoView);
             }
 
-            String content = "ID: " + selectedTournament.getMaMG() + "\n" +
+            StringBuilder content = new StringBuilder("ID: " + selectedTournament.getMaMG() + "\n" +
                     "Ngày bắt đầu: " + selectedTournament.getNgayBD().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "\n" +
                     "Ngày kết thúc: " + selectedTournament.getNgayKT().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "\n" +
-                    "Trạng thái: " + selectedTournament.getStatus();
+                    "Trạng thái: " + selectedTournament.getStatus());
+            if (listVD != null && !listVD.isEmpty()) {
+                content.append("\n\nDanh sách vòng đấu:\n");
+                for (MODEL_VONGDAU vongDau : listVD) {
+                    content.append("- ").append(vongDau.getTenVD()).append(" (ID: ").append(vongDau.getMaVD()).append(") - Từ: ").append(vongDau.getNgayBD()).append(" Đến: ").append(vongDau.getNgayKT()).append("\n");
+                }
+            } else {
+                content.append("\n\nKhông có vòng đấu nào trong giải đấu này.");
+            }
 
-            alert.setContentText(content);
+            alert.setContentText(content.toString());
             alert.showAndWait();
         }
     }
@@ -356,6 +355,8 @@ public class TournamentManagementController {
         String name = nameField.getText();
         LocalDate startDate = startDatePicker.getValue();
         LocalDate endDate = endDatePicker.getValue();
+        MODEL_MUAGIAI savedTournament = null;
+
         if (isEditing && currentModel != null) {
             // Cập nhật giải đấu hiện tại
             currentModel.setTenMG(name);
@@ -382,6 +383,7 @@ public class TournamentManagementController {
             }
             new DAO_MUAGIAI().updateDB(currentModel);
             tournamentsTableView.refresh();
+            savedTournament = currentModel;
         } else {
             int id = nextId++;
 
@@ -393,14 +395,43 @@ public class TournamentManagementController {
 
             MODEL_MUAGIAI newTournament = new MODEL_MUAGIAI(id, name, startDate, endDate, logoFileName);
             new DAO_MUAGIAI().insertDB(newTournament);
+            service.insertDefaultQD(newTournament.getMaMG());
             tournamentsList.add(newTournament);
+
+            savedTournament = newTournament;
         }
 
         updateStatistics();
         resetForm();
         enableForm(false);
+
+        // Mở màn hình quản lý vòng đấu sau khi lưu giải đấu
+        if (savedTournament != null) {
+            openRoundManagement(savedTournament);
+        }
     }
 
+    // Phương thức mới để mở màn hình quản lý vòng đấu
+    private void openRoundManagement(MODEL_MUAGIAI tournament) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/RoundFrame.fxml"));
+            Parent root = loader.load();
+
+            // Lấy controller và thiết lập thông tin giải đấu
+            RoundController controller = loader.getController();
+            controller.setTournament(tournament);
+
+            // Tạo cửa sổ mới
+            Stage stage = new Stage();
+            stage.setTitle("Quản lý vòng đấu - " + tournament.getTenMG());
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể mở màn hình quản lý vòng đấu", e.getMessage());
+        }
+    }
     private String saveLogoFile(File logoFile) {
         if (logoFile == null) return null;
 

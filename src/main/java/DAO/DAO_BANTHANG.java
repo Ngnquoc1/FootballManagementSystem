@@ -24,7 +24,7 @@ public class DAO_BANTHANG implements DAOInterface<MODEL_BANTHANG> {
     @Override
     public void updateDB(MODEL_BANTHANG modelBanthang) throws SQLException {
         Connection conn = DatabaseConnection.getInstance().getConnectionn();
-        String sql = "UPDATE BanThang SET MaCT = ?, MaTD = ?, PhutGhiBan = ?, MaLoaiBT = ? WHERE MaBT = ?";
+        String sql = "{call UpdateGoal(?,?,?,?,?)}";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, modelBanthang.getMaCT());
             ps.setInt(2, modelBanthang.getMaTD());
@@ -38,7 +38,7 @@ public class DAO_BANTHANG implements DAOInterface<MODEL_BANTHANG> {
     @Override
     public int deleteDB(MODEL_BANTHANG modelBanthang) throws SQLException {
         Connection conn = DatabaseConnection.getInstance().getConnectionn();
-        String sql = "DELETE FROM BanThang WHERE MaBT = ?";
+        String sql = "{call DeleteGoal(?)}";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, modelBanthang.getMaBT());
             return ps.executeUpdate();

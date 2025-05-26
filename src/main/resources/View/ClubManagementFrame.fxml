@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="625.0" prefWidth="800.0" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ClubManagementController">
+   <top>
+      <VBox alignment="CENTER" prefHeight="63.0" prefWidth="900.0" styleClass="header-container">
+         <padding>
+            <Insets bottom="20" left="20" right="20" top="20" />
+         </padding>
+         <children>
+            <HBox alignment="CENTER" spacing="15">
+               <children>
+                  <ImageView fx:id="tournamentLogo" fitHeight="60.0" fitWidth="60.0" preserveRatio="true" />
+                  <Label prefHeight="30.0" prefWidth="244.0" styleClass="header-text" text="CLUB MANAGEMENT" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </top>
+   <bottom>
+      <HBox alignment="CENTER" prefHeight="46.0" prefWidth="902.0" spacing="20" styleClass="button-container">
+         <padding>
+            <Insets bottom="15" left="30" right="30" top="15" />
+         </padding>
+         <children>
+            <Button fx:id="cancelButton" styleClass="cancel-button" text="Cancel" />
+            <Button fx:id="removeRegistrationBtn" onAction="#removeBtn" styleClass="secondary-button" text="Remove" />
+            <Button fx:id="submitButton" onAction="#saveBtn" styleClass="primary-button" text="Save" />
+         </children>
+      </HBox>
+   </bottom>
+   <right>
+      <ScrollPane fitToWidth="true" prefWidth="902.0" styleClass="content-pane" BorderPane.alignment="CENTER">
+         <content>
+            <VBox prefHeight="884.0" prefWidth="800.0" spacing="20" styleClass="form-container">
+               <padding>
+                  <Insets bottom="20" left="30" right="30" top="20" />
+               </padding>
+               <children>
+                  <TitledPane expanded="true" styleClass="section-title" text="Filter">
+                     <content>
+                        <VBox spacing="15">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" spacing="15">
+                                 <children>
+                                    <Label styleClass="field-label" text="Find CLB" />
+                                    <TextField fx:id="searchClubField" promptText="Enter Club's Name" HBox.hgrow="ALWAYS" />
+                                    <Button fx:id="searchButton" onAction="#searchClub" styleClass="secondary-button" text="Find" />
+                                 </children>
+                              </HBox>
+                              <Label styleClass="hint-text" text="If you want to UPDATE, Let's find CLB to fill the form automatically " />
+                              <HBox fx:id="searchResultBox" alignment="CENTER_LEFT" spacing="10" styleClass="search-result" visible="false">
+                                 <children>
+                                    <ImageView fx:id="resultClubLogo" fitHeight="40.0" fitWidth="40.0" preserveRatio="true" />
+                                    <VBox spacing="2">
+                                       <children>
+                                          <Label fx:id="resultClubName" styleClass="result-title" text="Tên CLB" />
+                                          <Label fx:id="resultClubInfo" styleClass="result-info" text="Thông tin CLB" />
+                                       </children>
+                                    </VBox>
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Button fx:id="selectClubButton" styleClass="primary-button" text="Chọn CLB này" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </content>
+                  </TitledPane>
+                  <TitledPane expanded="true" styleClass="section-title" text="Thông tin cơ bản CLB">
+                     <content>
+                        <VBox spacing="15">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" spacing="20">
+                                 <children>
+                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <Label styleClass="field-label" text="Tên CLB *" />
+                                          <TextField fx:id="clubNameField" promptText="Nhập tên CLB" />
+                                          <Label fx:id="clubNameError" styleClass="error-text" visible="false" />
+                                       </children>
+                                    </VBox>
+                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <Label styleClass="field-label" text="Email *" />
+                                          <TextField fx:id="emailField" promptText="Nhập địa chỉ email" />
+                                          <Label fx:id="emailError" styleClass="error-text" visible="false" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" spacing="20">
+                                 <children>
+                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <Label styleClass="field-label" text="Logo CLB" />
+                                          <HBox alignment="CENTER_LEFT" spacing="10">
+                                             <children>
+                                                <StackPane styleClass="logo-container">
+                                                   <children>
+                                                      <ImageView fx:id="clubLogoPreview" fitHeight="100.0" fitWidth="100.0" preserveRatio="true" />
+                                                   </children>
+                                                </StackPane>
+                                                <Button fx:id="uploadLogoButton" onAction="#uploadClubLogo" styleClass="secondary-button" text="Tải lên logo" />
+                                             </children>
+                                          </HBox>
+                                          <Label fx:id="logoPathLabel" styleClass="hint-text" text="" />
+                                       </children>
+                                    </VBox>
+                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <Label styleClass="field-label" text="Huấn luyện viên trưởng *" />
+                                          <TextField fx:id="coachField" promptText="Nhập tên HLV trưởng" />
+                                          <Label fx:id="coachError" styleClass="error-text" visible="false" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </content>
+                  </TitledPane>
+                  <TitledPane expanded="true" styleClass="section-title" text="Thông tin sân vận động">
+                     <content>
+                        <VBox spacing="15">
+                           <children>
+                              <HBox spacing="20">
+                                 <children>
+                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <Label styleClass="field-label" text="Chọn sân vận động *" />
+                                          <ComboBox fx:id="stadiumComboBox" promptText="Chọn sân vận động" HBox.hgrow="ALWAYS" />
+                                          <Label fx:id="stadiumError" styleClass="error-text" visible="false" />
+                                       </children>
+                                    </VBox>
+                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <Label styleClass="field-label" text="Mã sân" />
+                                          <TextField fx:id="stadiumIdField" disable="true" promptText="Mã sân (tự động)" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" spacing="10">
+                                 <children>
+                                    <Button fx:id="viewStadiumButton" onAction="#viewStadiumDetails" styleClass="secondary-button" text="Xem thông tin sân" />
+                                    <Button fx:id="addStadiumButton" onAction="#addNewStadium" styleClass="secondary-button" text="Thêm sân mới" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </content>
+                  </TitledPane>
+                  <VBox spacing="10">
+                     <children>
+                        <Label fx:id="termsError" styleClass="error-text" visible="false" />
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+         </content>
+      </ScrollPane>
+   </right>
+</BorderPane>

@@ -1,9 +1,17 @@
 package Model;
 
+import java.util.Date;
+
 public class MODEL_CAUTHUTHAMGIACLB {
     private int maMG,maCLB,maCT;
+    private boolean selected;
     public MODEL_CAUTHUTHAMGIACLB() {}
 
+    public MODEL_CAUTHUTHAMGIACLB(int maCT,int maMG,int maCLB) {
+        this.maCT = maCT;
+        this.maMG = maCLB;
+        this.maCLB = maCLB;
+    }
     public int getMaMG() {
         return maMG;
     }
@@ -26,5 +34,12 @@ public class MODEL_CAUTHUTHAMGIACLB {
 
     public void setMaCT(int maCT) {
         this.maCT = maCT;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }

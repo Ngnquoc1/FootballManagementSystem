@@ -2,16 +2,10 @@ package Model;
 
 public class MODEL_QUYDINH {
 
-    private int maQD,
-            maMG,
-            tuoiToiThieu,
-            tuoiToiDa,
-            soCTToiThieu,
-            soCTToiDa,
-            soCTNuocNgoaiToiDa,
-            phutGhiBanToiDa;
+    private int maMG, tuoiToiThieu, tuoiToiDa, soCTToiThieu, soCTToiDa,
+            soCTNuocNgoaiToiDa, phutGhiBanToiDa;
 
-    MODEL_QUYDINH() {
+    public MODEL_QUYDINH() {
         this.tuoiToiThieu = 16;
         this.tuoiToiDa = 40;
         this.soCTNuocNgoaiToiDa = 3;
@@ -20,13 +14,6 @@ public class MODEL_QUYDINH {
         this.phutGhiBanToiDa=90;
     }
 
-    public int getMaQD() {
-        return maQD;
-    }
-
-    public void setMaQD(int maQD) {
-        this.maQD = maQD;
-    }
 
     public int getSoCTNuocNgoaiToiDa() {
         return soCTNuocNgoaiToiDa;

@@ -1,12 +1,21 @@
 package Model;
 
-
 import java.sql.Date;
 
 public class MODEL_VONGDAU {
-    private int maVD,tenVD,maMG;
-    private Date ngayBD,ngayKT;
+    private int maVD, maMG;
+    private String tenVD;  // Đã thay đổi từ int sang String
+    private Date ngayBD, ngayKT;
+
     public MODEL_VONGDAU() {}
+
+    public MODEL_VONGDAU(int maVD, String tenVD, int maMG, Date ngayBD, Date ngayKT) {
+        this.maVD = maVD;
+        this.tenVD = tenVD;
+        this.maMG = maMG;
+        this.ngayBD = ngayBD;
+        this.ngayKT = ngayKT;
+    }
 
     public int getMaVD() {
         return maVD;
@@ -16,11 +25,11 @@ public class MODEL_VONGDAU {
         this.maVD = maVD;
     }
 
-    public int getTenVD() {
+    public String getTenVD() {  // Đã thay đổi kiểu trả về
         return tenVD;
     }
 
-    public void setTenVD(int tenVD) {
+    public void setTenVD(String tenVD) {  // Đã thay đổi kiểu tham số
         this.tenVD = tenVD;
     }
 
@@ -46,5 +55,18 @@ public class MODEL_VONGDAU {
 
     public void setNgayKT(Date ngayKT) {
         this.ngayKT = ngayKT;
+    }
+
+    // Phương thức để lấy trạng thái vòng đấu dựa trên ngày hiện tại
+    public String getStatus() {
+        Date today = new Date(System.currentTimeMillis());
+
+        if (today.before(ngayBD)) {
+            return "Sắp diễn ra";
+        } else if (today.after(ngayKT)) {
+            return "Đã kết thúc";
+        } else {
+            return "Đang diễn ra";
+        }
     }
 }

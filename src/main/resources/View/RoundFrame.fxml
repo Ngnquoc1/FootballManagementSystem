@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.RoundController">
+    <top>
+        <VBox alignment="CENTER" spacing="10.0" BorderPane.alignment="CENTER">
+            <children>
+                <Label fx:id="tournamentNameLabel" style="-fx-text-fill: #991f18;" text="QUẢN LÝ VÒNG ĐẤU - [TÊN GIẢI ĐẤU]">
+                    <font>
+                        <Font name="System Bold" size="20.0" />
+                    </font>
+                </Label>
+                <HBox alignment="CENTER" spacing="20.0">
+                    <children>
+                        <Label fx:id="tournamentDatesLabel" text="Thời gian: 01/01/2024 - 31/12/2024">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Label>
+                        <Label fx:id="tournamentStatusLabel" style="-fx-text-fill: green; -fx-font-weight: bold;" text="Đang diễn ra">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </HBox>
+                <Separator prefWidth="200.0" />
+            </children>
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="20.0" />
+            </padding>
+        </VBox>
+    </top>
+    <center>
+        <BorderPane BorderPane.alignment="CENTER">
+            <center>
+                <TableView fx:id="roundsTableView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                    <columns>
+                        <TableColumn fx:id="idColumn" prefWidth="75.0" text="Mã VĐ" />
+                        <TableColumn fx:id="nameColumn" prefWidth="150.0" text="Tên vòng đấu" />
+                        <TableColumn fx:id="startDateColumn" prefWidth="120.0" text="Ngày bắt đầu" />
+                        <TableColumn fx:id="endDateColumn" prefWidth="120.0" text="Ngày kết thúc" />
+                        <TableColumn fx:id="statusColumn" prefWidth="120.0" text="Trạng thái" />
+                    </columns>
+                    <BorderPane.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </BorderPane.margin>
+                </TableView>
+            </center>
+            <bottom>
+                <HBox alignment="CENTER" spacing="10.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <Label text="Tổng số vòng đấu:">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+                        <Label fx:id="totalRoundsLabel" text="0">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Label>
+                    </children>
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </padding>
+                </HBox>
+            </bottom>
+        </BorderPane>
+    </center>
+    <right>
+        <VBox prefWidth="300.0" spacing="10.0" style="-fx-background-color: #f5f5f5;" BorderPane.alignment="CENTER">
+            <children>
+                <Label style="-fx-text-fill: #991f18;" text="THÔNG TIN VÒNG ĐẤU">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Label>
+                <Separator prefWidth="200.0" />
+                <Label text="Mã vòng đấu:">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </Label>
+                <TextField fx:id="idField" disable="true" promptText="Mã tự động tạo" />
+                <Label text="Tên vòng đấu:">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </Label>
+                <TextField fx:id="nameField" promptText="Nhập tên vòng đấu" />
+                <Label text="Ngày bắt đầu:">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </Label>
+                <DatePicker fx:id="startDatePicker" prefWidth="280.0" promptText="Chọn ngày bắt đầu" />
+                <Label text="Ngày kết thúc:">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </Label>
+                <DatePicker fx:id="endDatePicker" prefWidth="280.0" promptText="Chọn ngày kết thúc" />
+                <Separator prefWidth="200.0" />
+                <HBox alignment="CENTER" spacing="10.0">
+                    <children>
+                        <Button fx:id="addButton" mnemonicParsing="false" onAction="#handleAddRound" prefWidth="80.0" style="-fx-background-color: #991f18; -fx-text-fill: white;" text="Thêm" />
+                        <Button fx:id="editButton" disable="true" mnemonicParsing="false" onAction="#handleEditRound" prefWidth="80.0" style="-fx-background-color: #991f18; -fx-text-fill: white;" text="Sửa" />
+                        <Button fx:id="deleteButton" disable="true" mnemonicParsing="false" onAction="#handleDeleteRound" prefWidth="80.0" style="-fx-background-color: #991f18; -fx-text-fill: white;" text="Xóa" />
+                    </children>
+                </HBox>
+                <Separator prefWidth="200.0" />
+                <HBox alignment="CENTER" spacing="10.0">
+                    <children>
+                        <Button fx:id="saveButton" disable="true" mnemonicParsing="false" onAction="#handleSave" prefWidth="80.0" style="-fx-background-color: #991f18; -fx-text-fill: white;" text="Lưu" />
+                        <Button fx:id="cancelButton" disable="true" mnemonicParsing="false" onAction="#handleCancel" prefWidth="80.0" style="-fx-background-color: #666666; -fx-text-fill: white;" text="Hủy" />
+                    </children>
+                </HBox>
+                <Separator prefWidth="200.0" />
+                <Button fx:id="finishButton" mnemonicParsing="false" onAction="#handleFinish" prefHeight="40.0" prefWidth="280.0" style="-fx-background-color: #991f18; -fx-text-fill: white; -fx-font-weight: bold;" text="HOÀN THÀNH" />
+            </children>
+            <padding>
+                <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
+            </padding>
+        </VBox>
+    </right>
+</BorderPane>
