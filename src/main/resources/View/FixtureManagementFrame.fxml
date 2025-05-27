@@ -13,13 +13,13 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox minHeight="-Infinity" minWidth="-Infinity" prefWidth="776.0" spacing="10.0" style="-fx-background-color: White; -fx-border-color: #991f18; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.FixtureManagementController">
+<VBox prefHeight="770.0" prefWidth="800.0" spacing="10.0" style="-fx-background-color: White; -fx-border-color: #991f18; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.FixtureManagementController">
    <children>
-      <HBox prefHeight="26.0" prefWidth="755.0" stylesheets="@../CSS/Fixtures.css">
+      <HBox prefHeight="22.0" prefWidth="755.0" stylesheets="@../CSS/Fixtures.css">
          <children>
             <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="236.0" styleClass="title" text="Fixtures Management">
                <font>
@@ -41,29 +41,18 @@
          </padding>
       </HBox>
       <Separator prefHeight="0.0" prefWidth="762.0" VBox.vgrow="ALWAYS" />
-      <VBox prefHeight="68.0" prefWidth="678.0" VBox.vgrow="ALWAYS">
+      <VBox alignment="CENTER_LEFT" prefHeight="53.0" prefWidth="755.0">
          <children>
             <Label prefHeight="20.0" prefWidth="56.0" text="Filter:">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding>
             </Label>
-            <HBox alignment="CENTER_LEFT" prefHeight="28.0" prefWidth="731.0" spacing="15.0" styleClass="filter_box" stylesheets="@../CSS/Fixtures.css" VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" prefHeight="32.0" prefWidth="755.0" spacing="15.0" styleClass="filter_box" stylesheets="@../CSS/Fixtures.css">
                <children>
-                  <VBox prefHeight="58.0" prefWidth="162.0" styleClass="filter_element">
-                     <children>
-                        <ComboBox fx:id="compeFilter" prefHeight="2.0" prefWidth="162.0" promptText="Filter by Competition" style="-fx-border-color: #991f18;" />
-                     </children>
-                  </VBox>
-                  <VBox layoutX="10.0" layoutY="10.0" prefHeight="58.0" prefWidth="146.0" styleClass="filter_element" translateX="10.0">
-                     <children>
-                        <ComboBox fx:id="clubFilter" minWidth="-Infinity" prefHeight="11.0" prefWidth="162.0" promptText="Filter by CLB" style="-fx-border-color: #991f18;" />
-                     </children>
-                  </VBox>
-                  <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#resetFilter" prefHeight="28.0" prefWidth="118.0" styleClass="reset_button" text="Reset Filters" translateX="19.0" translateY="-2.0">
+                  <ComboBox fx:id="compeFilter" prefWidth="162.0" promptText="Filter by Competition" style="-fx-border-color: #991f18;" />
+                  <ComboBox fx:id="clubFilter" minWidth="-Infinity" prefWidth="162.0" promptText="Filter by CLB" style="-fx-border-color: #991f18;" />
+                  <Button fx:id="resetBtn" alignment="CENTER" mnemonicParsing="false" onAction="#resetFilter" prefHeight="30.0" prefWidth="118.0" styleClass="reset_button" text="Reset Filters">
                      <graphic>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                            <image>
@@ -72,23 +61,24 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button fx:id="findBtn" mnemonicParsing="false" onAction="#find" prefHeight="35.0" prefWidth="90.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Find" translateX="87.0" translateY="-3.0" />
+                  <Region prefHeight="21.0" prefWidth="102.0" />
+                  <Button fx:id="findBtn" mnemonicParsing="false" onAction="#find" prefHeight="30.0" prefWidth="90.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Find" />
                </children>
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding>
             </HBox>
          </children>
+         <padding>
+            <Insets left="5.0" />
+         </padding>
       </VBox>
       <Separator prefHeight="3.0" prefWidth="648.0" />
-      <VBox prefHeight="547.0" prefWidth="731.0" spacing="10.0">
+      <VBox prefHeight="622.0" prefWidth="755.0" spacing="10.0">
          <children>
             <Label prefHeight="28.0" prefWidth="82.0" text="Match List:">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
             </Label>
-            <TableView fx:id="fixtureTable" prefHeight="334.0" prefWidth="722.0" VBox.vgrow="ALWAYS">
+            <TableView fx:id="fixtureTable" prefHeight="290.0" prefWidth="746.0" VBox.vgrow="ALWAYS">
                <columns>
                   <TableColumn fx:id="idCol" prefWidth="27.200011432170868" text="ID" />
                   <TableColumn fx:id="leagueCol" prefWidth="79.19995498657227" text="League" />
@@ -119,7 +109,7 @@
                   <Font name="System Bold" size="14.0" />
                </font>
             </Label>
-            <VBox minHeight="-Infinity" prefHeight="220.0" prefWidth="722.0" spacing="8.0" style="-fx-background-color: #f5f5f5; -fx-padding: 15; -fx-background-radius: 8;" stylesheets="@../CSS/Fixtures.css">
+            <VBox minHeight="-Infinity" prefHeight="227.0" prefWidth="746.0" spacing="8.0" style="-fx-background-color: #f5f5f5; -fx-padding: 15; -fx-background-radius: 8;" stylesheets="@../CSS/Fixtures.css">
                <children>
                   <HBox prefHeight="106.0" prefWidth="608.0" spacing="40.0">
                      <children>
@@ -147,7 +137,7 @@
                   </HBox>
                   <HBox layoutX="6.0" layoutY="54.0" prefHeight="100.0" prefWidth="200.0" spacing="40.0">
                      <children>
-                        <VBox prefHeight="56.0" prefWidth="165.0">
+                        <VBox prefWidth="165.0">
                            <children>
                               <Label prefHeight="27.0" prefWidth="65.0" styleClass="form-label" text="Round">
                                  <font>
@@ -159,22 +149,22 @@
                         </VBox>
                         <VBox prefHeight="56.0" prefWidth="165.0">
                            <children>
-                              <Label prefHeight="27.0" prefWidth="84.0" styleClass="form-label" text="Away team">
-                                 <font>
-                                    <Font size="11.0" />
-                                 </font>
-                              </Label>
-                              <ComboBox fx:id="clbForm2" minHeight="-Infinity" prefHeight="25.0" prefWidth="166.0" promptText="Away Team" style="-fx-border-color: #991f18;" />
-                           </children>
-                        </VBox>
-                        <VBox prefHeight="56.0" prefWidth="165.0">
-                           <children>
                               <Label prefHeight="27.0" prefWidth="84.0" styleClass="form-label" text="Home team">
                                  <font>
                                     <Font size="11.0" />
                                  </font>
                               </Label>
                               <ComboBox fx:id="clbForm1" minHeight="-Infinity" prefHeight="25.0" prefWidth="166.0" promptText="Home Team" style="-fx-border-color: #991f18;" />
+                           </children>
+                        </VBox>
+                        <VBox prefHeight="56.0" prefWidth="165.0">
+                           <children>
+                              <Label prefHeight="27.0" prefWidth="84.0" styleClass="form-label" text="Away team">
+                                 <font>
+                                    <Font size="11.0" />
+                                 </font>
+                              </Label>
+                              <ComboBox fx:id="clbForm2" minHeight="-Infinity" prefHeight="25.0" prefWidth="166.0" promptText="Away Team" style="-fx-border-color: #991f18;" />
                            </children>
                         </VBox>
                      </children>
@@ -237,8 +227,10 @@
                      </VBox.margin>
                   </HBox>
                </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
             </VBox>
-            <Pane prefHeight="73.0" prefWidth="630.0" />
             <HBox alignment="CENTER_RIGHT" prefHeight="0.0" prefWidth="668.0">
                <children>
                   <Button fx:id="closeBtn" minHeight="-Infinity" mnemonicParsing="false" onAction="#closeBtn" prefHeight="34.0" prefWidth="150.0" style="-fx-border-color: #991f18; -fx-background-color: #991f18; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-border-radius: 5;" styleClass="ManagementBtn" text="Complete" />
@@ -251,6 +243,6 @@
       </VBox>
    </children>
    <padding>
-      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+      <Insets bottom="20.0" left="20.0" right="20.0" top="15.0" />
    </padding>
 </VBox>

@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import javafx.scene.input.MouseEvent;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -75,66 +76,102 @@ public class FixtureManagementController implements Initializable {
             dsMG.add(mg.getTenMG());
         }
         compeFilter.getItems().addAll(dsMG);
+        compeForm.getItems().addAll(dsMG);
         compeFilter.getSelectionModel().selectFirst();
 
+        roundForm.addEventFilter( MouseEvent.MOUSE_CLICKED, event -> {;
+            if (compeForm.getValue() != null) {
+                MODEL_MUAGIAI mg= service.getTournamentByName(compeForm.getValue());
+                List<MODEL_VONGDAU> ds2 = service.getAllRoundByTournament(mg.getMaMG());
+                ArrayList<String> dsVD = new ArrayList<>();
+                for (MODEL_VONGDAU vd : ds2) {
+                    dsVD.add(vd.getTenVD());
+                }
+                roundForm.getItems().setAll(dsVD);
+            }
+        });
+        clbForm1.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            if (compeForm.getValue() != null) {
+                MODEL_MUAGIAI mg = service.getTournamentByName(compeForm.getValue());
+                List<Integer> dsClbIds = service.getRegistedClubIdsByTournament(mg.getMaMG());
+                for( Integer clbId : dsClbIds) {
+                    MODEL_CLB clb = service.getCLBByID(clbId);
+                    if (clb != null) {
+                        clbForm1.getItems().add(clb.getTenCLB());
+                    }
+                }
+            }
+        });
+        clbForm2.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            if (compeForm.getValue() != null) {
+                MODEL_MUAGIAI mg = service.getTournamentByName(compeForm.getValue());
+                List<Integer> dsClbIds = service.getRegistedClubIdsByTournament(mg.getMaMG());
+                for( Integer clbId : dsClbIds) {
+                    MODEL_CLB clb = service.getCLBByID(clbId);
+                    if (clb != null && (clbForm1.getValue()!=null && !clb.getTenCLB().equals(clbForm1.getValue()))) {
+                        clbForm2.getItems().add(clb.getTenCLB());
+                    }
+                }
+            }
+        });
+        dateForm.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                if(roundForm.getValue()!=null)
+                {
+                    MODEL_VONGDAU vd = service.getRoundByName(roundForm.getValue());
+                    LocalDate startDate = vd.getNgayBD().toLocalDate();
+                    LocalDate endDate = vd.getNgayKT().toLocalDate();
+                    setDisable(empty || date.isBefore(startDate) || date.isAfter(endDate));
+                }
+            }
+        } );
+        staForm.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            if(compeForm.getValue() != null) {
+                MODEL_MUAGIAI mg = service.getTournamentByName(compeForm.getValue());
+                List<Integer> dsClbIds = service.getRegistedClubIdsByTournament(mg.getMaMG());
+                List<String> dsSanNames = new ArrayList<>();
+                for (Integer clbId : dsClbIds) {
+                    MODEL_CLB clb = service.getCLBByID(clbId);
+                    if (clb != null) {
 
-        List<MODEL_CLB> ds2 = service.getAllClubs();
-        ArrayList<String> dsCLB = new ArrayList<>();
-        for (MODEL_CLB clb : ds2) {
-            dsCLB.add(clb.getTenCLB());
-        }
-
-        List<MODEL_SAN> ds3 = service.getAllStadiums();
-        ArrayList<String> dsSan = new ArrayList<>();
-        for (MODEL_SAN san : ds3) {
-            dsSan.add(san.getTenSan());
-        }
-        roundForm.getItems().addAll("Lượt đi", "Lượt về");
-        compeForm.getItems().addAll(dsMG);
-        clbForm1.getItems().addAll(dsCLB);
-        clbForm2.getItems().addAll(dsCLB);
-        clubFilter.getItems().addAll(dsCLB);
-        staForm.getItems().addAll(dsSan);
+                        String stadiumName = service.getStadiumById(clb.getMaSan()).getTenSan();
+                        if (stadiumName != null  && !dsSanNames.contains(stadiumName)) {
+                            dsSanNames.add(stadiumName);
+                        }
+                    }
+                }
+                staForm.getItems().setAll(dsSanNames);
+            }
+        });
     }
 
-    private void showErrorAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-    private void showInfoAlert(String title,String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
+
     private Match collectFormData() {
         // Validate required fields
         if (compeForm.getValue() == null || compeForm.getValue().isEmpty()) {
-            showErrorAlert("Competition field is required.");
+            AlertUtils.showError("Error"," ", "Competition field is required.");
             return null;
         }
         if (clbForm1.getValue() == null || clbForm1.getValue().isEmpty()) {
-            showErrorAlert("Home team field is required.");
+            AlertUtils.showError("Error"," ", "Home team field is required.");
             return null;
         }
         if (clbForm2.getValue() == null || clbForm2.getValue().isEmpty()) {
-            showErrorAlert("Away team field is required.");
+            AlertUtils.showError("Error"," ", "Away team is required.");
             return null;
         }
         if (staForm.getValue() == null || staForm.getValue().isEmpty()) {
-            showErrorAlert("Stadium field is required.");
+            AlertUtils.showError("Error"," ", "Stadium field is required.");
             return null;
         }
         if (dateForm.getValue() == null) {
-            showErrorAlert("Date field is required.");
+            AlertUtils.showError("Error"," ", "Date field is required.");
             return null;
         }
         if (roundForm.getValue() == null || roundForm.getValue().isEmpty()) {
-            showErrorAlert("Round field is required.");
+            AlertUtils.showError("Error"," ", "Round field is required.");
             return null;
         }
         String tenMuaGiai = compeForm.getValue();
@@ -212,15 +249,15 @@ public class FixtureManagementController implements Initializable {
                             // Reset form
                             resetForm();
                             // Thông báo thành công
-                            showInfoAlert("Success", "Xóa trận đấu thành công!");
+                            AlertUtils.showInformation("Success", "Xóa trận đấu thành công", "Trận đấu đã được xóa thành công.");
                         }
                     } catch (SQLException e) {
-                        showErrorAlert("Vui lòng chọn 1 tận đu để xóa"+ e.getMessage());
+                        AlertUtils.showError("Error", "Lỗi khi xóa trận đấu", "Không thể xóa trận đấu: " );
                     }
                 }
             });
         } else {
-            showErrorAlert("Vui lòng chọn 1 tận đu để xóa");
+            AlertUtils.showError("Error", "Chưa chọn trận đấu", "Vui lòng chọn một trận đấu để xóa.");
         }
     }
 
@@ -250,11 +287,7 @@ public class FixtureManagementController implements Initializable {
             minSpinner.getValueFactory().setValue(time.getMinute());
 
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText(null);
-            alert.setContentText("No row is selected ");
-            alert.showAndWait();
+            AlertUtils.showError("Error", "Chưa chọn trận đấu", "Vui lòng chọn một trận đấu để cập nhật.");
         }
     }
 
@@ -263,7 +296,7 @@ public class FixtureManagementController implements Initializable {
         try {
             // Lấy dữ liệu từ các trường nhập
             Match match = collectFormData();
-
+            System.out.println(match);
             // Thuc hien update hoac insert
             if (service.selectByID(match.getId()) != null) {
                 service.updateMatch(match);
@@ -283,9 +316,11 @@ public class FixtureManagementController implements Initializable {
             loadFixtureData(matches);
 
         } catch (SQLException e) {
-            showErrorAlert("Lỗi khi thực hiện thao tác với cơ sở dữ liệu: " + e.getMessage());
+            e.printStackTrace();
+            AlertUtils.showError("Error", "Lỗi cơ sở dữ liệu", "Không thể thực hiện thao tác với cơ sở dữ liệu: ");
         } catch (Exception e) {
-            showErrorAlert("Dữ liệu nhập không hợp lệ: " + e.getMessage());
+            e.printStackTrace();
+            AlertUtils.showError("Error", "Lỗi dữ liệu", "Dữ liệu nhập không hợp lệ: " );
         }
 
     }

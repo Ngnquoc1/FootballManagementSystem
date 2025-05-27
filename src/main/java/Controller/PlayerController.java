@@ -5,13 +5,16 @@ import Model.MODEL_CAUTHU;
 import Model.MODEL_CAUTHUTHAMGIACLB;
 import Model.MODEL_CLB;
 import Model.MODEL_MUAGIAI;
+import Util.AlertUtils;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -168,18 +171,22 @@ public class PlayerController implements Initializable {
 
             // Lọc theo CLB
             if (selectedClub != null && !selectedClub.isEmpty()) {
-                String sql="MaCT="+player.getMaCT();
-                MODEL_CAUTHUTHAMGIACLB ct_clb = service.getRegistedPlayersByCondition(sql).get(0);
-                MODEL_CLB clb = service.getCLBByID(ct_clb.getMaCLB());
-                matchesClub = clb.getTenCLB().equals(selectedClub);
+                MODEL_CLB player_clb= service.getCLBByID(player.getMaCLB());
+                matchesClub = player_clb.getTenCLB().equals(selectedClub);
             }
 
-            // Lọc theo mùa giải (chưa triển khai chi tiết - cần thêm logic phù hợp)
+            // Lọc theo mùa giải
+            // Lọc theo mùa giải
             if (selectedCompetition != null && !selectedCompetition.isEmpty()) {
-                String sql="MaCT="+player.getMaCT();
-                MODEL_CAUTHUTHAMGIACLB ct_clb = service.getRegistedPlayersByCondition(sql).get(0);
-                MODEL_MUAGIAI mgi = service.getTournamentByID(ct_clb.getMaMG());
-                matchesCompetition = mgi.getTenMG().equals(selectedCompetition);
+                String sql = "MaCT = " + player.getMaCT();
+                List<MODEL_CAUTHUTHAMGIACLB> registedPlayers = service.getRegistedPlayersByCondition(sql);
+                if (!registedPlayers.isEmpty()) {
+                    MODEL_CAUTHUTHAMGIACLB ct_clb = registedPlayers.getFirst();
+                    MODEL_MUAGIAI mgi = service.getTournamentByID(ct_clb.getMaMG());
+                    matchesCompetition = mgi.getTenMG().equals(selectedCompetition);
+                } else {
+                    matchesCompetition = false;
+                }
             }
 
             // Thêm cầu thủ vào danh sách đã lọc nếu thỏa mãn tất cả điều kiện
@@ -521,7 +528,7 @@ public class PlayerController implements Initializable {
     private PlayerClubData fetchPlayerClubData(int playerId) {
         PlayerClubData data = new PlayerClubData();
         try {
-            String sql="MaCT="+playerId;
+            String sql="MaCT= "+playerId;
             MODEL_CAUTHUTHAMGIACLB ct_clb = service.getRegistedPlayersByCondition(sql).get(0);
 
             data.clb = service.getCLBByID(data.ctclb.getMaCLB());
@@ -762,5 +769,41 @@ public class PlayerController implements Initializable {
         MODEL_CLB clb = new MODEL_CLB();
     }
 
+    @FXML
+    public void openPlayerManagement() {
+        String sql="TenCLB= '" + ClubFilter.getValue()+"'";
+        MODEL_CLB clb = service.getClbByCondition(sql);
+        if (clb != null) {
+            openPlayerRegistrationWindow(clb);
+        } else {
+            AlertUtils.showWarning("Cảnh báo", "Chưa chọn CLB", "Vui lòng chọn một CLB từ CLB filter để quản lý danh sách cầu thủ.");
+        }
+    }
+    private void openPlayerRegistrationWindow(MODEL_CLB club) {
+        try {
+            // Tải FXML cho cửa sổ đăng ký cầu thủ
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/PLayerManagementFrame.fxml"));
+            Parent root = loader.load();
+
+            // Lấy controller
+            PlayerManagementController controller = loader.getController();
+
+            // Thiết lập thông tin CLB và giải đấu
+            controller.setPlayersClub(club);
+            // Tạo scene mới
+            Scene scene = new Scene(root);
+
+            // Tạo stage mới
+            Stage stage = new Stage();
+            stage.setTitle("Quản lý cầu thủ - " + club.getTenCLB() );
+            stage.setScene(scene);
+            stage.setResizable(false);
+
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            AlertUtils.showError("Lỗi", "Không thể mở cửa sổ đăng ký cầu thủ", e.getMessage());
+        }
+    }
 
 }

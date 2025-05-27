@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="mainContent" style="-fx-background-color: linear-gradient(to bottom, #ffffff, #f0f0f0, #e6e6e6); -fx-border-color: #991f18; -fx-border-width: 2;" stylesheets="@../CSS/Fixtures.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.FixtureController">
+<VBox fx:id="mainContent" prefHeight="625.0" prefWidth="800.0" style="-fx-background-color: linear-gradient(to bottom, #ffffff, #f0f0f0, #e6e6e6); -fx-border-color: #991f18; -fx-border-width: 2;" stylesheets="@../CSS/Fixtures.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.FixtureController">
    <children>
       <Pane prefHeight="114.0" prefWidth="648.0" style="-fx-background-color: linear-gradient(to right, #f9f3ee, #f5e8e0);;" stylesheets="@../CSS/Fixtures.css">
          <children>
@@ -69,7 +69,7 @@
       </Pane>
       <VBox>
          <children>
-            <ScrollPane fx:id="Calendar" prefWidth="795.0" style="-fx-background-color: linear-gradient(to bottom, #ffffff, #f0f0f0, #e6e6e6);;" />
+            <ScrollPane fx:id="Calendar" prefHeight="470.0" prefWidth="795.0" style="-fx-background-color: linear-gradient(to bottom, #ffffff, #f0f0f0, #e6e6e6);;" />
          </children>
       </VBox>
       <HBox alignment="CENTER" style="-fx-background-color: #991f18;">

@@ -137,6 +137,7 @@
                         <TableColumn fx:id="colTenCT" prefWidth="150.0" text="Tên cầu thủ" />
                         <TableColumn fx:id="colTuoi" prefWidth="75.0" text="Tuổi" />
                         <TableColumn fx:id="colQuocTich" prefWidth="100.0" text="Quốc tịch" />
+                  <TableColumn fx:id="colLoaiCT" prefWidth="100.0" text="Loại cầu thủ" />
                         <TableColumn fx:id="colSoAo" prefWidth="75.0" text="Số áo" />
                         <TableColumn fx:id="colViTri" prefWidth="100.0" text="Vị trí" />
                         <TableColumn fx:id="colTrangThai" prefWidth="100.0" text="Trạng thái" />

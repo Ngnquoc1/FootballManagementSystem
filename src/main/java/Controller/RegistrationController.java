@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 import java.net.URL;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
@@ -55,6 +56,9 @@ public class RegistrationController implements Initializable {
 
     @FXML
     private TableColumn<CauThuViewModel, String> colQuocTich;
+
+    @FXML
+    private TableColumn<CauThuViewModel, String> colLoaiCT;
 
     @FXML
     private TableColumn<CauThuViewModel, Integer> colSoAo;
@@ -126,6 +130,7 @@ public class RegistrationController implements Initializable {
         colTenCT.setCellValueFactory(cellData -> cellData.getValue().tenCTProperty());
         colTuoi.setCellValueFactory(cellData -> cellData.getValue().tuoiProperty().asObject());
         colQuocTich.setCellValueFactory(cellData -> cellData.getValue().quocTichProperty());
+        colLoaiCT.setCellValueFactory(cellData -> cellData.getValue().tenLoaiCTProperty());
         colSoAo.setCellValueFactory(cellData -> cellData.getValue().soAoProperty().asObject());
         colViTri.setCellValueFactory(cellData -> cellData.getValue().viTriProperty());
         colTrangThai.setCellValueFactory(cellData -> cellData.getValue().trangThaiProperty());
@@ -252,7 +257,7 @@ public class RegistrationController implements Initializable {
         for (CauThuViewModel viewModel : danhSachCauThu) {
             if (viewModel.isSelected()) {
                 soDaChon++;
-                if (!"Viet Nam".equals(viewModel.getQuocTich())) {
+                if (!"Cầu thủ nội".equals(viewModel.getTenLoaiCT())) {
                     soNuocNgoai++;
                 }
             }
@@ -285,7 +290,7 @@ public class RegistrationController implements Initializable {
     }
 
     @FXML
-    private void addRegistration(ActionEvent event) {
+    private void addRegistration(ActionEvent event) throws SQLException {
         MODEL_CLB selectedCLB = cboCLB.getValue();
         MODEL_MUAGIAI selectedMuaGiai = cboMuaGiai.getValue();
 
@@ -310,8 +315,14 @@ public class RegistrationController implements Initializable {
                 "Đăng ký tham gia mùa giải",
                 "Bạn có chắc chắn muốn đăng ký tham gia mùa giải này?");
         if (ok) {
-            boolean ketQua = service.addRegistration(selectedCLB.getMaCLB(), selectedMuaGiai.getMaMG(),
-                    getPlayerList());
+            boolean ketQua =false;
+            int maClb= selectedCLB.getMaCLB();
+            int maMG = selectedMuaGiai.getMaMG();
+            List<CauThuViewModel> danhSachDaChon = getPlayerList();
+            List<Integer> maCTList = danhSachDaChon.stream()
+                    .map(CauThuViewModel::getMaCT)
+                    .toList();
+             ketQua = service.addRegistration(maClb, maMG, maCTList);
 
             if (ketQua) {
                 AlertUtils.showInformation("Thông báo","Đăng ký tham gia thành công!",
@@ -343,18 +354,11 @@ public class RegistrationController implements Initializable {
             return;
         }
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Xác nhận hủy đăng ký");
-        alert.setHeaderText("Hủy đăng ký tham gia mùa giải");
-        alert.setContentText("Bạn có chắc chắn muốn hủy đăng ký tham gia mùa giải này?");
-
-        Optional<ButtonType> result = alert.showAndWait();
         boolean ok=AlertUtils.showConfirmation("Xác nhận hủy đăng ký",
                 "Hủy đăng ký tham gia mùa giải",
                 "Bạn có chắc chắn muốn hủy đăng ký tham gia mùa giải này?");
         if (ok) {
             boolean ketQua = service.removeRegistration(selectedCLB.getMaCLB(), selectedMuaGiai.getMaMG());
-
             if (ketQua) {
                 AlertUtils.showInformation("Thông báo","Hủy đăng ký thành công!",
                         "Bạn đã hủy đăng ký tham gia mùa giải thành công!");
@@ -407,7 +411,7 @@ public class RegistrationController implements Initializable {
                 return false;
             }
 
-            if (!"Việt Nam".equals(cauThu.getQuocTich())) {
+            if ("Cầu thủ ngoại".equals(cauThu.getTenLoaiCT())) {
                 soCauThuNuocNgoai++;
             }
         }
@@ -470,6 +474,7 @@ public class RegistrationController implements Initializable {
         private final SimpleIntegerProperty soAo;
         private final SimpleStringProperty viTri;
         private final SimpleStringProperty trangThai;
+        private final SimpleStringProperty tenLoaiCT;
         private Service service;
         public CauThuViewModel(MODEL_CAUTHU cauThu) {
             service = new Service();
@@ -481,6 +486,7 @@ public class RegistrationController implements Initializable {
             this.soAo = new SimpleIntegerProperty(cauThu.getSoAo());
             this.viTri = new SimpleStringProperty(getTenVT(cauThu.getMaVT()));
             this.trangThai = new SimpleStringProperty(checkStatus(cauThu));
+            this.tenLoaiCT = new SimpleStringProperty(service.getPLayerTypeById(cauThu.getLoaiCT()));
         }
 
         private int calculateAge(java.sql.Date ngaySinh) {
@@ -526,5 +532,8 @@ public class RegistrationController implements Initializable {
 
         public SimpleStringProperty trangThaiProperty() { return trangThai; }
         public String getTrangThai() { return trangThai.get(); }
+
+        public SimpleStringProperty tenLoaiCTProperty() { return tenLoaiCT; }
+        public String getTenLoaiCT() { return tenLoaiCT.get(); }
     }
 }

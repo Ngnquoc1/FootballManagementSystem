@@ -10,6 +10,7 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -56,21 +57,21 @@
         </HBox>
         <VBox prefHeight="484.0" prefWidth="649.0" stylesheets="@../CSS/Player.css">
             <children>
-                <HBox prefHeight="78.0" prefWidth="795.0" spacing="5">
+                <HBox alignment="BOTTOM_CENTER" prefHeight="40.0" prefWidth="795.0" spacing="5">
                     <children>
-                        <VBox prefHeight="45.0" prefWidth="203.0">
+                        <VBox prefHeight="45.0" prefWidth="211.0" stylesheets="@../CSS/Fixtures.css">
                             <children>
                                 <Label prefHeight="18.0" prefWidth="149.0" styleClass="filter_text" text="Filter by competition" textAlignment="CENTER" />
-                                <ComboBox fx:id="compeFilter" prefHeight="27.0" prefWidth="197.0" promptText="Choose your League" style="-fx-border-color: #991f18;" styleClass="menu-button" />
+                                <ComboBox fx:id="compeFilter" prefHeight="14.0" prefWidth="198.0" promptText="Choose your League" style="-fx-border-color: #991f18;" styleClass="menu-button" />
                             </children>
                         </VBox>
-                        <VBox prefHeight="45.0" prefWidth="147.0">
+                        <VBox prefHeight="45.0" prefWidth="147.0" stylesheets="@../CSS/Fixtures.css">
                             <children>
                                 <Label prefHeight="18.0" prefWidth="150.0" styleClass="filter_text" text="Filter by club" textAlignment="CENTER" />
-                                <ComboBox fx:id="ClubFilter" prefHeight="27.0" prefWidth="118.0" promptText="AllCLub" style="-fx-border-color: #991f18;" styleClass="menu-button" />
+                                <ComboBox fx:id="ClubFilter" prefHeight="27.0" prefWidth="155.0" promptText="AllCLub" style="-fx-border-color: #991f18;" styleClass="menu-button" />
                             </children>
                         </VBox>
-                        <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#resetFilter" prefHeight="45.0" prefWidth="122.0" styleClass="reset_button" text="Reset Filters" translateX="-10.0">
+                        <Button fx:id="resetBtn" alignment="CENTER" mnemonicParsing="false" onAction="#resetFilter" prefHeight="21.0" prefWidth="122.0" styleClass="reset_button" text="Reset Filters">
                             <graphic>
                                 <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                     <image>
@@ -79,9 +80,19 @@
                                 </ImageView>
                             </graphic>
                         </Button>
+                  <Region prefHeight="45.0" prefWidth="70.0" />
+                  <Button fx:id="addBtn" mnemonicParsing="false" onAction="#openPlayerManagement" prefHeight="18.0" prefWidth="178.0" styleClass="reset_button" text="PLayer Management">
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
+                           <image>
+                              <Image url="@../icons/appointment.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
                     </children>
                     <padding>
-                        <Insets bottom="10.0" left="44.0" right="5.0" top="10.0" />
+                        <Insets bottom="10.0" left="20.0" right="5.0" top="10.0" />
                     </padding>
                 </HBox>
                 <ScrollPane prefHeight="438.0" prefWidth="795.0">
