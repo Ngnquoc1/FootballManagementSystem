@@ -122,7 +122,7 @@ public class RulesManagementController implements Initializable{
     }
 
     private void taiDanhSachMuaGiai() throws SQLException {
-        List<MODEL_MUAGIAI> list = service.selectAllTournament();
+        List<MODEL_MUAGIAI> list = service.getAllTournament();
         danhSachMuaGiai = FXCollections.observableArrayList(list);
         cboMuaGiai.setItems(danhSachMuaGiai);
     }

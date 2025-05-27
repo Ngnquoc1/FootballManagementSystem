@@ -1,8 +1,8 @@
 package Controller;
 
-import DAO.*;
 import Model.*;
 import Service.Service;
+import Util.AlertUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -95,8 +95,7 @@ public class ResultManagementController implements Initializable {
 
     private void setCombobox() throws SQLException {
 
-        DAO_MUAGIAI daoMG = new DAO_MUAGIAI();
-        ArrayList<MODEL_MUAGIAI> ds1 = daoMG.selectAllDB();
+        List<MODEL_MUAGIAI> ds1 = service.getAllTournament();
         ArrayList<String> dsMG = new ArrayList<>();
         for (MODEL_MUAGIAI mg : ds1) {
             dsMG.add(mg.getTenMG());
@@ -105,8 +104,7 @@ public class ResultManagementController implements Initializable {
         compeFilter.getSelectionModel().selectFirst();
 
 
-        DAO_CLB daoClb = new DAO_CLB();
-        ArrayList<MODEL_CLB> ds2 = daoClb.selectAllDB();
+        List<MODEL_CLB> ds2 = service.getAllClubs();
         ArrayList<String> dsCLB = new ArrayList<>();
         for (MODEL_CLB clb : ds2) {
             dsCLB.add(clb.getTenCLB());
@@ -114,21 +112,8 @@ public class ResultManagementController implements Initializable {
         clubFilter.getItems().addAll(dsCLB);
     }
 
-    private void showErrorAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
 
-    private void showInfoAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
+
 
     @FXML
     private void resetFilter() throws SQLException {
@@ -141,7 +126,6 @@ public class ResultManagementController implements Initializable {
 
     @FXML
     public void find() {
-        DAO_Match daoMatch = new DAO_Match();
         String compe = compeFilter.getValue();
         String clb = clubFilter.getValue();
 
@@ -186,7 +170,7 @@ public class ResultManagementController implements Initializable {
         Match selectedMatch2 = fixtureTable.getSelectionModel().getSelectedItem();
         if (selectedMatch1 != null && selectedMatch2 != null) {
             if (selectedMatch1.getId() != selectedMatch2.getId()) {
-                showErrorAlert("Please just select ONE match to remove.");
+                AlertUtils.showError("Error","", "Please just select ONE match to remove.");
             }
         } else {
             Match selectedMatch = selectedMatch1 != null ? selectedMatch1 : selectedMatch2;
@@ -204,22 +188,21 @@ public class ResultManagementController implements Initializable {
                     if (response == okButton) {
                         try {
                             // Xóa trận đấu
-                            DAO_KQUATRANDAU daoKq = new DAO_KQUATRANDAU();
                             MODEL_KETQUATD model = new MODEL_KETQUATD(selectedMatch.getId(), selectedMatch.getScoreCLB1(), selectedMatch.getScoreCLB2());
-                            int result = daoKq.deleteDB(model);
+                            int result = service.deleteResult(model);
                             if (result == 1) {
                                 // Tải lại dữ liệu với bộ lọc hiện tại
                                 find();
                                 // Thông báo thành công
-                                showInfoAlert("Success", "Xóa trận đấu thành công!");
+                                AlertUtils.showInformation("Success","", "Xóa trận đấu thành công!");
                             }
                         } catch (SQLException e) {
-                            showErrorAlert("Vui lòng chọn 1 tận đu để xóa" + e.getMessage());
+                            AlertUtils.showError("Error","", "Vui lòng chọn 1 tận đu để xóa");
                         }
                     }
                 });
             } else {
-                showErrorAlert("Vui lòng chọn 1 tận đu để xóa");
+                AlertUtils.showError("Error","", "Vui lòng chọn 1 trận đấu để xóa");
             }
         }
     }
@@ -230,7 +213,7 @@ public class ResultManagementController implements Initializable {
         Match selectedMatch2 = fixtureTable.getSelectionModel().getSelectedItem();
         if (selectedMatch1 != null && selectedMatch2 != null) {
             if (selectedMatch1.getId() != selectedMatch2.getId()) {
-                showErrorAlert("Please just select ONE match to update.");
+                AlertUtils.showError("Error","", "Please just select ONE match to update.");
             }
         } else {
             Match selectedMatch = selectedMatch1 != null ? selectedMatch1 : selectedMatch2;
@@ -253,10 +236,12 @@ public class ResultManagementController implements Initializable {
                     stage.show();
                 } catch (IOException | SQLException e) {
                     e.printStackTrace();
-                    showErrorAlert("Error loading GoalFrame: " + e.getMessage());
+                    AlertUtils.showError("Error","", "Error loading GoalFrame: ");
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
             } else {
-                showErrorAlert("Please select a match to update.");
+                AlertUtils.showError("Error","", "Please select a match to update.");
             }
         }
     }
@@ -264,16 +249,13 @@ public class ResultManagementController implements Initializable {
     public void save(int id,int score1,int score2) throws SQLException {
         MODEL_KETQUATD model = new MODEL_KETQUATD(id,score1,score2);
 
-        DAO_KQUATRANDAU daoKq = new DAO_KQUATRANDAU();
-        DAO_BXH_CLB daoBxhClb = new DAO_BXH_CLB();
-        if (daoKq.selectByID(model.getMaTD()) == null) {
-            daoKq.insertDB(model);
-
-            showInfoAlert("Success", "Thêm kết quả thành công!");
+        if (service.getResultByID(model.getMaTD()) == null) {
+            service.insertResult(model);
+            AlertUtils.showInformation("Success","", "Thêm kết quả thành công!");
 
         } else {
-            daoKq.updateDB(model);
-            showInfoAlert("Success", "Cập nhật kết quả thành công!");
+            service.updateResult(model);
+            AlertUtils.showInformation("Success","", "Cập nhật kết quả thành công!");
         }
         // Cập nhật BXH
         service.updateRanking(model.getMaTD());

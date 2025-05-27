@@ -1,7 +1,5 @@
 package Controller;
 
-import DAO.DAO_MUAGIAI;
-import DAO.DAO_SAN;
 import Model.MODEL_CLB;
 import Model.MODEL_MUAGIAI;
 import Model.MODEL_SAN;
@@ -45,8 +43,12 @@ public class ClubController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        setFilter();
-        List<MODEL_CLB> clubs = service.selectAllClubs();
+        try {
+            setFilter();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        List<MODEL_CLB> clubs = service.getAllClubs();
         allClubs.addAll(clubs);
 
         // Thiết lập sự kiện tìm kiếm
@@ -74,9 +76,8 @@ public class ClubController implements Initializable {
             throw new RuntimeException(e);
         }
     }
-    public void setFilter() {
-        DAO_MUAGIAI daoMG= new DAO_MUAGIAI();
-        ArrayList<MODEL_MUAGIAI> ds1 = daoMG.selectAllDB();
+    public void setFilter() throws SQLException {
+        List<MODEL_MUAGIAI> ds1 = service.getAllTournament();
         ArrayList<String> dsMG = new ArrayList<>();
         dsMG.add("All CLubs");
         for (MODEL_MUAGIAI mg : ds1) {
@@ -208,7 +209,7 @@ public class ClubController implements Initializable {
         try {
             root = loader.load();
             ClubsDetailController controller=loader.getController();
-            MODEL_SAN stadium=new DAO_SAN().selectByID(club.getMaSan());
+            MODEL_SAN stadium=service.getStadiumById(club.getMaSan());
             controller.setData(club,stadium);
             Stage stage = new Stage();
             stage.setTitle("Club Details - " + club.getTenCLB());

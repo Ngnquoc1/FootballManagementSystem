@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import DAO.DAO_BXH_CLB;
 import Model.MODEL_BXH_CLB;
 import Model.MODEL_CLB;
 import Model.Match;
@@ -71,15 +70,12 @@ public class HomeController implements Initializable {
     @FXML
     private ImageView userIcon;
 
-    private DAO_BXH_CLB daoRanking;
     private Service service;
-
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        daoRanking = new DAO_BXH_CLB();
-        service = new Service();
+        service= new Service();
 
         try {
             loadLatestMatch();
@@ -218,7 +214,7 @@ public class HomeController implements Initializable {
     private void loadTopTeams() {
         try {
             // Lấy các đội bóng trong bảng xếp hạng
-            ArrayList<MODEL_BXH_CLB> rankings = daoRanking.selectAllDB();
+            ArrayList<MODEL_BXH_CLB> rankings = service.getAllBxhCLB();
 
             // Sắp xếp bằng thứ hạng
             rankings.sort((a, b) -> Integer.compare(a.getHang(), b.getHang()));

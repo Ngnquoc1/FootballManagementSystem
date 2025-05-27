@@ -1,10 +1,10 @@
 package Controller;
 
+import Service.Service;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
-import DAO.DAO_User;
 import Model.MODEL_USER;
 import Model.Session;
 import javafx.fxml.FXMLLoader;
@@ -21,18 +21,18 @@ public class UserPopupController {
     private Label roleLabel;
     @FXML
     private Label usernameLabel;
-
-    private DAO_User daoUser = new DAO_User();
+    private Service service;
 
     @FXML
     private void initialize() {
+        service = new Service();
         Session session = Session.getInstance();
         String currentUsername = session.getUsername();
 
         if (currentUsername != null && !currentUsername.isEmpty()) {
             usernameLabel.setText(currentUsername);
 
-            MODEL_USER currentUser = daoUser.getUserByUsername(currentUsername);
+            MODEL_USER currentUser = service.getUserByUsername(currentUsername);
             if (currentUser != null) {
                 roleLabel.setText(currentUser.getVaiTroText());
             } else {

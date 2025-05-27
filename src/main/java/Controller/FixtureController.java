@@ -1,8 +1,7 @@
 package Controller;
 
 import Service.Service;
-import DAO.DAO_CLB;
-import DAO.DAO_MUAGIAI;
+
 import Model.MODEL_CLB;
 import Model.MODEL_MUAGIAI;
 import Model.Match;
@@ -58,8 +57,7 @@ public class FixtureController implements Initializable {
     }
     private void setFilter() throws SQLException {
 
-        DAO_MUAGIAI daoMG= new DAO_MUAGIAI();
-        ArrayList<MODEL_MUAGIAI> ds1 = daoMG.selectAllDB();
+        List<MODEL_MUAGIAI> ds1 = service.getAllTournament();
         ArrayList<String> dsMG = new ArrayList<>();
         for (MODEL_MUAGIAI mg : ds1) {
             dsMG.add(mg.getTenMG());
@@ -68,8 +66,7 @@ public class FixtureController implements Initializable {
         compeFilter.getSelectionModel().selectFirst();
 
 
-        DAO_CLB daoClb= new DAO_CLB();
-        ArrayList<MODEL_CLB> ds2 = daoClb.selectAllDB();
+        List<MODEL_CLB> ds2 = service.getAllClubs();
         ArrayList<String> dsCLB = new ArrayList<>();
         for (MODEL_CLB clb : ds2) {
             dsCLB.add(clb.getTenCLB());

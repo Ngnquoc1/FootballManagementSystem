@@ -2,14 +2,10 @@ package Controller;
 
 import Model.*;
 import Service.Service;
-import DAO.DAO_CLB;
-import DAO.DAO_MUAGIAI;
-import DAO.DAO_Match;
-import DAO.DAO_SAN;
+import Util.AlertUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -56,7 +52,7 @@ public class FixtureManagementController implements Initializable {
         stadiumCol.setCellValueFactory(new PropertyValueFactory<>("sanThiDau"));
 
         // Tải dữ liệu vào bảng
-        List<Match> matches = new DAO_Match().selectByCondition("");
+        List<Match> matches = service.getMatchViewByCondition("");
         loadFixtureData(matches);
         try {
             setCombobox();
@@ -73,8 +69,7 @@ public class FixtureManagementController implements Initializable {
     }
     private void setCombobox() throws SQLException {
 
-        DAO_MUAGIAI daoMG = new DAO_MUAGIAI();
-        ArrayList<MODEL_MUAGIAI> ds1 = daoMG.selectAllDB();
+        List<MODEL_MUAGIAI> ds1 = service.getAllTournament();
         ArrayList<String> dsMG = new ArrayList<>();
         for (MODEL_MUAGIAI mg : ds1) {
             dsMG.add(mg.getTenMG());
@@ -83,15 +78,13 @@ public class FixtureManagementController implements Initializable {
         compeFilter.getSelectionModel().selectFirst();
 
 
-        DAO_CLB daoClb = new DAO_CLB();
-        ArrayList<MODEL_CLB> ds2 = daoClb.selectAllDB();
+        List<MODEL_CLB> ds2 = service.getAllClubs();
         ArrayList<String> dsCLB = new ArrayList<>();
         for (MODEL_CLB clb : ds2) {
             dsCLB.add(clb.getTenCLB());
         }
 
-        DAO_SAN daoSan = new DAO_SAN();
-        ArrayList<MODEL_SAN> ds3 = daoSan.selectAllDB();
+        List<MODEL_SAN> ds3 = service.getAllStadiums();
         ArrayList<String> dsSan = new ArrayList<>();
         for (MODEL_SAN san : ds3) {
             dsSan.add(san.getTenSan());
@@ -179,7 +172,6 @@ public class FixtureManagementController implements Initializable {
 
     @FXML
     public void find() {
-        DAO_Match daoMatch = new DAO_Match();
         String compe = compeFilter.getValue();
         String clb = clubFilter.getValue();
 
@@ -187,7 +179,7 @@ public class FixtureManagementController implements Initializable {
         if (clb!=null) {
             sql += " and (c1.TenCLB='" + clb + "' or c2.TenCLB= '" + clb + "')";
         }
-        List<Match> matches = daoMatch.selectByCondition(sql);
+        List<Match> matches = service.getMatchViewByCondition(sql);
         loadFixtureData(matches);
     }
 
@@ -213,8 +205,7 @@ public class FixtureManagementController implements Initializable {
                 if (response == okButton) {
                     try {
                         // Xóa trận đấu
-                        DAO_Match daoMatch = new DAO_Match();
-                        int result = daoMatch.deleteDB(selectedMatch);
+                        int result = service.deleteMatch(selectedMatch);
                         if (result == 1) {
                             // Tải lại dữ liệu với bộ lọc hiện tại
                             find();
@@ -274,22 +265,21 @@ public class FixtureManagementController implements Initializable {
             Match match = collectFormData();
 
             // Thuc hien update hoac insert
-            DAO_Match daoMatch = new DAO_Match();
-            if (daoMatch.selectByID(match.getId()) != null) {
-                daoMatch.updateDB(match);
+            if (service.selectByID(match.getId()) != null) {
+                service.updateMatch(match);
                 // Thông báo thành công
-                showInfoAlert("Success", "Cập nhật trận đấu thành công!");
+                AlertUtils.showInformation("Success","", "Cập nhật trận đấu thành công!");
             }
             // Nếu không có id thì thực hiện insert
             else {
-                daoMatch.insertDB(match);
+                service.insertMatch(match);
                 idLabel.setText(String.valueOf(match.getId()));
 
-                showInfoAlert("Success", "Thêm trận đấu thành công!");
+                AlertUtils.showInformation("Success","", "Thêm trận đấu thành công!");
             }
 
             // Cập nhật lại danh sách trận đấu
-            List<Match> matches = daoMatch.selectByCondition("");
+            List<Match> matches = service.getMatchViewByCondition("");
             loadFixtureData(matches);
 
         } catch (SQLException e) {

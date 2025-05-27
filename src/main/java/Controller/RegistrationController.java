@@ -139,7 +139,7 @@ public class RegistrationController implements Initializable {
     }
 
     private void loadPlayerList() {
-        List<MODEL_CLB> list = service.selectAllClubs();
+        List<MODEL_CLB> list = service.getAllClubs();
         danhSachCLB = FXCollections.observableArrayList(list);
         cboCLB.setItems(danhSachCLB);
     }

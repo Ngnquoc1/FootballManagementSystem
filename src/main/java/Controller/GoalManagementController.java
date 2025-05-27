@@ -45,12 +45,6 @@ public class GoalManagementController {
     private boolean isEditing = false;
 
     private Service service = new Service();
-    private DAO_BANTHANG daoBanthang = new DAO_BANTHANG();
-    private DAO_TRANDAU daoTrandau = new DAO_TRANDAU();
-    private DAO_CAUTHU daoCauthu = new DAO_CAUTHU();
-    private DAO_CLB daoClb = new DAO_CLB();
-    private DAO_CAUTHU_CLB daoCauthuClb = new DAO_CAUTHU_CLB();
-    private DAO_LOAIBT daoLoaiBT = new DAO_LOAIBT();
     private MODEL_TRANDAU currentMatch;
     private Map<String, Integer> teamToClbIdMap = new HashMap<>();
     private Map<String, Integer> playerToCauthuIdMap = new HashMap<>();
@@ -63,7 +57,7 @@ public class GoalManagementController {
         this.resultManagementController = controller;
     }
 
-    public void setMatchId(int matchId) throws SQLException {
+    public void setMatchId(int matchId) throws Exception {
         this.maTD = matchId;
         // Tải thông tin trận đấu
         loadMatchInfo();
@@ -91,7 +85,7 @@ public class GoalManagementController {
                 int maCT = cellData.getValue().getMaCT();
                 int maTD = cellData.getValue().getMaTD();
                 int maCLB = service.getCLBIDFromGoal(maCT, maTD);
-                MODEL_CLB clb = daoClb.selectByID(maCLB);
+                MODEL_CLB clb = service.getCLBByID(maCLB);
                 return new javafx.beans.property.SimpleStringProperty(clb != null ? clb.getTenCLB() : "Unknown");
             } catch (Exception e) {
                 return new javafx.beans.property.SimpleStringProperty("Error");
@@ -100,7 +94,7 @@ public class GoalManagementController {
         typeColumn.setCellValueFactory(cellData -> {
             try {
                 int maLoaiBT = cellData.getValue().getmaLoaiBT();
-                MODEL_LOAIBANTHANG loaiBT=daoLoaiBT.selectByID(maLoaiBT);
+                MODEL_LOAIBANTHANG loaiBT=service.getGoalTypeFromId(maLoaiBT);
                 return new javafx.beans.property.SimpleStringProperty(loaiBT != null ? loaiBT.getTenLoaiBT() : "Unknown");
             } catch (Exception e) {
                 return new javafx.beans.property.SimpleStringProperty("Error");
@@ -142,10 +136,10 @@ public class GoalManagementController {
     }
 
     private void loadMatchInfo() throws SQLException {
-        currentMatch = daoTrandau.selectByID(maTD);
+        currentMatch = service.getMatchByID(maTD);
         if (currentMatch != null) {
-            MODEL_CLB clb1 = daoClb.selectByID(currentMatch.getMaCLB1());
-            MODEL_CLB clb2 = daoClb.selectByID(currentMatch.getMaCLB2());
+            MODEL_CLB clb1 = service.getCLBByID(currentMatch.getMaCLB1());
+            MODEL_CLB clb2 = service.getCLBByID(currentMatch.getMaCLB2());
             if (clb1 != null && clb2 != null) {
                 matchInfoLabel.setText(clb1.getTenCLB() + " vs " + clb2.getTenCLB());
                 teamComboBox.setItems(FXCollections.observableArrayList(clb1.getTenCLB(), clb2.getTenCLB()));
@@ -155,14 +149,14 @@ public class GoalManagementController {
         }
     }
 
-    private void loadGoals() throws SQLException {
-        List<MODEL_BANTHANG> goals = daoBanthang.selectByCondition("MaTD = " + maTD);
+    private void loadGoals() throws Exception {
+        List<MODEL_BANTHANG> goals = service.selectGoalByCondition("MaTD = " + maTD);
         goalsList.clear();
         goalsList.addAll(goals);
 
         // Tải danh sách cầu thủ để hiển thị
         for (MODEL_BANTHANG goal : goals) {
-            MODEL_CAUTHU cauthu = daoCauthu.selectByID(goal.getMaCT());
+            MODEL_CAUTHU cauthu = service.getPlayerById(goal.getMaCT());
             if (cauthu != null) {
                 cauthuIdToNameMap.put(cauthu.getMaCT(), cauthu.getTenCT());
             }
@@ -176,7 +170,7 @@ public class GoalManagementController {
 
         Integer maCLB = teamToClbIdMap.get(selectedTeam);
         if (maCLB != null) {
-            List<MODEL_CAUTHUTHAMGIACLB> playersInTeam = daoCauthuClb.selectByCondition("MaCLB = " + maCLB);
+            List<MODEL_CAUTHUTHAMGIACLB> playersInTeam = service.getRegistedPlayersByCondition("MaCLB = " + maCLB);
             List<MODEL_CAUTHU> players=new ArrayList<>();
             if (playersInTeam.isEmpty()) {
                 playerComboBox.setItems(FXCollections.observableArrayList());
@@ -187,11 +181,13 @@ public class GoalManagementController {
                 playerComboBox.setItems(FXCollections.observableArrayList(
                         playersInTeam.stream().map(player -> {
                             try {
-                                players.add(daoCauthu.selectByID(player.getMaCT()));
-                                return daoCauthu.selectByID(player.getMaCT()).getTenCT();
+                                players.add(service.getPlayerById(player.getMaCT()));
+                                return service.getPlayerById(player.getMaCT()).getTenCT();
                             } catch (SQLException e) {
                                 e.printStackTrace();
                                 return null;
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
                             }
                         }).collect(Collectors.toList())
                 ));
@@ -205,21 +201,21 @@ public class GoalManagementController {
         }
     }
 
-    private void updateScore() throws SQLException {
+    private void updateScore() throws Exception {
         int homeGoals = 0;
         int awayGoals = 0;
 
-        MODEL_CLB clb1 = daoClb.selectByID(currentMatch.getMaCLB1());
-        MODEL_CLB clb2 = daoClb.selectByID(currentMatch.getMaCLB2());
+        MODEL_CLB clb1 = service.getCLBByID(currentMatch.getMaCLB1());
+        MODEL_CLB clb2 = service.getCLBByID(currentMatch.getMaCLB2());
         String homeTeam = clb1 != null ? clb1.getTenCLB() : "";
         String awayTeam = clb2 != null ? clb2.getTenCLB() : "";
 
         for (MODEL_BANTHANG goal : goalsList) {
-            MODEL_CAUTHU cauthu = daoCauthu.selectByID(goal.getMaCT());
-            MODEL_LOAIBANTHANG loaiBT = daoLoaiBT.selectByID(goal.getmaLoaiBT());
+            MODEL_CAUTHU cauthu = service.getPlayerById(goal.getMaCT());
+            MODEL_LOAIBANTHANG loaiBT = service.getGoalTypeFromId(goal.getmaLoaiBT());
             if (cauthu != null) {
                 int maCLB = service.getCLBIDFromGoal(cauthu.getMaCT(), goal.getMaTD());
-                MODEL_CLB clb = daoClb.selectByID(maCLB);
+                MODEL_CLB clb = service.getCLBByID(maCLB);
                 String teamName = clb != null ? clb.getTenCLB() : "";
                 boolean isOwnGoal = "Phản lưới nhà".equals(loaiBT.getTenLoaiBT());
 
@@ -241,7 +237,7 @@ public class GoalManagementController {
     }
 
     @FXML
-    private void handleEditGoal() throws SQLException {
+    private void handleEditGoal() throws Exception {
         MODEL_BANTHANG selectedGoal = goalsTableView.getSelectionModel().getSelectedItem();
         if (selectedGoal != null) {
             currentGoal = selectedGoal;
@@ -249,13 +245,13 @@ public class GoalManagementController {
 
             // Điền thông tin vào form
             timeField.setText(String.valueOf(selectedGoal.getPhutGhiBan()));
-            String tenLBT = daoLoaiBT.selectByID(selectedGoal.getmaLoaiBT()).getTenLoaiBT();
+            String tenLBT = service.getGoalTypeFromId(selectedGoal.getmaLoaiBT()).getTenLoaiBT();
             goalTypeComboBox.setValue(tenLBT);
 
-            MODEL_CAUTHU cauthu = daoCauthu.selectByID(selectedGoal.getMaCT());
+            MODEL_CAUTHU cauthu = service.getPlayerById(selectedGoal.getMaCT());
             if (cauthu != null) {
                 int maCLB = service.getCLBIDFromGoal(cauthu.getMaCT(), selectedGoal.getMaTD());
-                MODEL_CLB clb = daoClb.selectByID(maCLB);
+                MODEL_CLB clb = service.getCLBByID(maCLB);
                 if (clb != null) {
                     teamComboBox.setValue(clb.getTenCLB());
                     updatePlayersList();
@@ -279,12 +275,14 @@ public class GoalManagementController {
             alert.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
                     try {
-                        daoBanthang.deleteDB(selectedGoal);
+                        service.deleteGoal(selectedGoal);
                         goalsList.remove(selectedGoal);
                         updateScore();
                     } catch (SQLException e) {
                         e.printStackTrace();
                         showErrorAlert("Lỗi khi xóa bàn thắng: " + e.getMessage());
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
                     }
                 }
             });
@@ -306,7 +304,7 @@ public class GoalManagementController {
             int maCT = playerToCauthuIdMap.get(player);
 
             MODEL_BANTHANG goal = new MODEL_BANTHANG();
-            ArrayList<MODEL_LOAIBANTHANG> loaiBTModel = daoLoaiBT.selectByCondition("TenLoaiBT='" + loaiBT + "'");
+            List<MODEL_LOAIBANTHANG> loaiBTModel = service.getGoalTypesByName(loaiBT);
             int maLoaiBT = loaiBTModel.getFirst().getMaLoaiBT();
             goal.setMaCT(maCT);
             goal.setMaTD(maTD);
@@ -316,15 +314,15 @@ public class GoalManagementController {
             if (isEditing && currentGoal != null) {
                 // Cập nhật bàn thắng
                 goal.setMaBT(currentGoal.getMaBT());
-                daoBanthang.updateDB(goal);
+                service.updateGoal(goal);
                 goalsList.set(goalsList.indexOf(currentGoal), goal);
             } else {
                 // Thêm bàn thắng mới
-                daoBanthang.insertDB(goal);
+                service.insertGoal(goal);
                 goalsList.add(goal);
 
                 // Cập nhật MaBT sau khi thêm (cần truy vấn lại vì MaBT tự tăng)
-                List<MODEL_BANTHANG> updatedGoals = daoBanthang.selectByCondition(
+                List<MODEL_BANTHANG> updatedGoals = service.selectGoalByCondition(
                         "MaTD = " + maTD + " AND MaCT = " + maCT + " AND phutGhiBan = " + phutGhiBan
                 );
                 if (!updatedGoals.isEmpty()) {
@@ -343,6 +341,8 @@ public class GoalManagementController {
         } catch (SQLException e) {
             e.printStackTrace();
             showErrorAlert("Lỗi khi lưu bàn thắng: " + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

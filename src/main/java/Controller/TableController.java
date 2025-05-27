@@ -4,6 +4,8 @@ import DAO.*;
 import Model.MODEL_BXH_CLB;
 import Model.MODEL_MUAGIAI;
 import Model.MODEL_BXH_BANTHANG;
+import Service.Service;
+import Util.AlertUtils;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -86,12 +88,13 @@ public class TableController {
     private ObservableList<MODEL_BXH_CLB> bracketARankings = FXCollections.observableArrayList();
     private ObservableList<MODEL_BXH_CLB> bracketBRankings = FXCollections.observableArrayList();
 
+    private Service service;
     @FXML
     private void initialize() throws SQLException {
+        service = new Service();
         // Thiết lập các ComboBox
-        DAO_MUAGIAI daoMuagiai = new DAO_MUAGIAI();
         compeFilter.setItems(FXCollections.observableArrayList(
-                daoMuagiai.selectAllDB().stream().map(MODEL_MUAGIAI::getTenMG).toList()
+                service.getAllTournament().stream().map(MODEL_MUAGIAI::getTenMG).toList()
         ));
         rankingTypeFilter.setItems(FXCollections.observableArrayList("BXH CLB", "Vua phá lưới"));
         bracketComboBox.setItems(FXCollections.observableArrayList("Nhánh A", "Nhánh B"));
@@ -135,7 +138,7 @@ public class TableController {
 
     private void setupClubTableColumns() throws SQLException {
         String condition="TenMG = '"+compeFilter.getValue()+"'";
-        List<MODEL_MUAGIAI> musimList = new DAO_MUAGIAI().selectByCondition(condition);
+        List<MODEL_MUAGIAI> musimList = service.getAllTournament();
 
         if (musimList == null || musimList.isEmpty()) {
             throw new RuntimeException("No matching season found for condition: " + condition);
@@ -145,9 +148,8 @@ public class TableController {
         clubRankColumn.setCellValueFactory(new PropertyValueFactory<>("Hang"));
         clubNameColumn.setCellValueFactory(cellData -> {
             try {
-                DAO_CLB daoClb = new DAO_CLB();
                 int maCLB= cellData.getValue().getMaCLB();
-                String clbName = daoClb.selectByID(maCLB).getTenCLB();
+                String clbName = service.getCLBByID(maCLB).getTenCLB();
                 return new SimpleStringProperty(clbName != null ? clbName : "Unknown");
             } catch (Exception e) {
                 return new SimpleStringProperty("Error");
@@ -161,8 +163,7 @@ public class TableController {
         clubPointsColumn.setCellValueFactory(new PropertyValueFactory<>("Diem"));
 
         clubTableView.setItems(vleagueClubRankings);
-        String condition1="MaMG = "+maMG;
-        List<MODEL_BXH_CLB> modelList=new DAO_BXH_CLB().selectByCondition(condition1);
+        List<MODEL_BXH_CLB> modelList=service.getBxhCLBByTournamentId(maMG);
         vleagueClubRankings.addAll(modelList);
         // Thiết lập màu nền cho các hàng dựa trên thứ hạng
         clubTableView.setRowFactory(tv -> new TableRow<MODEL_BXH_CLB>() {
@@ -188,14 +189,13 @@ public class TableController {
 
     private void setupScorerTableColumns() throws SQLException {
         String condition="TenMG = '"+compeFilter.getValue()+"'";
-        int maMG = new DAO_MUAGIAI().selectByCondition(condition).get(0).getMaMG();
+        int maMG = service.getTournamentByName(compeFilter.getValue()).getMaMG();
 
         scorerRankColumn.setCellValueFactory(new PropertyValueFactory<>("Hang"));
         scorerNameColumn.setCellValueFactory(cellData -> {;
             try {
-                DAO_CAUTHU daoCauthu = new DAO_CAUTHU();
                 int maCauThu = cellData.getValue().getMaCT();
-                String playerName = daoCauthu.selectByID(maCauThu).getTenCT();
+                String playerName = service.getPlayerById(maCauThu).getTenCT();
                 return new SimpleStringProperty(playerName != null ? playerName : "Unknown");
             } catch (Exception e) {
                 return new SimpleStringProperty("Error");
@@ -203,12 +203,10 @@ public class TableController {
         });
         scorerClubColumn.setCellValueFactory(cellData -> {;
             try {
-                DAO_CLB daoClb = new DAO_CLB();
-                DAO_CAUTHU_CLB daoCauthuClb = new DAO_CAUTHU_CLB();
                 int maCT = cellData.getValue().getMaCT();
                 String condition1 = "MaCT = " + maCT + " AND MaMG = " + maMG;
-                int maCLB = daoCauthuClb.selectByCondition(condition1).get(0).getMaCLB();
-                String clubName = daoClb.selectByID(maCLB).getTenCLB();
+                int maCLB=service.getRegistedPlayersByCondition(condition1).get(0).getMaCLB();
+                String clubName = service.getCLBByID(maCLB).getTenCLB();
                 return new SimpleStringProperty(clubName != null ? clubName : "Unknown");
             } catch (Exception e) {
                 return new SimpleStringProperty("Error");
@@ -218,8 +216,8 @@ public class TableController {
         scorerPenaltyColumn.setCellValueFactory(new PropertyValueFactory<>("Penalty"));
 
         scorerTableView.setItems(vleagueScorerRankings);
-        List<MODEL_BXH_BANTHANG> modelList=new DAO_BXH_BANTHANG().selectByCondition("MaMG = "+maMG);
-        vleagueScorerRankings.addAll(modelList);
+        List<MODEL_BXH_BANTHANG> modelLists=service.getBxhBanThangByTournamentId(maMG);
+        vleagueScorerRankings.addAll(modelLists);
         // Thiết lập màu nền cho top 3 cầu thủ ghi bàn nhiều nhất
         scorerTableView.setRowFactory(tv -> new TableRow<MODEL_BXH_BANTHANG>() {
             @Override
@@ -320,12 +318,7 @@ public class TableController {
     @FXML
     private void handleRefresh() {
         updateTableView();
-
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Làm mới dữ liệu");
-        alert.setHeaderText(null);
-        alert.setContentText("Dữ liệu đã được làm mới!");
-        alert.showAndWait();
+        AlertUtils.showInformation("Làm mới dữ liệu","", "Dữ liệu đã được làm mới!");
     }
 
     @FXML
@@ -341,11 +334,7 @@ public class TableController {
         File file = fileChooser.showSaveDialog(mainContainer.getScene().getWindow());
 
         if (file != null) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Xuất báo cáo");
-            alert.setHeaderText(null);
-            alert.setContentText("Đã xuất báo cáo thành công!\nFile: " + file.getAbsolutePath());
-            alert.showAndWait();
+            AlertUtils.showInformation("Xuất báo cáo", "", "Đã xuất báo cáo thành công!\nFile: " + file.getAbsolutePath());
         }
     }
 
