@@ -598,6 +598,27 @@ public class Service {
         return null;
     }
 
+    public MODEL_CLB getCLBByMaSan(int maSan) {
+        String sql = "SELECT * FROM CLB WHERE MaSan = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, maSan);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                MODEL_CLB clb = new MODEL_CLB();
+                clb.setMaCLB(rs.getInt("MaCLB"));
+                clb.setTenCLB(rs.getString("TenCLB"));
+                clb.setLogoCLB(rs.getString("LogoCLB"));
+                clb.setTenHLV(rs.getString("TenHLV"));
+                clb.setEmail(rs.getString("Email"));
+                clb.setMaSan(rs.getInt("SanNha"));
+                return clb;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     //    Tournament
     public MODEL_MUAGIAI getTournamentFromRs(ResultSet rs) throws Exception {
 
@@ -632,7 +653,7 @@ public class Service {
     }
     public List<MODEL_MUAGIAI> getAllActiveTournaments() {
         List<MODEL_MUAGIAI> list = new ArrayList<>();
-        String sql = "SELECT * FROM MUAGIAI WHERE NGAYKHAIMAC <= SYSDATE AND NGAYBEMAC >= SYSDATE";
+        String sql = "SELECT * FROM MUAGIAI WHERE NGAYBEMAC >= SYSDATE";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -661,6 +682,24 @@ public class Service {
         String sql = "SELECT * FROM MUAGIAI WHERE LOWER(TenMG) = LOWER(?)";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, value);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                int MaMG = (rs.getInt("MaMG"));
+                String TenMG = (rs.getString("TenMG"));
+                LocalDate NgayBD = (rs.getDate("NgayKhaiMac").toLocalDate());
+                LocalDate NgayKT = (rs.getDate("NgayBeMac").toLocalDate());
+                String LogoFileName = (rs.getString("LogoMG"));
+                return new MODEL_MUAGIAI(MaMG, TenMG, NgayBD, NgayKT, LogoFileName);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public MODEL_MUAGIAI getTournamentByID(int maMG) {
+        String sql = "SELECT * FROM MUAGIAI WHERE MaMG = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, maMG);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 int MaMG = (rs.getInt("MaMG"));
@@ -956,6 +995,21 @@ public class Service {
         return players;
     }
 
+    public List<MODEL_CAUTHU> getAllPlayers(){
+        List<MODEL_CAUTHU> players = new ArrayList<>();
+        String sql = "SELECT * FROM CAUTHU";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                MODEL_CAUTHU player = getPlayerFromRs(rs);
+                players.add(player);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return players;
+
+    }
     public int addPlayer(MODEL_CAUTHU player) throws Exception {
         // Validate MaCLB
         if (!isClubExists(player.getMaCLB())) {
@@ -1273,6 +1327,21 @@ public class Service {
         modelBanthang.setmaLoaiBT(rs.getInt("MaLoaiBT"));
         return modelBanthang;
     }
+    public List<MODEL_BANTHANG> getGoalByCondition(String s) {
+        String sql = "SELECT * FROM CAUTHUTHAMGIACLB WHERE " + s;
+        List<MODEL_BANTHANG> danhSach = new ArrayList<>();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                danhSach.add(getGoalFromRs(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return danhSach;
+    }
     public int deleteGoal(MODEL_BANTHANG modelBanthang) throws SQLException {
         String sql = "{call DeleteGoal(?)}";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -1301,6 +1370,7 @@ public class Service {
             ps.executeUpdate();
         }
     }
+
 
 
     public MODEL_LOAIBANTHANG getGoalTypeFromId(int maLoaiBT) {
@@ -1422,4 +1492,25 @@ public class Service {
         }
         return null;
     }
+
+    public MODEL_SAN getStadiumByName(String tenSan) {
+        String sql = "SELECT * FROM SAN WHERE TenSan = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, tenSan);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                MODEL_SAN san = new MODEL_SAN();
+                san.setMaSan(rs.getInt("MaSan"));
+                san.setTenSan(rs.getString("TenSAN"));
+                san.setDiaChi(rs.getString("DiaChi"));
+                san.setSucChua(rs.getInt("SucChua"));
+                return san;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 }

@@ -1,6 +1,5 @@
 package Controller;
 
-import DAO.*;
 import Service.Service;
 import Model.*;
 import javafx.collections.FXCollections;
@@ -150,7 +149,7 @@ public class GoalManagementController {
     }
 
     private void loadGoals() throws Exception {
-        List<MODEL_BANTHANG> goals = service.selectGoalByCondition("MaTD = " + maTD);
+        List<MODEL_BANTHANG> goals = service.getGoalByCondition("MaTD = " + maTD);
         goalsList.clear();
         goalsList.addAll(goals);
 
@@ -322,7 +321,7 @@ public class GoalManagementController {
                 goalsList.add(goal);
 
                 // Cập nhật MaBT sau khi thêm (cần truy vấn lại vì MaBT tự tăng)
-                List<MODEL_BANTHANG> updatedGoals = service.selectGoalByCondition(
+                List<MODEL_BANTHANG> updatedGoals = service.getGoalByCondition(
                         "MaTD = " + maTD + " AND MaCT = " + maCT + " AND phutGhiBan = " + phutGhiBan
                 );
                 if (!updatedGoals.isEmpty()) {

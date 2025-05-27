@@ -379,13 +379,6 @@ public class ClubManagementController implements Initializable {
             isValid = false;
         }
 
-        // Kiểm tra điều khoản
-        if (!termsCheckbox.isSelected()) {
-            termsError.setText("Bạn phải đồng ý với điều lệ giải đấu");
-            termsError.setVisible(true);
-            isValid = false;
-        }
-
         // Kiểm tra logo
         if (ValidationUtils.isNullOrEmpty(logoPath)) {
             AlertUtils.showWarning("Cảnh báo", "Chưa có logo CLB", "Vui lòng tải lên logo CLB.");

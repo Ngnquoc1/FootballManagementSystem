@@ -1,0 +1,171 @@
+.header {
+    -fx-background-color: linear-gradient(to right bottom, #ff8c00, #991f18);
+}
+
+.title{
+    -fx-text-fill:  #991f18;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 1);
+    -fx-font-family: "Arial Black";
+}
+
+.search-container {
+    -fx-background-color: #f5f5f5;
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1px;
+    -fx-padding: 5px;
+    -fx-spacing: 5px;
+}
+
+.iconBtn{
+    -fx-effect: innershadow(gaussian,  #991f18, 100, 1, 0, 0);
+    -fx-cursor: hand;
+}
+
+.search-btn {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-cursor: hand;
+}
+
+.search-field {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-prompt-text-fill: #999;
+    -fx-font-size: 14px;
+}
+
+.notification{
+    -fx-background-color: #fff;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0.5, 0.0, 0.0);
+}
+
+.notification:hover{
+    -fx-background-color: #e7ecef;
+}
+
+
+.filter_text{
+    -fx-text-fill:#991f18;
+    -fx-padding: 0 0  0 10px;
+}
+
+.reset_button{
+    -fx-background-color: transparent;
+    -fx-text-fill: #991f18 ;
+
+}
+.reset_button:hover{
+    -fx-text-fill: #e32b19 ;
+    -fx-cursor: hand;
+}
+
+.player_row{
+    -fx-padding: 10px;
+    -fx-border-color: transparent transparent #e0e0e0 transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.player_image{
+    -fx-fit-height: 50;
+    -fx-fit-width: 50;
+    -fx-preserve-ratio: true;
+}
+
+.player_info{
+    -fx-text-fill: #991f18;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-font-family: System;
+}
+
+.flag_image{
+    -fx-fit-height: 40;
+    -fx-fit-width: 40;
+    -fx-preserve-ratio: true;
+}
+
+.player_name{
+    -fx-text-fill: #991f18;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-font-family: System;
+}
+
+.player_name:hover{
+    -fx-border-color: transparent transparent #991f18 transparent;
+    -fx-border-width: 0 0 2px 0; /* underline dày 2px */
+    -fx-border-style: solid;
+    -fx-cursor: hand;
+}
+
+
+/* player_details_popup.css */
+
+
+.close-button{
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 20px;
+}
+.close-button:hover{
+    -fx-cursor: hand;
+}
+
+.player_detail_container {
+    -fx-background-color: #f8f9fa;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.detail_player_image {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.detail_player_name {
+    -fx-font-family: "Arial";
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #991f18;
+}
+
+.detail_jersey_number {
+    -fx-font-family: "Arial";
+    -fx-font-size: 50px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #991f18;
+}
+
+.detail_label {
+    -fx-font-family: "Arial";
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #7D0A0A;
+}
+
+.detail_value {
+    -fx-font-family: "Arial";
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #991f18;
+}
+
+.section_title {
+    -fx-font-family: "Arial";
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #991f18;
+    -fx-padding: 10 0 5 0;
+}
+
+.detail_image{
+    --fx-fit-height: 25;
+    -fx-fit-width: 35;
+    -fx-preserve-ratio: true;
+}

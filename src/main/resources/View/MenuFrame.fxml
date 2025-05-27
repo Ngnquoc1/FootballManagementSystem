@@ -109,7 +109,7 @@
                               </ImageView>
                            </graphic>
                         </Button>
-                        <Button fx:id="playerMenuBtn" mnemonicParsing="false" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="Players">
+                        <Button fx:id="playerMenuBtn" mnemonicParsing="false" onAction="#clickOnPlayerBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="Players">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                  <image>

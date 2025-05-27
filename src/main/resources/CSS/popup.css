@@ -1,0 +1,107 @@
+.root {
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+}
+
+.transparent-scrollpane{
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.transparent-scrollpane .viewport {
+    -fx-background-color: transparent;
+}
+
+.transparent-scrollpane .scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.transparent-scrollpane .thumb {
+    -fx-background-color: rgba(255, 255, 255, 0.3); /* Mờ nhẹ để thấy thanh kéo */
+    -fx-background-insets: 2;
+    -fx-background-radius: 5;
+}
+
+.transparent-scrollpane .track {
+    -fx-background-color: transparent;
+}
+
+.button_popup:hover{
+    -fx-background-color: linear-gradient(to right bottom, #ff8c00, #991f18);
+    -fx-text-fill: white;
+}
+
+.close-button{
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 20px;
+}
+.close-button:hover{
+    -fx-cursor: hand;
+}
+
+
+.team-label{
+    -fx-font-weight: bold;
+    -fx-font-size: 20px;
+    -fx-text-fill: #991f18;
+}
+
+.stadium-icon{
+    -fx-fit-height: 20;
+    -fx-fit-width: 20;
+    -fx-effect: innershadow(gaussian, #991f18, 100, 0.8, 0, 0);
+}
+
+
+
+.hcmfc-homebox{
+    -fx-background-color: linear-gradient(from 50% 20% to 100% 100%, #991f18, #CF0F47);
+}
+
+.hnfc-homebox{
+    -fx-background-color: linear-gradient(from 50% 20% to 100% 100%, #693382, #4635B1);
+}
+
+.hpfc-homebox{
+    -fx-background-color: linear-gradient(from 50% 20% to 100% 100%, #7D0A0A, #E16A54);
+}
+
+.vtfc-homebox{
+    -fx-background-color: linear-gradient(from 50% 20% to 100% 100%, #D2665A, #FF9D23);
+
+}
+
+.hometeam-box{
+    -fx-background-radius: 10px 0 0 10px;
+    -fx-padding: 2px 1px 5px;
+    -fx-pref-width: 275px;
+    -fx-alignment: CENTER-LEFT;
+}
+
+
+.hcmfc-awaybox{
+    -fx-background-color: linear-gradient(from 20% 70% to 100% 100%, #CF0F47, #991f18);
+}
+
+.hnfc-awaybox{
+    -fx-background-color: linear-gradient(from 20% 70% to 100% 100%, #4635B1, #693382);
+}
+
+.hpfc-awaybox{
+    -fx-background-color: linear-gradient(from 20% 70% to 100% 100%, #E16A54, #A31D1D);
+}
+
+.vtfc-awaybox{
+    -fx-background-color: linear-gradient(from 20% 70% to 100% 100%, #FF9D23, #D2665A);
+
+}
+
+.awayteam-box{
+    -fx-background-radius: 0 10px 10px 0;
+    -fx-padding: 2px 1px 5px;
+    -fx-pref-width: 275px;
+    -fx-alignment: CENTER-RIGHT;
+}

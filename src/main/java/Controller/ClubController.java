@@ -154,8 +154,15 @@ public class ClubController implements Initializable {
         VBox teamCard = new VBox(5);
         teamCard.setAlignment(Pos.CENTER);
         teamCard.setPadding(new Insets(5,10,0, 10));
-        
-        ImageView logoView = new ImageView(new Image(getClass().getResourceAsStream("/Image/ClubLogo/"+ team.getLogoCLB())));
+
+        Image logo=null;
+        try{
+            logo=new Image(getClass().getResourceAsStream("/Image/ClubLogo/"+ team.getLogoCLB()));
+        }
+        catch(Exception e){
+            logo=new Image(getClass().getResourceAsStream("/Image/ClubLogo/defaultLogo.png"));
+        }
+        ImageView logoView = new ImageView(logo);
         logoView.setPreserveRatio(true);
         logoView.getStyleClass().add("logo-view");
 
@@ -216,7 +223,7 @@ public class ClubController implements Initializable {
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL); // Block interaction with the main window
             stage.showAndWait();
-        } catch (IOException | SQLException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
