@@ -1,8 +1,5 @@
 package Controller;
 
-import DAO.DAO_CLB;
-import DAO.DAO_MUAGIAI;
-import Model.MODEL_CLB;
 import Model.MODEL_MUAGIAI;
 import Model.MODEL_VONGDAU;
 import Service.Service;
@@ -26,7 +23,6 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -147,7 +143,7 @@ public class TournamentManagementController {
         filteredTournaments = new FilteredList<>(tournamentsList, p -> true);
         tournamentsTableView.setItems(filteredTournaments);
 
-        List<MODEL_MUAGIAI> allList= service.selectAllTournament();
+        List<MODEL_MUAGIAI> allList= service.getAllTournament();
         tournamentsList.addAll(allList);
 
         updateStatistics();
@@ -171,8 +167,7 @@ public class TournamentManagementController {
     }
     private void setFilter() throws SQLException {
 
-        DAO_MUAGIAI daoMG= new DAO_MUAGIAI();
-        ArrayList<MODEL_MUAGIAI> ds1 = daoMG.selectAllDB();
+        List<MODEL_MUAGIAI> ds1 = service.getAllTournament();
         ArrayList<String> dsMG = new ArrayList<>();
         for (MODEL_MUAGIAI mg : ds1) {
             dsMG.add(mg.getTenMG());
@@ -276,7 +271,7 @@ public class TournamentManagementController {
                         System.err.println("Không thể xóa file logo: " + e.getMessage());
                     }
                 }
-                new DAO_MUAGIAI().deleteDB(selectedTournament);
+                int ok=service.deleteTournament(selectedTournament);
                 tournamentsList.remove(selectedTournament);
                 updateStatistics();
             }
@@ -308,7 +303,7 @@ public class TournamentManagementController {
     private void handleViewDetails() {
         MODEL_MUAGIAI selectedTournament = tournamentsTableView.getSelectionModel().getSelectedItem();
         if (selectedTournament != null) {
-            List<MODEL_VONGDAU> listVD= service.selectAllByTournament(selectedTournament.getMaMG());
+            List<MODEL_VONGDAU> listVD= service.getAllRoundByTournament(selectedTournament.getMaMG());
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Chi tiết giải đấu");
             alert.setHeaderText(selectedTournament.getTenMG());
@@ -381,7 +376,7 @@ public class TournamentManagementController {
                     currentModel.setLogoFileName(newLogoFileName);
                 }
             }
-            new DAO_MUAGIAI().updateDB(currentModel);
+            service.updateTournament(currentModel);
             tournamentsTableView.refresh();
             savedTournament = currentModel;
         } else {
@@ -394,7 +389,7 @@ public class TournamentManagementController {
             }
 
             MODEL_MUAGIAI newTournament = new MODEL_MUAGIAI(id, name, startDate, endDate, logoFileName);
-            new DAO_MUAGIAI().insertDB(newTournament);
+            service.insertTournament(newTournament);
             service.insertDefaultQD(newTournament.getMaMG());
             tournamentsList.add(newTournament);
 

@@ -2,7 +2,6 @@ package Controller;
 
 import Model.MODEL_MUAGIAI;
 import Model.MODEL_VONGDAU;
-import DAO.DAO_VONGDAU;
 import Service.Service;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -48,7 +47,6 @@ public class RoundController {
     private MODEL_VONGDAU currentRound;
     private boolean isEditing = false;
     private int nextId = 1;
-    private DAO_VONGDAU roundDAO = new DAO_VONGDAU();
     private Service service = new Service();
     @FXML
     private void initialize() {
@@ -187,7 +185,7 @@ public class RoundController {
     private void loadRounds() {
         try {
             // Tải danh sách vòng đấu từ cơ sở dữ liệu
-            List<MODEL_VONGDAU> rounds = service.selectAllByTournament(tournament.getMaMG());
+            List<MODEL_VONGDAU> rounds = service.getAllRoundByTournament(tournament.getMaMG());
             roundsList.clear();
             roundsList.addAll(rounds);
 

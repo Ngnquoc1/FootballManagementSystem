@@ -1,3 +1,22 @@
+--DROP TABLE THUTU_UUTIEN CASCADE CONSTRAINTS;
+--DROP TABLE BANGXEPHANG_BANTHANG CASCADE CONSTRAINTS;
+--DROP TABLE BANGXEPHANG_CLB CASCADE CONSTRAINTS;
+--DROP TABLE QuyDinh CASCADE CONSTRAINTS;
+--DROP TABLE BanThang CASCADE CONSTRAINTS;
+--DROP TABLE KetQuaTD CASCADE CONSTRAINTS;
+--DROP TABLE TranDau CASCADE CONSTRAINTS;
+--DROP TABLE CAUTHU_CLB CASCADE CONSTRAINTS;
+--DROP TABLE CauThu CASCADE CONSTRAINTS;
+--DROP TABLE LoaiCauThu CASCADE CONSTRAINTS;
+--DROP TABLE ViTriTD CASCADE CONSTRAINTS;
+--DROP TABLE CLB_THAMGIAMUAGIAI CASCADE CONSTRAINTS;
+--DROP TABLE CLB CASCADE CONSTRAINTS;
+--DROP TABLE SAN CASCADE CONSTRAINTS;
+--DROP TABLE VongDau CASCADE CONSTRAINTS;
+--DROP TABLE MuaGiai CASCADE CONSTRAINTS;
+--DROP TABLE LoaiBanThang CASCADE CONSTRAINTS;
+--DROP TABLE TaiKhoan CASCADE CONSTRAINTS;
+
 CREATE TABLE MuaGiai (
     MaMG NUMBER PRIMARY KEY,
     TenMG NVARCHAR2(100) NOT NULL,
@@ -5,48 +24,72 @@ CREATE TABLE MuaGiai (
     NgayBeMac DATE NOT NULL,
     LogoMG NVARCHAR2(100)
 );
+/
 CREATE TABLE VongDau (
     MaVD NUMBER PRIMARY KEY,
-    MaMG  NUMBER NOT NULL,
+    MaMG NUMBER NOT NULL,
     TENVD NVARCHAR2(200),
     NgayBD DATE NOT NULL,
-    NgayKT DATE NOT NULL
+    NgayKT DATE NOT NULL,
+    FOREIGN KEY (MaMG) REFERENCES MuaGiai(MaMG)
 );
-CREATE TABLE CLB (
-    MaCLB NUMBER PRIMARY KEY,
-    TenCLB NVARCHAR2(100) NOT NULL,
-    LogoCLB NVARCHAR2(255),
-    SanNha NUMBER NOT NULL,
-    TenHLV NVARCHAR2(100),
-    Email NVARCHAR2(255)
-);
+/
 CREATE TABLE SAN (
     MaSan NUMBER PRIMARY KEY,
     TenSan NVARCHAR2(100) NOT NULL,
     DiaChi NVARCHAR2(100) NOT NULL,
     Succhua NUMBER NOT NULL
 );
-
+/
+CREATE TABLE CLB (
+    MaCLB NUMBER PRIMARY KEY,
+    TenCLB NVARCHAR2(100) NOT NULL,
+    LogoCLB NVARCHAR2(255),
+    SanNha NUMBER NOT NULL,
+    TenHLV NVARCHAR2(100),
+    Email NVARCHAR2(255),
+    FOREIGN KEY (SanNha) REFERENCES SAN(MaSan)
+);
+/
 CREATE TABLE CLB_THAMGIAMUAGIAI (
     MaCLB NUMBER,
     MaMG NUMBER,
-    PRIMARY KEY (MaCLB, MaMG)
+    PRIMARY KEY (MaCLB, MaMG),
+    FOREIGN KEY (MaCLB) REFERENCES CLB(MaCLB),
+    FOREIGN KEY (MaMG) REFERENCES MuaGiai(MaMG)
 );
-commit;
-CREATE TABLE CauThu (
+/
+CREATE TABLE ViTriTD (
+    MaVT NUMBER PRIMARY KEY,
+    TenVT NVARCHAR2(200)
+);
+/
+CREATE TABLE LoaiCauThu (
+    MaLoaiCT NUMBER PRIMARY KEY,
+    TenLoaiCT NVARCHAR2(200) NOT NULL
+);
+/
+CREATE TABLE LoaiBanThang (
+    MaLoaiBT NUMBER PRIMARY KEY,
+    TenLoaiBT NVARCHAR2(100)
+);
+/
+CREATE TABLE CauThu(
     MaCT NUMBER PRIMARY KEY,
     TenCT NVARCHAR2(50) NOT NULL,
     NgaySinh DATE,
     QuocTich NVARCHAR2(100),
     Avatar NVARCHAR2(100),
-    CCCD NVARCHAR2(50),
+    SoAo NUMBER,
     LoaiCT NUMBER NOT NULL,
-    MaCLB NUMBER
+    MaCLB NUMBER,
+    MaVT NUMBER,
+    FOREIGN KEY (MaCLB) REFERENCES CLB(MaCLB),
+    FOREIGN KEY (LoaiCT) REFERENCES LoaiCauThu(MaLoaiCT),
+    FOREIGN KEY (MaVT) REFERENCES ViTriTD(MaVT)
 );
-CREATE TABLE ViTRiTD (
-    MaVT NUMBER PRIMARY KEY,
-    TenVT NVARCHAR2(200)
-)
+
+/
 CREATE TABLE CAUTHU_CLB (
     MaMG NUMBER NOT NULL,
     MaCLB NUMBER NOT NULL,
@@ -55,49 +98,55 @@ CREATE TABLE CAUTHU_CLB (
     FOREIGN KEY (MaMG) REFERENCES MuaGiai(MaMG),
     FOREIGN KEY (MaCLB) REFERENCES CLB(MaCLB),
     FOREIGN KEY (MaCT) REFERENCES CauThu(MaCT),
-    CONSTRAINT chk_unique_cauthu_clb UNIQUE (MaCT, MaMG) 
+    CONSTRAINT chk_unique_cauthu_clb UNIQUE (MaCT, MaMG)
 );
-Alter Table CAUTHU_CLB Drop Column SoAo;
+/
 CREATE TABLE TranDau (
-    MaTD NUMBER  PRIMARY KEY,
+    MaTD NUMBER PRIMARY KEY,
     MaCLB1 NUMBER NOT NULL,
     MaCLB2 NUMBER NOT NULL,
     MaSan NUMBER NOT NULL,
     MaVD NUMBER NOT NULL,
-    ThoiGian DATE NOT NULL
+    ThoiGian DATE NOT NULL,
+    FOREIGN KEY (MaCLB1) REFERENCES CLB(MaCLB),
+    FOREIGN KEY (MaCLB2) REFERENCES CLB(MaCLB),
+    FOREIGN KEY (MaSan) REFERENCES SAN(MaSan),
+    FOREIGN KEY (MaVD) REFERENCES VongDau(MaVD)
 );
+/
 CREATE TABLE KetQuaTD (
     MaTD NUMBER PRIMARY KEY,
     DiemCLB1 NUMBER,
-    DiemCLB2 NUMBER
+    DiemCLB2 NUMBER,
+    FOREIGN KEY (MaTD) REFERENCES TranDau(MaTD)
 );
--- Bảng BanThang
+/
 CREATE TABLE BanThang (
     MaBT NUMBER PRIMARY KEY,
     MaCT NUMBER NOT NULL,
     MaTD NUMBER NOT NULL,
     PhutGhiBan NUMBER NOT NULL,
-    MaLoaiBT NUMBER NOT NULL
+    MaLoaiBT NUMBER NOT NULL,
+    FOREIGN KEY (MaTD) REFERENCES TranDau(MaTD),
+    FOREIGN KEY (MaCT) REFERENCES CauThu(MaCT),
+    FOREIGN KEY (MaLoaiBT) REFERENCES LoaiBanThang(MaLoaiBT)
 );
-Create Table LoaiBanThang(
-    MaLoaiBT NUMBER PRIMARY KEY,
-    TenLoaiBT NVARCHAR2(100)
-);
+/
+
 CREATE TABLE QuyDinh (
-    MaQD NUMBER PRIMARY KEY,
-    MaMG NUMBER,
+    MaMG NUMBER PRIMARY KEY,
     TUOITOITHIEU NUMBER DEFAULT 16,
     TUOITOIDA NUMBER DEFAULT 40,
     SOCTTOITHIEU NUMBER DEFAULT 15,
     SOCTTOIDA NUMBER DEFAULT 22,
     SOCTNUOCNGOAITOIDA NUMBER DEFAULT 3,
     DiemThang NUMBER DEFAULT 3,
-    DiemHoa   NUMBER DEFAULT 1,
-    DiemThua  NUMBER DEFAULT 0,
+    DiemHoa NUMBER DEFAULT 1,
+    DiemThua NUMBER DEFAULT 0,
     PhutGhiBanToiDa NUMBER DEFAULT 90,
-    PhutGhiBanToiThieu NUMBER DEFAULT 1
+    FOREIGN KEY (MaMG) REFERENCES MuaGiai(MaMG)
 );
-
+/
 CREATE TABLE BANGXEPHANG_CLB (
     MaMG NUMBER NOT NULL,
     MaCLB NUMBER NOT NULL,
@@ -108,95 +157,39 @@ CREATE TABLE BANGXEPHANG_CLB (
     HieuSo NUMBER DEFAULT 0,
     Diem NUMBER DEFAULT 0,
     Hang NUMBER,
-    PRIMARY KEY (MaMG, MaCLB)
+    PRIMARY KEY (MaMG, MaCLB),
+    FOREIGN KEY (MaMG) REFERENCES MuaGiai(MaMG),
+    FOREIGN KEY (MaCLB) REFERENCES CLB(MaCLB)
 );
+/
 CREATE TABLE BANGXEPHANG_BANTHANG (
     MaMG NUMBER NOT NULL,
     MaCT NUMBER NOT NULL,
     SoBanThang NUMBER DEFAULT 0,
     XepHang NUMBER UNIQUE,
     Penalty NUMBER DEFAULT 0,
-    PRIMARY KEY (MaMG, MaCT)
+    PRIMARY KEY (MaMG, MaCT),
+    FOREIGN KEY (MaMG) REFERENCES MuaGiai(MaMG),
+    FOREIGN KEY (MaCT) REFERENCES CauThu(MaCT)
 );
+/
 CREATE TABLE THUTU_UUTIEN (
     MaTTU NUMBER PRIMARY KEY,
     MaMG NUMBER NOT NULL,
     TieuChi NVARCHAR2(50) NOT NULL,
     DoUuTien NUMBER NOT NULL,
-    CONSTRAINT fk_thutu_mamg FOREIGN KEY (MaMG) REFERENCES MuaGiai(MaMG),
+    FOREIGN KEY (MaMG) REFERENCES MuaGiai(MaMG),
     CONSTRAINT chk_tieuchi CHECK (TieuChi IN ('Diem', 'HieuSo', 'SoTran', 'Thang', 'Hoa', 'Thua')),
     CONSTRAINT chk_douutien CHECK (DoUuTien >= 1)
 );
+/
 CREATE TABLE TaiKhoan (
     TenDangNhap VARCHAR2(50) PRIMARY KEY,
     MatKhau VARCHAR2(100) NOT NULL,
     VaiTro VARCHAR2(30) CHECK (VaiTro IN ('A', 'B', 'C', 'D'))
 );
-    
------Foreign key----------------------------
---CLB
-ALTER TABLE CLB ADD CONSTRAINT Fk_SanNha FOREIGN KEY(SanNha) REFERENCES SAN(MaSan);
-
---CLB_THAMGIAMUAGIAI
-ALTER TABLE CLB_THAMGIAMUAGIAI ADD CONSTRAINT FK_CLB_TG FOREIGN KEY(MaCLB) REFERENCES CLB(MaCLB);
-ALTER TABLE CLB_THAMGIAMUAGIAI ADD CONSTRAINT FK_MG_TG FOREIGN KEY (MaMG) REFERENCES MuaGiai(MaMG);
-
---VONGDAU
-ALTER TABLE VONGDAU ADD CONSTRAINT Fk_MGVD FOREIGN KEY(MaMG) REFERENCES MUAGIAI(MaMG);
-
-
---TRANDAU
-ALTER TABLE TRANDAU ADD CONSTRAINT Fk_CLB1 FOREIGN KEY(MaCLB1) REFERENCES CLB(MaCLB);
-ALTER TABLE TRANDAU ADD CONSTRAINT Fk_CLB2 FOREIGN KEY(MaCLB2) REFERENCES CLB(MaCLB);
-ALTER TABLE TRANDAU ADD CONSTRAINT Fk_VONGDAU_TD FOREIGN KEY(MaVD) REFERENCES VONGDAU(MaVD);
-ALTER TABLE TRANDAU ADD CONSTRAINT Fk_SanTD FOREIGN KEY(MaSan) REFERENCES SAN(MaSan);
-
---KQUATRANDAU
-ALTER TABLE KetQuaTD ADD CONSTRAINT Fk_KQTD FOREIGN KEY(MaTD) REFERENCES TranDau(MaTD);
-
---BANTHANG
-ALTER TABLE BANTHANG ADD CONSTRAINT Fk_TD_BT FOREIGN KEY(MaTD) REFERENCES TranDau(MaTD);
-ALTER TABLE BANTHANG ADD CONSTRAINT Fk_CT_BT FOREIGN KEY(MaCT) REFERENCES CauThu(MaCT);
-ALTER TABLE BANTHANG ADD CONSTRAINT Fk_LBT_BT FOREIGN KEY(MaLoaiBT) REFERENCES LoaiBanThang(MaLoaiBT);
-
---QUYDINH
-ALTER TABLE QUYDINH ADD CONSTRAINT Fk_QDMG FOREIGN KEY(MaMG) REFERENCES MUAGIAI(MaMG);
-
---BANGXEPHANG_CLB
-ALTER TABLE BANGXEPHANG_CLB ADD CONSTRAINT fk_maMG FOREIGN KEY (MaMG) REFERENCES MuaGiai(MaMG);
-ALTER TABLE BANGXEPHANG_CLB ADD CONSTRAINT fk_chitietbxh_madoi FOREIGN KEY (MaCLB) REFERENCES CLB(MaCLB);
-
---BANGXEPHANG_BANTHANG
-ALTER TABLE BANGXEPHANG_BANTHANG ADD CONSTRAINT fk_maMG_bxhbt FOREIGN KEY (MaMG) REFERENCES MuaGiai(MaMG);
-ALTER TABLE BANGXEPHANG_BANTHANG ADD CONSTRAINT fk_chitietbxh_maCT FOREIGN KEY (MaCT) REFERENCES CAUTHU(MaCT);
-
---CAUTHU
-ALTER TABLE CAUTHU ADD CONSTRAINT fk_CT1 FOREIGN KEY(MaCLB) REFERENCES CLB(MaCLB);
-SELECT 
-    uc.constraint_name,
-    uc.constraint_type,
-    uc.status,
-    ucc.column_name,
-    uc.r_constraint_name,
-    uc.search_condition
-FROM 
-    user_constraints uc
-LEFT JOIN 
-    user_cons_columns ucc ON uc.constraint_name = ucc.constraint_name
-WHERE 
-    uc.table_name = 'CAUTHU'
-ORDER BY 
-    uc.constraint_name, ucc.position;
--------------MienGiaTri----------------
---VongDau
-ALTER TABLE VongDau ADD CONSTRAINT chk_TenVD CHECK (TENVD IN ('Lượt đi', 'Lượt về', 'Vòng 1', 'Vòng 16 đội', 'Tứ kết', 'Bán kết', 'Chung kết' ));
-
---Cauthu
-ALTER TABLE CauThu ADD CONSTRAINT chk_LoaiCT CHECK (LoaiCT IN (0,1));
-
---LoaiBanThang
-ALTER TABLE LoaiBanThang ADD CONSTRAINT chk_LoaiBT CHECK (TenLoaiBT IN ('Bàn thắng thường','Phạt đền','Đá phạt','Phản lưới nhà'));
-
+/
+select * from TaiKhoan
 ---------------------------------------TRIGGER--------------------------------
 ---------- Ngày bắt đầu và kết thúc của vòng đấu phải nằm trong khoảng thời gian của mùa giải.
 CREATE OR REPLACE TRIGGER trg_check_ngay_vongdau
@@ -466,35 +459,30 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20020, 'Lỗi không xác định khi kiểm tra thời điểm ghi bàn: ' || SQLERRM);
 END trg_check_phut_ghi_ban_toi_da;
 /
---------------------------------------CAPNHAT_TENVONGDAU----------------------------
-CREATE OR REPLACE TRIGGER trg_update_tenvd
-AFTER INSERT OR UPDATE OF MaMG, TenVD, NgayBD, NgayKT ON VongDau
+-------------------Check So AO-----------------------
+CREATE OR REPLACE TRIGGER trg_check_soao_unique_clb
+BEFORE INSERT ON CauThu
 FOR EACH ROW
 DECLARE
-    v_tenMG NVARCHAR2(100);
+    v_count NUMBER;
 BEGIN
-    SELECT TenMG INTO v_tenMG
-    FROM MuaGiai
-    WHERE MaMG = :NEW.MaMG;
+    -- Kiểm tra xem số áo đã tồn tại cho cùng MaCLB chưa
+    SELECT COUNT(*)
+    INTO v_count
+    FROM CauThu
+    WHERE MaCLB = :NEW.MaCLB
+    AND SoAo = :NEW.SoAo
+    AND MaCT != :NEW.MaCT; -- Loại trừ chính bản ghi đang chèn (nếu là UPDATE)
 
-    -- Tạo tên vòng đấu mới với tên mùa giải trong ngoặc
-    DECLARE
-        v_newTenVD NVARCHAR2(200) := TRIM(:NEW.TenVD) || ' (' || TRIM(v_tenMG) || ')';
-    BEGIN
-        IF LENGTH(v_newTenVD) > 200 THEN
-            RAISE_APPLICATION_ERROR(-20015, 'Tên vòng đấu sau khi ghép vượt quá 200 ký tự.');
-        END IF;
-
-        -- Cập nhật TenVD
-        :NEW.TenVD := v_newTenVD;
-    END;
+    -- Nếu số áo đã tồn tại, ném lỗi
+    IF v_count > 0 THEN
+        RAISE_APPLICATION_ERROR(-20033, 'Số áo ' || :NEW.SoAo || ' đã tồn tại cho CLB có MaCLB = ' || :NEW.MaCLB || '.');
+    END IF;
 
 EXCEPTION
-    WHEN NO_DATA_FOUND THEN
-        RAISE_APPLICATION_ERROR(-20013, 'Mã mùa giải (MaMG = ' || :NEW.MaMG || ') không tồn tại.');
     WHEN OTHERS THEN
-        RAISE_APPLICATION_ERROR(-20016, 'Lỗi khi cập nhật tên vòng đấu: ' || SQLERRM);
-END;
+        RAISE_APPLICATION_ERROR(-20034, 'Lỗi khi kiểm tra số áo: ' || SQLERRM);
+END trg_check_soao_unique_clb;
 /
 ----------------------------------------------------------**********PROCEDURE**********---------------------
 
@@ -765,8 +753,22 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20003, 'Lỗi khi cập nhật kết quả và BXH: ' || SQLERRM);
 END UpdateRanking;
 /
-
 ----------------------------------------------------MUAGIAI------------------------------
+-----------InsertDefaultRules---------------------------------
+CREATE OR REPLACE PROCEDURE InsertQuyDinhForMuaGiai(
+    p_maMG IN NUMBER
+)
+AS
+BEGIN
+    -- Chèn dữ liệu vào bảng QuyDinh với các giá trị mặc định
+    INSERT INTO QuyDinh (MaMG) VALUES (p_maMG);
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE_APPLICATION_ERROR(-20035, 'Lỗi khi thêm quy định cho mùa giải: ' || SQLERRM);
+END InsertQuyDinhForMuaGiai;
+/
+commit
 ----------------------RegisterClubForSeason--------------------
 CREATE OR REPLACE PROCEDURE RegisterClubForSeason(
     p_maCLB IN NUMBER,
@@ -936,6 +938,7 @@ BEGIN
             ORDER BY td.ThoiGian ;
 
 END GetPendingMatches;
+/
 -----------------InsertMatch--------
 CREATE OR REPLACE PROCEDURE InsertMatch(
     p_tenMuaGiai IN VARCHAR2,
@@ -1223,36 +1226,6 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20004, 'Lỗi khi cập nhật kết quả trận đấu: ' || SQLERRM);
 END UpdateMatchResult;
 /
-----------------------------------------------------CAUTHU------------------------------
-------------------InsertCauThu---------------------
-CREATE OR REPLACE PROCEDURE InsertCauThu(
-    p_maCT OUT NUMBER,
-    p_tenCT IN NVARCHAR2,
-    p_ngaySinh IN DATE,
-    p_quocTich IN NVARCHAR2,
-    p_avatar IN NVARCHAR2,
-    p_cccd IN NVARCHAR2,
-    p_loaiCT IN NUMBER
-)
-AS
-    v_maxMaCT NUMBER;
-BEGIN
-    -- Tạo MaCT mới (MAX + 1)
-    SELECT NVL(MAX(MaCT), 0) + 1 INTO v_maxMaCT
-    FROM CauThu;
-
-    -- Thêm cầu thủ mới
-    INSERT INTO CauThu (MaCT, TenCT, NgaySinh, QuocTich, Avatar, CCCD, LoaiCT)
-    VALUES (v_maxMaCT, p_tenCT, p_ngaySinh, p_quocTich, p_avatar, p_cccd, p_loaiCT);
-
-    -- Trả về MaCT vừa tạo
-    p_maCT := v_maxMaCT;
-
-EXCEPTION
-    WHEN OTHERS THEN
-        RAISE_APPLICATION_ERROR(-20017, 'Lỗi khi thêm cầu thủ: ' || SQLERRM);
-END InsertCauThu;
-/
 ----------------------------------------------------BXH_BANTHANG------------------------------
 --------------UpdateBXH_BanThang------
 CREATE OR REPLACE PROCEDURE UpdateBXH_BanThang(
@@ -1442,110 +1415,140 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20012, 'Lỗi khi xóa bàn thắng: ' || SQLERRM);
 END DeleteGoal;
 /
-
---------------------------------------------------------INSERT--------------------------------------------
-INSERT INTO TaiKhoan VALUES ('admin', 'admin123', 'A');
-/
--------------- MuaGiai------------
-INSERT INTO MuaGiai (MaMG, TenMG, NgayKhaiMac, NgayBeMac, LogoMG) VALUES (1, 'V-League 2025', TO_DATE('01/01/2025', 'DD/MM/YYYY'), TO_DATE('30/06/2025', 'DD/MM/YYYY'), 'logo.png');
-/
--------------- VongDau------------
-INSERT INTO VongDau (MaVD, MaMG, TENVD, NgayBD, NgayKT) VALUES (1, 1, 'Lượt đi', TO_DATE('01/01/2025', 'DD/MM/YYYY'), TO_DATE('31/03/2025', 'DD/MM/YYYY'));
-INSERT INTO VongDau (MaVD, MaMG, TENVD, NgayBD, NgayKT) VALUES (2, 1, 'Lượt về', TO_DATE('01/04/2025', 'DD/MM/YYYY'), TO_DATE('30/06/2025', 'DD/MM/YYYY'));
-/
--------------- SAN------------
-INSERT INTO SAN (MaSan, TenSan, DiaChi, Succhua) VALUES (1, 'Sân Mỹ Đình', 'Hà Nội', 40000);
-INSERT INTO SAN (MaSan, TenSan, DiaChi, Succhua) VALUES (2, 'Sân Thống Nhất', 'TP Hồ Chí Minh', 25000);
-INSERT INTO SAN (MaSan, TenSan, DiaChi, Succhua) VALUES (3, 'Sân Hàng Đẫy', 'Hà Nội', 20000);
-INSERT INTO SAN (MaSan, TenSan, DiaChi, Succhua) VALUES (4, 'Sân Lạch Tray', 'Hải Phòng', 30000);
-/
--------------- CLB------------
-INSERT INTO CLB (MaCLB, TenCLB, SanNha, LogoCLB) VALUES (1, 'Hà Nội FC', 1, 'HNFC.png');
-INSERT INTO CLB (MaCLB, TenCLB, SanNha, LogoCLB) VALUES (2, 'TP Hồ Chí Minh FC', 2, 'HCMFC.png');
-INSERT INTO CLB (MaCLB, TenCLB, SanNha, LogoCLB) VALUES (3, 'Viettel FC', 3, 'VTFC.png');
-INSERT INTO CLB (MaCLB, TenCLB, SanNha, LogoCLB) VALUES (4, 'Hải Phòng FC', 4,'HPFC.png');
-/
--------------- CLB_THAMGIAMUAGIAI------------
-INSERT INTO CLB_THAMGIAMUAGIAI (MaCLB, MaMG) VALUES (1, 1);
-INSERT INTO CLB_THAMGIAMUAGIAI (MaCLB, MaMG) VALUES (2, 1);
-INSERT INTO CLB_THAMGIAMUAGIAI (MaCLB, MaMG) VALUES (3, 1);
-INSERT INTO CLB_THAMGIAMUAGIAI (MaCLB, MaMG) VALUES (4, 1);
-/
-DECLARE
-    CURSOR cur_thamgia IS
-        SELECT MaCLB, MaMG FROM CLB_THAMGIAMUAGIAI;
-
-    v_MaCLB CLB_THAMGIAMUAGIAI.MaCLB%TYPE;
-    v_MaMG  CLB_THAMGIAMUAGIAI.MaMG%TYPE;
+----------------------------------------------------STADIUM------------------------------
+CREATE OR REPLACE PROCEDURE InsertSan(
+    p_tenSan IN NVARCHAR2,
+    p_diaChi IN NVARCHAR2,
+    p_sucChua IN NUMBER,
+    p_maSan OUT NUMBER
+)
+AS
+    v_maxMaSan NUMBER;
 BEGIN
-    OPEN cur_thamgia;
-    LOOP
-        FETCH cur_thamgia INTO v_MaCLB, v_MaMG;
-        EXIT WHEN cur_thamgia%NOTFOUND;
+    -- Lấy giá trị lớn nhất của MaSan hiện tại và tăng 1
+    SELECT NVL(MAX(MaSan), 0) + 1 INTO v_maxMaSan
+    FROM SAN;
 
-        -- Gọi procedure cho mỗi dòng
-        InsertInitialRanking(v_MaMG, v_MaCLB);
-    END LOOP;
-    CLOSE cur_thamgia;
-END;
-/
+    -- Chèn dữ liệu vào bảng SAN
+    INSERT INTO SAN (MaSan, TenSan, DiaChi, SucChua)
+    VALUES (v_maxMaSan, p_tenSan, p_diaChi, p_sucChua);
 
--------------- TranDau------------
--- Lượt đi (MaVD=1)
-INSERT INTO TranDau (MaTD, MaCLB1, MaCLB2, MaSan, MaVD, ThoiGian) VALUES (1, 1, 2, 1, 1, TO_DATE('15/01/2025 19:00', 'DD/MM/YYYY HH24:MI')); -- Hà Nội FC vs TP HCM FC
-INSERT INTO TranDau (MaTD, MaCLB1, MaCLB2, MaSan, MaVD, ThoiGian) VALUES (2, 3, 4, 3, 1, TO_DATE('15/01/2025 19:00', 'DD/MM/YYYY HH24:MI')); -- Viettel FC vs Hải Phòng FC
-INSERT INTO TranDau (MaTD, MaCLB1, MaCLB2, MaSan, MaVD, ThoiGian) VALUES (3, 1, 4, 1, 1, TO_DATE('15/02/2025 20:00', 'DD/MM/YYYY HH24:MI')); -- Hà Nội FC vs Hải Phòng FC
-INSERT INTO TranDau (MaTD, MaCLB1, MaCLB2, MaSan, MaVD, ThoiGian) VALUES (4, 3, 2, 3, 1, TO_DATE('15/02/2025 19:30', 'DD/MM/YYYY HH24:MI')); -- Viettel FC vs TP HCM FC
--- Lượt về (MaVD=2
-INSERT INTO TranDau (MaTD, MaCLB1, MaCLB2, MaSan, MaVD, ThoiGian) VALUES (7, 2, 1, 2, 2, TO_DATE('15/04/2025 19:00', 'DD/MM/YYYY HH24:MI')); -- TP HCM FC vs Hà Nội FC
-INSERT INTO TranDau (MaTD, MaCLB1, MaCLB2, MaSan, MaVD, ThoiGian) VALUES (8, 4, 3, 4, 2, TO_DATE('15/04/2025 19:00', 'DD/MM/YYYY HH24:MI')); -- Hải Phòng FC vs Viettel FC
-INSERT INTO TranDau (MaTD, MaCLB1, MaCLB2, MaSan, MaVD, ThoiGian) VALUES (5, 4, 1, 4, 2, TO_DATE('30/05/2025 18:45', 'DD/MM/YYYY HH24:MI')); -- Hải Phòng FC vs Hà Nội FC
-INSERT INTO TranDau (MaTD, MaCLB1, MaCLB2, MaSan, MaVD, ThoiGian) VALUES (6, 2, 3, 2, 2, TO_DATE('30/05/2025 18:15', 'DD/MM/YYYY HH24:MI')); -- TP HCM FC vs Viettel FC
+    -- Trả về giá trị MaSan vừa tạo
+    p_maSan := v_maxMaSan;
 
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE_APPLICATION_ERROR(-20027, 'Lỗi khi thêm sân: ' || SQLERRM);
+END InsertSan;
 /
--------------- KetQuaTD------------
-Begin
-    InsertMatchResult(1,2,1);-- Kết quả cho trận MaTD = 1 (Hà Nội FC vs TP HCM FC)
-    InsertMatchResult(2,1,0);-- Kết quả cho trận MaTD = 2 (Viettel FC vs Hải Phòng FC)
-END;
+----------------------------------------------------CLUB------------------------------
+CREATE OR REPLACE PROCEDURE InsertCLB(
+    p_tenCLB IN NVARCHAR2,
+    p_logoCLB IN NVARCHAR2,
+    p_sanNha IN NUMBER,
+    p_tenHLV IN NVARCHAR2,
+    p_email IN NVARCHAR2,
+    p_maCLB OUT NUMBER
+)
+AS
+    v_maxMaCLB NUMBER;
+BEGIN
+    -- Lấy giá trị lớn nhất của MaCLB hiện tại và tăng 1
+    SELECT NVL(MAX(MaCLB), 0) + 1 INTO v_maxMaCLB
+    FROM CLB;
+
+    -- Chèn dữ liệu vào bảng CLB
+    INSERT INTO CLB (MaCLB, TenCLB, LogoCLB, SanNha, TenHLV, Email)
+    VALUES (v_maxMaCLB, p_tenCLB, p_logoCLB, p_sanNha, p_tenHLV, p_email);
+
+    -- Trả về giá trị MaCLB vừa tạo
+    p_maCLB := v_maxMaCLB;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE_APPLICATION_ERROR(-20028, 'Lỗi khi thêm CLB: ' || SQLERRM);
+END InsertCLB;
 /
--------------- LOAIBANTHANG------------
+----------------------------------------------------PLAYER----------------------------
+CREATE OR REPLACE PROCEDURE InsertPlayer(
+    p_tenCT IN NVARCHAR2,
+    p_ngaySinh IN DATE,
+    p_quocTich IN NVARCHAR2,
+    p_avatar IN NVARCHAR2,
+    p_soAo IN NUMBER,
+    p_loaiCT IN NUMBER,
+    p_maCLB IN NUMBER,
+    p_maVT IN NUMBER,
+    p_maCT OUT NUMBER
+)
+AS
+    v_maxMaCT NUMBER;
+BEGIN
+    -- Lấy giá trị lớn nhất của MaCT hiện tại và tăng 1
+    SELECT NVL(MAX(MaCT), 0) + 1 INTO v_maxMaCT
+    FROM CauThu;
+
+    -- Chèn dữ liệu vào bảng CauThu
+    INSERT INTO CauThu (MaCT, TenCT, NgaySinh, QuocTich, Avatar, SoAo, LoaiCT, MaCLB, MaVT)
+    VALUES (v_maxMaCT, p_tenCT, p_ngaySinh, p_quocTich, p_avatar, p_soAo, p_loaiCT, p_maCLB, p_maVT);
+
+    -- Trả về giá trị MaCT vừa tạo
+    p_maCT := v_maxMaCT;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE_APPLICATION_ERROR(-20029, 'Lỗi khi thêm cầu thủ: ' || SQLERRM);
+END InsertPlayer;
+/
+----------------------------------------------------REGISTRATION------------------------------
+----------------------RegisterClubForSeason--------------------
+CREATE OR REPLACE PROCEDURE RegisterClubForSeason(
+    p_maCLB IN NUMBER,
+    p_maMG IN NUMBER
+)
+AS
+    v_count NUMBER;
+BEGIN
+    -- Kiểm tra xem CLB đã đăng ký mùa giải này chưa
+    SELECT COUNT(*) INTO v_count
+    FROM CLB_THAMGIAMUAGIAI
+    WHERE MaCLB = p_maCLB AND MaMG = p_maMG;
+
+    IF v_count > 0 THEN
+        RAISE_APPLICATION_ERROR(-20015, 'CLB với MaCLB = ' || p_maCLB || ' đã đăng ký mùa giải MaMG = ' || p_maMG);
+    END IF;
+
+    -- Đăng ký CLB vào mùa giải (chèn bản ghi mới)
+    INSERT INTO CLB_THAMGIAMUAGIAI (MaCLB, MaMG)
+    VALUES (p_maCLB, p_maMG);
+    
+    InsertInitialRanking(p_maMG,p_maCLB);
+    -- Lưu thay đổi
+    COMMIT;
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE_APPLICATION_ERROR(-20016, 'Lỗi khi đăng ký CLB: ' || SQLERRM);
+END RegisterClubForSeason;
+/
+select * from MuaGiai
+select * from VongDau
+select * from CLB
+-----------------------------INSERT------------------------
+INSERT INTO TaiKhoan VALUES ('admin', '123', 'A');
+
 INSERT INTO LOAIBANTHANG (MaLoaiBT, TenLoaiBT) VALUES (1, 'Bàn thắng thường');
 INSERT INTO LOAIBANTHANG (MaLoaiBT, TenLoaiBT) VALUES (2, 'Phạt đền');
 INSERT INTO LOAIBANTHANG (MaLoaiBT, TenLoaiBT) VALUES (3, 'Đá phạt');
 INSERT INTO LOAIBANTHANG (MaLoaiBT, TenLoaiBT) VALUES (4, 'Phản lưới nhà');
-/
---------------CAUTHU--------------
--- Hà Nội FC (MaCLB = 1)
-INSERT INTO CAUTHU (MaCT, TenCT, NgaySinh, LoaiCT) VALUES (9, 'Nguyễn Văn A', TO_DATE('01/01/1995', 'DD/MM/YYYY'), 0); -- Nội, tuổi 30
-INSERT INTO CAUTHU (MaCT, TenCT, NgaySinh, LoaiCT) VALUES (10, 'John Smith', TO_DATE('15/03/1990', 'DD/MM/YYYY'), 1); -- Ngoại, tuổi 35
--- TP Hồ Chí Minh FC (MaCLB = 2)
-INSERT INTO CAUTHU (MaCT, TenCT, NgaySinh, LoaiCT) VALUES (11, 'Trần Văn B', TO_DATE('10/05/1998', 'DD/MM/YYYY'), 0); -- Nội, tuổi 27
-INSERT INTO CAUTHU (MaCT, TenCT, NgaySinh, LoaiCT) VALUES (12, 'Carlos Lopez', TO_DATE('20/07/1989', 'DD/MM/YYYY'), 1); -- Ngoại, tuổi 36
--- Viettel FC (MaCLB = 3)
-INSERT INTO CAUTHU (MaCT, TenCT, NgaySinh, LoaiCT) VALUES (13, 'Lê Văn C', TO_DATE('25/12/1996', 'DD/MM/YYYY'), 0); -- Nội, tuổi 29
-INSERT INTO CAUTHU (MaCT, TenCT, NgaySinh, LoaiCT) VALUES (14, 'Pedro Silva', TO_DATE('30/09/1992', 'DD/MM/YYYY'), 1); -- Ngoại, tuổi 33
--- Hải Phòng FC (MaCLB = 4)
-INSERT INTO CAUTHU (MaCT, TenCT, NgaySinh, LoaiCT) VALUES (15, 'Phạm Văn D', TO_DATE('05/06/1999', 'DD/MM/YYYY'), 0); -- Nội, tuổi 26
-INSERT INTO CAUTHU (MaCT, TenCT, NgaySinh, LoaiCT) VALUES (16, 'Miguel Torres', TO_DATE('12/11/1991', 'DD/MM/YYYY'), 1); -- Ngoại, tuổi 34
--------------------CAUTHU_CLB-------------
--- Hà Nội FC (MaCLB = 1)
-INSERT INTO CAUTHU_CLB (MaMG, MaCLB, MaCT) VALUES (1, 1, 9); -- Nguyễn Văn A
-INSERT INTO CAUTHU_CLB (MaMG, MaCLB, MaCT) VALUES (1, 1, 10); -- John Smith
--- TP Hồ Chí Minh FC (MaCLB = 2)
-INSERT INTO CAUTHU_CLB (MaMG, MaCLB, MaCT) VALUES (1, 2, 11); -- Trần Văn B
-INSERT INTO CAUTHU_CLB (MaMG, MaCLB, MaCT) VALUES (1, 2, 12); -- Carlos Lopez
--- Viettel FC (MaCLB = 3)
-INSERT INTO CAUTHU_CLB (MaMG, MaCLB, MaCT) VALUES (1, 3, 13); -- Lê Văn C
-INSERT INTO CAUTHU_CLB (MaMG, MaCLB, MaCT) VALUES (1, 3, 14); -- Pedro Silva
--- Hải Phòng FC (MaCLB = 4)
-INSERT INTO CAUTHU_CLB (MaMG, MaCLB, MaCT) VALUES (1, 4, 15); -- Phạm Văn D
-INSERT INTO CAUTHU_CLB (MaMG, MaCLB, MaCT) VALUES (1, 4, 16); -- Miguel Torres
 
-----------BANTHANG------------
-Begin
-    InsertGoal(14, 2, 12, 3); -- Bàn thắng 1: Hà Nội FC (cầu thủ Nguyễn Văn A, MaCT = 9)
-    InsertGoal(10, 1, 60, 2); -- Bàn thắng 2: Hà Nội FC (cầu thủ John Smith, MaCT = 10)
-    InsertGoal(11, 1, 75, 1); -- Bàn thắng 3: TP Hồ Chí Minh FC (cầu thủ Trần Văn B, MaCT = 11)
-end;
-/
+INSERT INTO ViTriTD (MaVT, TenVT) VALUES (1, 'Forward');
+INSERT INTO ViTriTD (MaVT, TenVT) VALUES (2, 'Midfielder');
+INSERT INTO ViTriTD (MaVT, TenVT) VALUES (3, 'Defender');
+INSERT INTO ViTriTD (MaVT, TenVT) VALUES (4, 'Goalkeeper');
+
+INSERT INTO LoaiCauThu (MaLoaiCT, TenLoaiCT) VALUES (0, 'Cầu thủ nội');
+INSERT INTO LoaiCauThu (MaLoaiCT, TenLoaiCT) VALUES (1, 'Cầu thủ ngoại');
+commit;
+select * from CauThu;
+SELECT MAVT FROM VITRITD WHERE LOWER(TenVT) LIKE LOWER('%Forward%')
