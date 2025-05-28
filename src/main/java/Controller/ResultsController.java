@@ -764,7 +764,7 @@ public class ResultsController implements Initializable {
         timeLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #991f18;");
         ImageView ballLogo = createImageView("/icons/football.png", 15, 15);
         ballLogo.setStyle("-fx-effect: innershadow(gaussian, #991f18, 100, 0.8, 0, 0);");
-        if( isHome == true){
+        if(isHome){
             timeBox.getChildren().addAll(timeLabel, ballLogo);
             timeBox.setAlignment(Pos.CENTER_RIGHT);
         }else{
@@ -776,7 +776,7 @@ public class ResultsController implements Initializable {
         player.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #991f18;");
 
         container.getChildren().addAll(timeBox, player);
-        if(isHome == true){
+        if(isHome){
             container.setAlignment(Pos.CENTER_RIGHT);
         }else{
             container.setAlignment(Pos.CENTER_LEFT);
@@ -786,7 +786,15 @@ public class ResultsController implements Initializable {
 
 
     private ImageView createImageView(String resourcePath, double height, double width) {
-        ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(resourcePath)));
+        Image img=null;
+        try {
+             img = new Image(getClass().getResourceAsStream(resourcePath));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            // Fallback to a default image if the resource is not found
+        }
+        ImageView imageView = new ImageView(img);
         imageView.setFitHeight(height);
         imageView.setFitWidth(width);
         return imageView;
