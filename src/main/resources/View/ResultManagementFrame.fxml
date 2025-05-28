@@ -68,7 +68,10 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button fx:id="findBtn" mnemonicParsing="false" onAction="#find" prefHeight="35.0" prefWidth="90.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Find" translateX="87.0" translateY="-3.0" />
+                  <Button fx:id="findBtn" mnemonicParsing="false" onAction="#find" prefHeight="35.0" prefWidth="90.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Find" translateX="87.0" translateY="-3.0">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets></Button>
                </children>
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

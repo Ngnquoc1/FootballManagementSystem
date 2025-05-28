@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 
 public class FileUtils {
 
-    private static final String LOGO_STORAGE_PATH = "src/main/resources/images/logos/";
+    private static final String LOGO_STORAGE_PATH = "src/main/resources/image/ClubLogo/";
 
     /**
      * Sao chép file logo vào thư mục lưu trữ

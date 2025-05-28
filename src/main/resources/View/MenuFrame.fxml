@@ -173,7 +173,7 @@
       <Pane minHeight="-Infinity" minWidth="-Infinity" prefHeight="625.0" prefWidth="800.0" BorderPane.alignment="CENTER" />
    </center>
    <stylesheets>
-      <URL value="@../CSS/Result.css" />
+
       <URL value="@../CSS/Fixtures.css" />
    </stylesheets>
 </BorderPane>

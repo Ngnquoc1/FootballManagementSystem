@@ -103,13 +103,27 @@ public class ResultManagementController implements Initializable {
         compeFilter.getItems().addAll(dsMG);
         compeFilter.getSelectionModel().selectFirst();
 
-
-        List<MODEL_CLB> ds2 = service.getAllClubs();
-        ArrayList<String> dsCLB = new ArrayList<>();
-        for (MODEL_CLB clb : ds2) {
-            dsCLB.add(clb.getTenCLB());
+        if(compeFilter.getValue()==null){
+            List<MODEL_CLB> ds2 = service.getAllClubs();
+            ArrayList<String> dsCLB = new ArrayList<>();
+            for (MODEL_CLB clb : ds2) {
+                dsCLB.add(clb.getTenCLB());
+            }
+            clubFilter.getItems().addAll(dsCLB);
         }
-        clubFilter.getItems().addAll(dsCLB);
+        else {
+            MODEL_MUAGIAI mg=service.getTournamentByName(compeFilter.getValue());
+            List<Integer> ds2 = service.getRegistedClubIdsByTournament(mg.getMaMG());
+            ArrayList<String> dsCLB = new ArrayList<>();
+            for(Integer id : ds2) {
+                MODEL_CLB clb = service.getCLBByID(id);
+                if (clb != null) {
+                    dsCLB.add(clb.getTenCLB());
+                }
+            }
+            clubFilter.getItems().addAll(dsCLB);
+        }
+
     }
 
 
@@ -175,32 +189,23 @@ public class ResultManagementController implements Initializable {
         } else {
             Match selectedMatch = selectedMatch1 != null ? selectedMatch1 : selectedMatch2;
             if (selectedMatch != null) {
-                //Xác nhận xóa
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Xác nhận xóa");
-                alert.setHeaderText("Bạn có chắc chắn muốn xóa kết quả trận đấu này không?");
-                alert.setContentText("Kết quả trận đấu sẽ bị xóa vĩnh viễn.");
-                ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-                ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-                alert.getButtonTypes().setAll(okButton, cancelButton);
-
-                alert.showAndWait().ifPresent(response -> {
-                    if (response == okButton) {
-                        try {
-                            // Xóa trận đấu
-                            MODEL_KETQUATD model = new MODEL_KETQUATD(selectedMatch.getId(), selectedMatch.getScoreCLB1(), selectedMatch.getScoreCLB2());
-                            int result = service.deleteResult(model);
-                            if (result == 1) {
-                                // Tải lại dữ liệu với bộ lọc hiện tại
-                                find();
-                                // Thông báo thành công
-                                AlertUtils.showInformation("Success","", "Xóa trận đấu thành công!");
-                            }
-                        } catch (SQLException e) {
-                            AlertUtils.showError("Error","", "Vui lòng chọn 1 tận đu để xóa");
+                boolean response=AlertUtils.showConfirmation("Xác nhận xóa","Bạn có chắc chắn muốn xóa kết quả trận đấu này không?",
+                                        "Bạn có chắc chắn muốn xóa trận đấu này?");
+                if (response) {
+                    try {
+                        // Xóa trận đấu
+                        MODEL_KETQUATD model = new MODEL_KETQUATD(selectedMatch.getId(), selectedMatch.getScoreCLB1(), selectedMatch.getScoreCLB2());
+                        int result = service.deleteResult(model);
+                        if (result == 1) {
+                            // Tải lại dữ liệu với bộ lọc hiện tại
+                            find();
+                            // Thông báo thành công
+                            AlertUtils.showInformation("Success","", "Xóa trận đấu thành công!");
                         }
+                    } catch (SQLException e) {
+                        AlertUtils.showError("Error","", "Vui lòng chọn 1 tận đu để xóa");
                     }
-                });
+                }
             } else {
                 AlertUtils.showError("Error","", "Vui lòng chọn 1 trận đấu để xóa");
             }

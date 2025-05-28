@@ -40,14 +40,15 @@
     -fx-cursor: hand;
 }
 
-.menuBtn:hover, menuBtn:pressed{
-    -fx-border-width: 0 0 0 4px;
-    -fx-border-color: #e32b19;
+.menuBtn:hover {
+    -fx-border-width: 0 0 0 5px;
+    -fx-border-color: #000000;
     -fx-background-color: #f1eae4;
     -fx-cursor: hand;
 }
 
-/*Content*/
+
+     /*Content*/
 
 /*Open*/
 .notification{
@@ -181,10 +182,7 @@
     -fx-text-fill: #991f18;
     -fx-cursor: hand;
 }
-.selectedBtn {
-    -fx-background-color: white;
-    -fx-text-fill: #991f18;
-}
+
 .combo-box, .text-field, .date-picker {
     -fx-background-color: white;
     -fx-border-color: #991f18;

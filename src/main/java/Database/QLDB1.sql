@@ -865,7 +865,7 @@ CREATE OR REPLACE PROCEDURE GetPendingMatches(
 )
 AS
 BEGIN
-    -- Mở cursor với truy vấn lấy các trận đấu có ngày thi đấu >= ngày hiện tại
+    -- Mở cursor với truy vấn lấy các trận đấu có ngày thi đấu <= ngày hiện tại
 OPEN p_result FOR
 SELECT
     td.MaTD AS ID,
@@ -876,7 +876,9 @@ SELECT
     td.ThoiGian AS ThoiGian,
     s.TenSan AS SanThiDau,
     m.TenMG AS TenMuaGiai,
-    v.TenVD AS TenVD
+    v.TenVD AS TenVD,
+    kq.DiemCLB1 as Score1,
+    kq.DiemCLB2 as Score2
 FROM TranDau td
          JOIN VongDau v ON td.MaVD = v.MaVD
          JOIN CLB c1 ON td.MaCLB1 = c1.MaCLB
@@ -884,12 +886,13 @@ FROM TranDau td
          JOIN SAN s ON td.MaSan = s.MaSan
          JOIN MuaGiai m ON v.MaMG = m.MaMG
          LEFT JOIN KetQuaTD kq ON td.MaTD = kq.MaTD
-WHERE td.ThoiGian <= TRUNC(SYSDATE)  -- Ngày thi đấu đã qua
+WHERE td.ThoiGian <= SYSDATE
   AND kq.MaTD IS NULL                -- Chưa có kết quả
 ORDER BY td.ThoiGian ;
 
 END GetPendingMatches;
 /
+commit;
 -----------------InsertMatch--------
 CREATE OR REPLACE PROCEDURE InsertMatch(
     p_tenMuaGiai IN VARCHAR2,

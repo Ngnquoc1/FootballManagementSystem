@@ -322,7 +322,7 @@ public class GoalManagementController {
 
                 // Cập nhật MaBT sau khi thêm (cần truy vấn lại vì MaBT tự tăng)
                 List<MODEL_BANTHANG> updatedGoals = service.getGoalByCondition(
-                        "MaTD = " + maTD + " AND MaCT = " + maCT + " AND phutGhiBan = " + phutGhiBan
+                        "MaTD = " + maTD + " AND MaCT = " + maCT + " AND PhutGhiBan = " + phutGhiBan
                 );
                 if (!updatedGoals.isEmpty()) {
                     goal.setMaBT(updatedGoals.getFirst().getMaBT());

@@ -1370,7 +1370,7 @@ public class Service {
     }
 
     public List<MODEL_BANTHANG> getGoalByCondition(String s) {
-        String sql = "SELECT * FROM CAUTHU_CLB WHERE " + s;
+        String sql = "SELECT * FROM BANTHANG WHERE " + s;
         List<MODEL_BANTHANG> danhSach = new ArrayList<>();
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             ResultSet rs = pstmt.executeQuery();
