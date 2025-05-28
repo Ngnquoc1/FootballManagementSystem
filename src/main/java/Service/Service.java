@@ -1484,6 +1484,23 @@ public class Service {
         return bxhClbList;
     }
 
+    public MODEL_BXH_CLB getBxhCLBByCLBName(String clbName) {
+        String sql = "SELECT bxh.* FROM BANGXEPHANG_CLB bxh " +
+                     "JOIN CLB clb on bxh.MaCLB = clb.MaCLB " +
+                     "WHERE TenCLB = ? ";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, clbName);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return getBxhFromRs(rs);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+        return null;
+    }
+
     public List<MODEL_BXH_BANTHANG> getBxhBanThangByTournamentId(int maMG) {
         List<MODEL_BXH_BANTHANG> bxhBanThangList = new ArrayList<>();
         String sql = "SELECT * FROM BANGXEPHANG_BANTHANG WHERE MaMG = ? ORDER BY XepHang ASC";

@@ -462,9 +462,11 @@ public class FixtureController implements Initializable {
         homeTeamStanding.setStyle("-fx-font-size: 15px;-fx-text-fill: #991f18;");
         HBox homeTeamStandingBox = new HBox(5, homeTeamSmallLogo, homeTeamStanding);
         homeTeamStandingBox.setAlignment(Pos.CENTER_LEFT);
-        Label homeTeamPos = new Label("6"); // Get from standings data
+
+        MODEL_BXH_CLB homeTeam = service.getBxhCLBByCLBName(match.getTenCLB1());
+        Label homeTeamPos = new Label(homeTeam.getHang()+""); // Get from standings data
         homeTeamPos.setStyle("-fx-font-size: 15px;-fx-text-fill: #991f18;");
-        Label homeTeamPts = new Label("63"); // Get from standings data
+        Label homeTeamPts = new Label(homeTeam.getDiem()+""); // Get from standings data
         homeTeamPts.setStyle("-fx-font-size: 15px;-fx-text-fill: #991f18;");
 
         standingsGrid.add(homeTeamStandingBox, 0, 1);
@@ -479,9 +481,11 @@ public class FixtureController implements Initializable {
         awayTeamStanding.setStyle("-fx-font-size: 15px;-fx-text-fill: #991f18;");
         HBox awayTeamStandingBox = new HBox(5, awayTeamSmallLogo, awayTeamStanding);
         awayTeamStandingBox.setAlignment(Pos.CENTER_LEFT);
-        Label awayTeamPos = new Label("17"); // Get from standings data
+
+        MODEL_BXH_CLB awayTeam = service.getBxhCLBByCLBName(match.getTenCLB2());
+        Label awayTeamPos = new Label(awayTeam.getHang()+""); // Get from standings data
         awayTeamPos.setStyle("-fx-font-size: 15px;-fx-text-fill: #991f18;");
-        Label awayTeamPts = new Label("38"); // Get from standings data
+        Label awayTeamPts = new Label(awayTeam.getDiem()+""); // Get from standings data
         awayTeamPts.setStyle("-fx-font-size: 15px;-fx-text-fill: #991f18;");
 
         standingsGrid.add(awayTeamStandingBox, 0, 2);

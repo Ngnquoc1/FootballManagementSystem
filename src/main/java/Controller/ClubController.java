@@ -71,7 +71,7 @@ public class ClubController implements Initializable {
 
         // Hiển thị danh sách câu lạc bộ ban đầu
         try {
-            loadTeams( allClubs);
+            loadTeams(allClubs);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -160,7 +160,7 @@ public class ClubController implements Initializable {
             logo=new Image(getClass().getResourceAsStream("/Image/ClubLogo/"+ team.getLogoCLB()));
         }
         catch(Exception e){
-            logo=new Image(getClass().getResourceAsStream("/Image/ClubLogo/defaultLogo.png"));
+            logo=new Image(getClass().getResourceAsStream("/Image/ClubLogo/default_logo.png"));
         }
         ImageView logoView = new ImageView(logo);
         logoView.setPreserveRatio(true);
