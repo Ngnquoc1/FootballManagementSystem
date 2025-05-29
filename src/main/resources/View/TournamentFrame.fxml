@@ -13,11 +13,25 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="625.0" prefWidth="800.0" style="-fx-border-color: #991f18; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.TournamentManagementController">
    <children>
+      <HBox alignment="CENTER_LEFT" prefHeight="85.0" prefWidth="800.0" style="-fx-background-color: #991f18;">
+         <children>
+            <Label text="Quản lý giải đấu" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="26.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="20.0" />
+               </HBox.margin>
+            </Label>
+            <Pane HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
       <ScrollPane prefHeight="622.0" prefWidth="795.0">
          <content>
             <VBox fx:id="mainContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="746.0" prefWidth="780.0" spacing="15.0" style="-fx-background-color: white;">
@@ -25,12 +39,7 @@
                   <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                </padding>
                <children>
-                  <Label alignment="CENTER" maxWidth="1.7976931348623157E308" style="-fx-text-fill: #991f18;" text="QUẢN LÝ GIẢI ĐẤU">
-                     <font>
-                        <Font name="System Bold" size="18.0" />
-                     </font>
-                  </Label>
-                  <HBox alignment="CENTER" minHeight="-Infinity" prefHeight="74.0" prefWidth="740.0" spacing="30.0">
+                  <HBox alignment="CENTER" minHeight="-Infinity" prefHeight="68.0" prefWidth="740.0" spacing="30.0">
                      <children>
                         <VBox alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" prefWidth="138.0" style="-fx-background-color: #f5f5f5; -fx-padding: 10; -fx-background-radius: 5;">
                            <children>
@@ -104,7 +113,7 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <TableView fx:id="tournamentsTableView" prefHeight="143.0" prefWidth="740.0" VBox.vgrow="ALWAYS">
+                  <TableView fx:id="tournamentsTableView" prefHeight="140.0" prefWidth="740.0" VBox.vgrow="ALWAYS">
                      <columns>
                         <TableColumn fx:id="idColumn" prefWidth="50.0" text="ID" />
                         <TableColumn fx:id="nameColumn" prefWidth="232.79999542236328" text="Tên giải đấu" />
@@ -195,9 +204,9 @@
             </VBox>
          </content>
       </ScrollPane>
-      <HBox alignment="CENTER" style="-fx-background-color: #991f18;">
+      <HBox alignment="CENTER" prefHeight="25.0" prefWidth="796.0" style="-fx-background-color: #991f18;">
          <children>
-            <Label style="-fx-text-fill: white;" text="© 2023 Football Manager System" />
+            <Label style="-fx-text-fill: white;" text="© 2025 Football Manager System" />
          </children>
          <padding>
             <Insets bottom="10.0" top="10.0" />

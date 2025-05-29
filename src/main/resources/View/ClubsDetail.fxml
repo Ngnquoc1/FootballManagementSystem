@@ -74,9 +74,9 @@
     <bottom>
         <HBox alignment="CENTER" style="-fx-background-color: #991f18;" BorderPane.alignment="CENTER">
             <children>
-                <Label style="-fx-text-fill: white;" text="© 2023 Football Manager System">
+                <Label style="-fx-text-fill: white;" text="© 2023 Football Manager System" textFill="WHITE">
                     <font>
-                        <Font size="12.0" />
+                        <Font name="Arial Bold" size="12.0" />
                     </font>
                 </Label>
             </children>

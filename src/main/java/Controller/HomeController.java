@@ -28,29 +28,49 @@ import javafx.stage.StageStyle;
 
 public class HomeController implements Initializable {
 
-    @FXML private Label latestHomeTeam;
-    @FXML private Label latestAwayTeam;
-    @FXML private Label latestScore;
-    @FXML private Label latestDate;
-    @FXML private ImageView latestHomeImage;
-    @FXML private ImageView latestAwayImage;
+    @FXML
+    private Label latestHomeTeam;
+    @FXML
+    private Label latestAwayTeam;
+    @FXML
+    private Label latestScore;
+    @FXML
+    private Label latestDate;
+    @FXML
+    private ImageView latestHomeImage;
+    @FXML
+    private ImageView latestAwayImage;
 
-    @FXML private Label nextHomeTeam;
-    @FXML private Label nextAwayTeam;
-    @FXML private Label nextTime;
-    @FXML private Label nextDate;
-    @FXML private ImageView nextHomeImage;
-    @FXML private ImageView nextAwayImage;
+    @FXML
+    private Label nextHomeTeam;
+    @FXML
+    private Label nextAwayTeam;
+    @FXML
+    private Label nextTime;
+    @FXML
+    private Label nextDate;
+    @FXML
+    private ImageView nextHomeImage;
+    @FXML
+    private ImageView nextAwayImage;
 
-    @FXML private Label team1Name;
-    @FXML private Label team1Points;
-    @FXML private ImageView team1Image;
-    @FXML private VBox team1Card;
+    @FXML
+    private Label team1Name;
+    @FXML
+    private Label team1Points;
+    @FXML
+    private ImageView team1Image;
+    @FXML
+    private VBox team1Card;
 
-    @FXML private Label team2Name;
-    @FXML private Label team2Points;
-    @FXML private ImageView team2Image;
-    @FXML private VBox team2Card;
+    @FXML
+    private Label team2Name;
+    @FXML
+    private Label team2Points;
+    @FXML
+    private ImageView team2Image;
+    @FXML
+    private VBox team2Card;
 
     @FXML
     private Label team3Name;
@@ -75,7 +95,7 @@ public class HomeController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        service= new Service();
+        service = new Service();
 
         try {
             loadLatestMatch();
@@ -85,7 +105,7 @@ public class HomeController implements Initializable {
             System.err.println("Error loading dashboard data: " + e.getMessage());
             e.printStackTrace();
 
-            //loadDefaultData();
+            // loadDefaultData();
         }
     }
 
@@ -180,7 +200,7 @@ public class HomeController implements Initializable {
             System.err.println("Error loading latest match: " + e.getMessage());
         }
 
-        //loadDefaultLatestMatch();
+        // loadDefaultLatestMatch();
     }
 
     private void loadNextMatch() {
@@ -208,47 +228,86 @@ public class HomeController implements Initializable {
             System.err.println("Error loading upcoming match: " + e.getMessage());
         }
 
-        //loadDefaultNextMatch();
+        // loadDefaultNextMatch();
     }
 
     private void loadTopTeams() {
-        try {
-            // Lấy các đội bóng trong bảng xếp hạng
-            ArrayList<MODEL_BXH_CLB> rankings = service.getAllBxhCLB();
+    try {
+        // Clear all previous data first
+        team1Name.setText("");
+        team1Points.setText("");
+        team1Image.setImage(null);
+        team1Card.setStyle("-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);");
+        
+        team2Name.setText("");
+        team2Points.setText("");
+        team2Image.setImage(null);
+        team2Card.setStyle("-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);");
+        
+        team3Name.setText("");
+        team3Points.setText("");
+        team3Image.setImage(null);
+        team3Card.setStyle("-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);");
+        
+        // Lấy các đội bóng trong bảng xếp hạng
+        ArrayList<MODEL_BXH_CLB> rankings = service.getAllBxhCLB();
 
-            // Sắp xếp bằng thứ hạng
-            rankings.sort((a, b) -> Integer.compare(a.getHang(), b.getHang()));
+        if (rankings == null || rankings.isEmpty()) {
+            System.err.println("Không có dữ liệu bảng xếp hạng");
+            return;
+        }
 
-            if (rankings.size() >= 3) {
+        // Sắp xếp bằng thứ hạng
+        rankings.sort((a, b) -> Integer.compare(a.getHang(), b.getHang()));
 
+        System.out.println("Số lượng đội trong bảng xếp hạng: " + rankings.size());
+
+            if (rankings.size() >= 1) {
                 MODEL_BXH_CLB team1Ranking = rankings.get(0);
                 MODEL_CLB club1 = service.getCLBByID(team1Ranking.getMaCLB());
                 team1Name.setText(club1.getTenCLB());
                 team1Points.setText(String.valueOf(team1Ranking.getDiem()));
                 loadTeamLogo(team1Image, club1.getLogoCLB());
-                team1Card.setStyle("-fx-background-color: linear-gradient(to bottom, #f9f3ee, #e6f7ff); -fx-border-color: #991f18; -fx-border-width: 2; -fx-border-radius: 10;");
+                team1Card.setStyle(
+                        "-fx-background-color: linear-gradient(to bottom, #f9f3ee, #e6f7ff); -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);");
+            } else {
+                team1Name.setText("");
+                team1Points.setText("");
+                team1Image.setImage(null);
+            }
 
+            if (rankings.size() >= 2) {
                 MODEL_BXH_CLB team2Ranking = rankings.get(1);
                 MODEL_CLB club2 = service.getCLBByID(team2Ranking.getMaCLB());
                 team2Name.setText(club2.getTenCLB());
                 team2Points.setText(String.valueOf(team2Ranking.getDiem()));
                 loadTeamLogo(team2Image, club2.getLogoCLB());
-                team2Card.setStyle("-fx-background-color: linear-gradient(to bottom, #f9f3ee, #ffe6e6); -fx-border-color: #991f18; -fx-border-width: 2; -fx-border-radius: 10;");
-
+                team2Card.setStyle(
+                        "-fx-background-color: linear-gradient(to bottom, #f9f3ee, #e6f7ff); -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);");
+            } else {
+                team2Name.setText("");
+                team2Points.setText("");
+                team2Image.setImage(null);
+            }
+            if (rankings.size() >= 3) {
                 MODEL_BXH_CLB team3Ranking = rankings.get(2);
                 MODEL_CLB club3 = service.getCLBByID(team3Ranking.getMaCLB());
                 team3Name.setText(club3.getTenCLB());
                 team3Points.setText(String.valueOf(team3Ranking.getDiem()));
                 loadTeamLogo(team3Image, club3.getLogoCLB());
-                team3Card.setStyle("-fx-background-color: linear-gradient(to bottom, #f9f3ee, #fff2e6); -fx-border-color: #991f18; -fx-border-width: 2; -fx-border-radius: 10;");
-
-                return;
+                team3Card.setStyle(
+                        "-fx-background-color: linear-gradient(to bottom, #f9f3ee, #e6f7ff); -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);");
+            } else {
+                // Xóa nội dung nếu không có đội hạng 3
+                team3Name.setText("");
+                team3Points.setText("");
+                team3Image.setImage(null);
             }
+
         } catch (Exception e) {
             System.err.println("Error loading top teams: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        //loadDefaultTopTeams();
     }
 
     private void loadTeamLogo(ImageView imageView, String logoPath) {
@@ -267,66 +326,86 @@ public class HomeController implements Initializable {
         }
     }
 
-//    private void loadDefaultData() {
-//        loadDefaultLatestMatch();
-//        loadDefaultNextMatch();
-//        loadDefaultTopTeams();
-//    }
-//
-//    private void loadDefaultLatestMatch() {
-//        latestHomeTeam.setText("Manchester United");
-//        latestAwayTeam.setText("Liverpool");
-//        latestScore.setText("2 - 1");
-//        latestDate.setText("15 May 2025");
-//
-//        try {
-//            latestHomeImage.setImage(new Image(getClass().getResourceAsStream("/icons/teams/man_united.png")));
-//            latestAwayImage.setImage(new Image(getClass().getResourceAsStream("/icons/teams/liverpool.png")));
-//        } catch (Exception e) {
-//            latestHomeImage.setImage(new Image(getClass().getResourceAsStream("/icons/club.png")));
-//            latestAwayImage.setImage(new Image(getClass().getResourceAsStream("/icons/club.png")));
-//        }
-//    }
-//
-//    private void loadDefaultNextMatch() {
-//        nextHomeTeam.setText("Liverpool");
-//        nextAwayTeam.setText("Arsenal");
-//        nextTime.setText("19:45");
-//        nextDate.setText("20 May 2025");
-//// Try catch set logo
-//        try {
-//            nextHomeImage.setImage(new Image(getClass().getResourceAsStream("/icons/teams/liverpool.png")));
-//            nextAwayImage.setImage(new Image(getClass().getResourceAsStream("/icons/teams/arsenal.png")));
-//        } catch (Exception e) {
-//            nextHomeImage.setImage(new Image(getClass().getResourceAsStream("/icons/club.png")));
-//            nextAwayImage.setImage(new Image(getClass().getResourceAsStream("/icons/club.png")));
-//        }
-//    }
-//
-//    private void loadDefaultTopTeams() {
-//        team1Name.setText("Manchester City");
-//        team1Points.setText("75");
-//        try {
-//            team1Image.setImage(new Image(getClass().getResourceAsStream("/icons/teams/man_city.png")));
-//        } catch (Exception e) {
-//            team1Image.setImage(new Image(getClass().getResourceAsStream("/icons/club.png")));
-//        }
-//        team1Card.setStyle("-fx-background-color: linear-gradient(to bottom, #f9f3ee, #e6f7ff); -fx-border-color: #991f18; -fx-border-width: 2; -fx-border-radius: 10;");
-//        team2Name.setText("Arsenal");
-//        team2Points.setText("71");
-//        try {
-//            team2Image.setImage(new Image(getClass().getResourceAsStream("/icons/teams/arsenal.png")));
-//        } catch (Exception e) {
-//            team2Image.setImage(new Image(getClass().getResourceAsStream("/icons/club.png")));
-//        }
-//        team2Card.setStyle("-fx-background-color: linear-gradient(to bottom, #f9f3ee, #ffe6e6); -fx-border-color: #991f18; -fx-border-width: 2; -fx-border-radius: 10;");
-//        team3Name.setText("Liverpool");
-//        team3Points.setText("68");
-//        try {
-//            team3Image.setImage(new Image(getClass().getResourceAsStream("/icons/teams/liverpool.png")));
-//        } catch (Exception e) {
-//            team3Image.setImage(new Image(getClass().getResourceAsStream("/icons/club.png")));
-//        }
-//        team3Card.setStyle("-fx-background-color: linear-gradient(to bottom, #f9f3ee, #fff2e6); -fx-border-color: #991f18; -fx-border-width: 2; -fx-border-radius: 10;");
-//    }
+    // private void loadDefaultData() {
+    // loadDefaultLatestMatch();
+    // loadDefaultNextMatch();
+    // loadDefaultTopTeams();
+    // }
+    //
+    // private void loadDefaultLatestMatch() {
+    // latestHomeTeam.setText("Manchester United");
+    // latestAwayTeam.setText("Liverpool");
+    // latestScore.setText("2 - 1");
+    // latestDate.setText("15 May 2025");
+    //
+    // try {
+    // latestHomeImage.setImage(new
+    // Image(getClass().getResourceAsStream("/icons/teams/man_united.png")));
+    // latestAwayImage.setImage(new
+    // Image(getClass().getResourceAsStream("/icons/teams/liverpool.png")));
+    // } catch (Exception e) {
+    // latestHomeImage.setImage(new
+    // Image(getClass().getResourceAsStream("/icons/club.png")));
+    // latestAwayImage.setImage(new
+    // Image(getClass().getResourceAsStream("/icons/club.png")));
+    // }
+    // }
+    //
+    // private void loadDefaultNextMatch() {
+    // nextHomeTeam.setText("Liverpool");
+    // nextAwayTeam.setText("Arsenal");
+    // nextTime.setText("19:45");
+    // nextDate.setText("20 May 2025");
+    //// Try catch set logo
+    // try {
+    // nextHomeImage.setImage(new
+    // Image(getClass().getResourceAsStream("/icons/teams/liverpool.png")));
+    // nextAwayImage.setImage(new
+    // Image(getClass().getResourceAsStream("/icons/teams/arsenal.png")));
+    // } catch (Exception e) {
+    // nextHomeImage.setImage(new
+    // Image(getClass().getResourceAsStream("/icons/club.png")));
+    // nextAwayImage.setImage(new
+    // Image(getClass().getResourceAsStream("/icons/club.png")));
+    // }
+    // }
+    //
+    // private void loadDefaultTopTeams() {
+    // team1Name.setText("Manchester City");
+    // team1Points.setText("75");
+    // try {
+    // team1Image.setImage(new
+    // Image(getClass().getResourceAsStream("/icons/teams/man_city.png")));
+    // } catch (Exception e) {
+    // team1Image.setImage(new
+    // Image(getClass().getResourceAsStream("/icons/club.png")));
+    // }
+    // team1Card.setStyle("-fx-background-color: linear-gradient(to bottom, #f9f3ee,
+    // #e6f7ff); -fx-border-color: #991f18; -fx-border-width: 2; -fx-border-radius:
+    // 10;");
+    // team2Name.setText("Arsenal");
+    // team2Points.setText("71");
+    // try {
+    // team2Image.setImage(new
+    // Image(getClass().getResourceAsStream("/icons/teams/arsenal.png")));
+    // } catch (Exception e) {
+    // team2Image.setImage(new
+    // Image(getClass().getResourceAsStream("/icons/club.png")));
+    // }
+    // team2Card.setStyle("-fx-background-color: linear-gradient(to bottom, #f9f3ee,
+    // #ffe6e6); -fx-border-color: #991f18; -fx-border-width: 2; -fx-border-radius:
+    // 10;");
+    // team3Name.setText("Liverpool");
+    // team3Points.setText("68");
+    // try {
+    // team3Image.setImage(new
+    // Image(getClass().getResourceAsStream("/icons/teams/liverpool.png")));
+    // } catch (Exception e) {
+    // team3Image.setImage(new
+    // Image(getClass().getResourceAsStream("/icons/club.png")));
+    // }
+    // team3Card.setStyle("-fx-background-color: linear-gradient(to bottom, #f9f3ee,
+    // #fff2e6); -fx-border-color: #991f18; -fx-border-width: 2; -fx-border-radius:
+    // 10;");
+    // }
 }
