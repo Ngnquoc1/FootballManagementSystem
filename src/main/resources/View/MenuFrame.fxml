@@ -20,7 +20,7 @@
          <children>
             <AnchorPane minWidth="166.0" prefHeight="625.0" prefWidth="231.0" styleClass="menuBar" stylesheets="@../CSS/Fixtures.css">
                <children>
-                  <Pane layoutX="8.0" layoutY="14.0" prefHeight="54.0" prefWidth="150.0" styleClass="inner_pane" stylesheets="@../CSS/Fixtures.css">
+                  <Pane layoutX="8.0" layoutY="22.0" prefHeight="54.0" prefWidth="150.0" styleClass="inner_pane" stylesheets="@../CSS/Fixtures.css">
                      <children>
                         <ImageView fitHeight="39.0" fitWidth="42.0" layoutX="7.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -29,7 +29,7 @@
                         </ImageView>
                         <Text fill="#991f18" layoutX="43.0" layoutY="22.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="title" text="Football Manager" textAlignment="CENTER" wrappingWidth="101.99999999999994">
                            <font>
-                              <Font name="Arial" size="14.0" />
+                              <Font size="14.0" />
                            </font>
                         </Text>
                      </children>

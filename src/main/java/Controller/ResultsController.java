@@ -1,7 +1,5 @@
 package Controller;
 
-
-
 import Controller.Connection.DatabaseConnection;
 import Model.*;
 import Service.Service;
@@ -43,13 +41,14 @@ import java.util.*;
 
 public class ResultsController implements Initializable {
     @FXML
-    private Button resetBtn,addBtn;
+    private Button resetBtn, addBtn;
     @FXML
     private ScrollPane Calendar;
     @FXML
     private ComboBox<String> compeFilter, clubFilter;
 
     private Service service = new Service();
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Session session = Session.getInstance();
@@ -82,7 +81,6 @@ public class ResultsController implements Initializable {
         compeFilter.getItems().addAll(dsMG);
         compeFilter.getSelectionModel().selectFirst();
 
-
         List<MODEL_CLB> ds2 = service.getAllClubs();
         ArrayList<String> dsCLB = new ArrayList<>();
         for (MODEL_CLB clb : ds2) {
@@ -90,6 +88,7 @@ public class ResultsController implements Initializable {
         }
         clubFilter.getItems().addAll(dsCLB);
     }
+
     private void createFullMatch(Map<LocalDate, List<Match>> matchesByDate) {
         VBox mainContent = new VBox(20);
         mainContent.setPadding(new Insets(10));
@@ -106,7 +105,7 @@ public class ResultsController implements Initializable {
             HBox dateHeader = createDateHeader(date, dateFormatter);
             mainContent.getChildren().add(dateHeader);
 
-            //Add match rows for this date
+            // Add match rows for this date
             for (Match match : matches) {
                 HBox matchRow = createMatchRow(match);
                 mainContent.getChildren().add(matchRow);
@@ -115,6 +114,7 @@ public class ResultsController implements Initializable {
         Calendar.setContent(mainContent);
         Calendar.setFitToWidth(true);
     }
+
     private HBox createDateHeader(LocalDate date, DateTimeFormatter formatter) {
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
@@ -135,17 +135,17 @@ public class ResultsController implements Initializable {
         header.getChildren().addAll(dateLabel, spacer, leagueLabel, leagueLogo);
         return header;
     }
+
     private HBox createMatchRow(Match match) {
         HBox row = new HBox(0);
         row.getStyleClass().add("match-row");
-
 
         // Home team with logo
         Image logo1 = new Image(String.valueOf(getClass().getResource("/Image/ClubLogo/" + match.getLogoCLB1())));
         ImageView homeTeamLogo = new ImageView(logo1);
         homeTeamLogo.getStyleClass().add("team-logo");
 
-        //Home team label
+        // Home team label
         Label homeTeamLabel = new Label(match.getTenCLB1());
         homeTeamLabel.setAlignment(Pos.CENTER_RIGHT);
         homeTeamLabel.getStyleClass().add("team-label");
@@ -153,14 +153,13 @@ public class ResultsController implements Initializable {
         HBox homeGroup = new HBox(5, homeTeamLabel, homeTeamLogo);
         homeGroup.getStyleClass().add("team-group");
 
-
         // SCore
         String score1 = String.valueOf(match.getScoreCLB1());
         String score2 = String.valueOf(match.getScoreCLB2());
-        Label scoreLabel =new Label(score1 + " - " + score2);
+        Label scoreLabel = new Label(score1 + " - " + score2);
         scoreLabel.getStyleClass().add("time-label");
 
-        Label roundLabel=new Label(match.getTenVongDau());
+        Label roundLabel = new Label(match.getTenVongDau());
         roundLabel.getStyleClass().add("round-label");
 
         // Away team with logo
@@ -168,14 +167,13 @@ public class ResultsController implements Initializable {
         ImageView awayTeamLogo = new ImageView(logo2);
         awayTeamLogo.getStyleClass().add("team-logo");
 
-        //Away team label
+        // Away team label
         Label awayTeamLabel = new Label(match.getTenCLB2());
         awayTeamLabel.setAlignment(Pos.CENTER_LEFT);
         awayTeamLabel.getStyleClass().add("team-label");
 
         HBox awayGroup = new HBox(5, awayTeamLogo, awayTeamLabel);
         awayGroup.getStyleClass().add("team-group");
-
 
         // Stadium info
         ImageView stadiumIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/stadium.png")));
@@ -194,7 +192,6 @@ public class ResultsController implements Initializable {
         ImageView arrowIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/right-arrow-line.png")));
         arrowIcon.getStyleClass().add("arrow-icon");
 
-
         HBox info = new HBox(5);
         info.setAlignment(Pos.CENTER_LEFT);
         info.getChildren().addAll(homeGroup, scoreLabel, awayGroup);
@@ -208,18 +205,18 @@ public class ResultsController implements Initializable {
         quickViewBox.getChildren().addAll(quickViewLabel, arrowIcon);
 
         row.getChildren().addAll(
-                info, venueBox, spacer, quickViewBox
-        );
+                info, venueBox, spacer, quickViewBox);
 
         row.setOnMouseClicked(event -> openMatchResult(match));
         return row;
     }
+
     @FXML
     public void filterByCLB() throws SQLException {
         String selectedCLB = clubFilter.getSelectionModel().getSelectedItem();
-        Map<LocalDate,List<Match>> matchesByDate = service.getResultedMatchs();
+        Map<LocalDate, List<Match>> matchesByDate = service.getResultedMatchs();
 
-        Map<LocalDate,List<Match>> filteredMatches = new HashMap<>();
+        Map<LocalDate, List<Match>> filteredMatches = new HashMap<>();
 
         for (Map.Entry<LocalDate, List<Match>> entry : matchesByDate.entrySet()) {
             List<Match> filteredList = entry.getValue().stream()
@@ -231,6 +228,7 @@ public class ResultsController implements Initializable {
         }
         createFullMatch(filteredMatches);
     }
+
     @FXML
     private void resetFilter() throws SQLException {
         Map<LocalDate, List<Match>> matchesByDate = service.getResultedMatchs();
@@ -239,8 +237,9 @@ public class ResultsController implements Initializable {
         createFullMatch(matchesByDate);
 
     }
+
     @FXML
-    public void controlResult(){
+    public void controlResult() {
         try {
             // Tải file FXML của cửa sổ mới
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/ResultManagementFrame.fxml"));
@@ -266,7 +265,6 @@ public class ResultsController implements Initializable {
         }
     }
 
-
     private void openMatchResult(Match match) {
         // Create a new stage for the popup with blurred background effect
         Stage popupStage = new Stage();
@@ -280,15 +278,15 @@ public class ResultsController implements Initializable {
             // Create the root container for our popup
             StackPane overlayRoot = new StackPane();
 
-
             // Create a semi-transparent rectangle to darken the background
-            Rectangle overlay = new Rectangle(currentScene.getWidth(), currentScene.getHeight()+40);
+            Rectangle overlay = new Rectangle(currentScene.getWidth(), currentScene.getHeight() + 40);
             overlay.setFill(Color.rgb(50, 50, 50, 0.7));
             // Create the popup content
             BorderPane popupContent = createMatchPopupContent(match);
             popupContent.setMaxWidth(700);
             popupContent.setMaxHeight(500);
-            popupContent.setStyle("-fx-background-color: white; -fx-border-color: #991f18; -fx-border-width: 1px; -fx-border-radius: 5px;");
+            popupContent.setStyle(
+                    "-fx-background-color: white; -fx-border-color: #991f18; -fx-border-width: 1px; -fx-border-radius: 5px;");
 
             // Position the popup in the center
             StackPane.setAlignment(popupContent, Pos.CENTER);
@@ -328,12 +326,12 @@ public class ResultsController implements Initializable {
             popupStage.setScene(popupScene);
             popupStage.setWidth(currentScene.getWidth());
             popupStage.setHeight(currentScene.getHeight());
-//       Lấy Stage gốc (giả sử currentScene là scene hiện tại)
+            // Lấy Stage gốc (giả sử currentScene là scene hiện tại)
             Window parentWindow = currentScene.getWindow();
 
             // Tính vị trí giữa dựa trên kích thước và vị trí Stage gốc
             double centerX = parentWindow.getX() + (parentWindow.getWidth() - popupStage.getWidth()) / 2;
-            double centerY = parentWindow.getY() + (parentWindow.getHeight() - popupStage.getHeight()) / 2+ 12;
+            double centerY = parentWindow.getY() + (parentWindow.getHeight() - popupStage.getHeight()) / 2 + 12;
 
             // Đặt vị trí popupStage
             popupStage.setX(centerX);
@@ -382,12 +380,12 @@ public class ResultsController implements Initializable {
         // Show the popup
         popupStage.show();
     }
-    //    private final TeamPlayerService service = new TeamPlayerService();
+
+    // private final TeamPlayerService service = new TeamPlayerService();
     private static final String BOLD_BLUE_STYLE = "-fx-font-weight: bold; -fx-text-fill: #3a0ca3;";
     private static final String WHITE_BOLD_STYLE = "-fx-font-size: 20px; -fx-text-fill: white; -fx-font-weight: bold;";
     private static final String TEAM_BOX_STYLE = "-fx-background-color: #DD3333;";
     private static final String HEADER_STYLE = "-fx-background-color: white; -fx-background-radius: 10px; -fx-border-color: none;";
-
 
     private BorderPane createMatchPopupContent(Match match) {
         BorderPane root = new BorderPane();
@@ -397,14 +395,12 @@ public class ResultsController implements Initializable {
         VBox header = createMatchHeader(match);
         root.setTop(header);
 
-
         // BOTTOM - Action buttons
         HBox buttons = createActionButtons(match);
         root.setBottom(buttons);
 
         return root;
     }
-
 
     private HBox createActionButtons(Match match) {
         HBox buttonBox = new HBox(15);
@@ -415,17 +411,17 @@ public class ResultsController implements Initializable {
         // Stadium Info button
         HBox containerButton = new HBox(15);
         Button stadiumButton = new Button("Stadium Information");
-        stadiumButton.setStyle("-fx-border-width: none;-fx-background-color: white;-fx-text-fill: #991f18; -fx-font-size: 16px;");
+        stadiumButton.setStyle(
+                "-fx-border-width: none;-fx-background-color: white;-fx-text-fill: #991f18; -fx-font-size: 16px;");
         stadiumButton.setPrefWidth(180);
         stadiumButton.setOnAction(e -> openStadiumInfo(match));
 
         ImageView arrowLogo = createImageView("/icons/right-arrow-line.png", 20, 20);
         arrowLogo.setStyle(" -fx-effect: innershadow(gaussian, #FF9D23, 100, 0.8, 0, 0);");
-        containerButton.getChildren().addAll(stadiumButton,arrowLogo);
+        containerButton.getChildren().addAll(stadiumButton, arrowLogo);
         containerButton.setStyle("-fx-background-color: white; -fx-background-radius: 10px;");
         containerButton.setAlignment(Pos.CENTER);
         containerButton.setPadding(new Insets(2, 2, 2, 2));
-
 
         buttonBox.getChildren().addAll(containerButton);
         return buttonBox;
@@ -450,7 +446,8 @@ public class ResultsController implements Initializable {
 
         return heading;
     }
-    private HBox goalsLineDisplay(Match match){
+
+    private HBox goalsLineDisplay(Match match) {
         HBox container = new HBox(10);
 
         HBox homeDisplay = new HBox(5);
@@ -471,7 +468,7 @@ public class ResultsController implements Initializable {
         awayDisplay.setAlignment(Pos.CENTER_LEFT);
 
         VBox display = new VBox(15);
-        display.getChildren().addAll(homeDisplay,centerSpacer, awayDisplay);
+        display.getChildren().addAll(homeDisplay, centerSpacer, awayDisplay);
 
         HBox timelineComponents = createTimeline(match);
         container.getChildren().addAll(display, timelineComponents);
@@ -498,13 +495,14 @@ public class ResultsController implements Initializable {
         List<GoalPopUpScene> allGoals = new ArrayList<>(goalsCLB1);
         allGoals.addAll(goalsCLB2);
 
-        int max =90;
-        for(GoalPopUpScene goal : allGoals ) {
-            if (goal.getPhutGhiBan() > 90) max = goal.getPhutGhiBan();
+        int max = 90;
+        for (GoalPopUpScene goal : allGoals) {
+            if (goal.getPhutGhiBan() > 90)
+                max = goal.getPhutGhiBan();
         }
-        max+=1;
+        max += 1;
 
-        for(GoalPopUpScene goal : allGoals ) {
+        for (GoalPopUpScene goal : allGoals) {
             int minute = goal.getPhutGhiBan();
             String label = (minute <= 45) ? String.valueOf(minute) : String.valueOf(minute + 1);
             double x = calculateXPosition(label, max, 400);
@@ -512,21 +510,22 @@ public class ResultsController implements Initializable {
         }
 
         // Add time markers
-        // Timeline có độ dài là 530, để KO và FT ở vị trí 0 và 530, giá trị tối thiểu (1) đến giá trị tối đa (101) nằm từ 15 đến 515 nên kích thuoc là 500
+        // Timeline có độ dài là 530, để KO và FT ở vị trí 0 và 530, giá trị tối thiểu
+        // (1) đến giá trị tối đa (101) nằm từ 15 đến 515 nên kích thuoc là 500
         // giá trị ối đa bằng ((45+5) -1 + 1) + ((90+4)-45+1) + 1(HT)
         addTimeMarker(timelinePane, "KO", 0, true);
         addTimeMarker(timelinePane, "HT", calculateXPosition("HT", max, 400), true);
         addTimeMarker(timelinePane, "FT", 430, true);
 
         // Goals
-        for(GoalPopUpScene goal : goalsCLB1 ) {
+        for (GoalPopUpScene goal : goalsCLB1) {
             int minute = goal.getPhutGhiBan();
             String label = (minute <= 45) ? String.valueOf(minute) : String.valueOf(minute + 1);
             double x = calculateXPosition(label, max, 400);
             addMatchEvent(timelinePane, "goal", x, -20);
         }
 
-        for(GoalPopUpScene goal : goalsCLB2 ) {
+        for (GoalPopUpScene goal : goalsCLB2) {
             int minute = goal.getPhutGhiBan();
             String label = (minute <= 45) ? String.valueOf(minute) : String.valueOf(minute + 1);
             double x = calculateXPosition(label, max, 400);
@@ -536,8 +535,10 @@ public class ResultsController implements Initializable {
         container.getChildren().add(timelinePane);
         return container;
     }
+
     private int parseTimeToMinute(String timeText) {
-        if(timeText.equalsIgnoreCase("HT")) return 45+1;
+        if (timeText.equalsIgnoreCase("HT"))
+            return 45 + 1;
         if (timeText.contains("+")) {
             String[] parts = timeText.split("\\+");
             try {
@@ -561,7 +562,6 @@ public class ResultsController implements Initializable {
         return (int) Math.ceil((double) totalPixels * minute / totalMinutes) + 15;
     }
 
-
     private void addTimeMarker(Pane timelinePane, String timeText, double xPosition, boolean isMajorEvent) {
         // Create vertical tick on timeline
         Line tick = new Line(xPosition, 35, xPosition, 45);
@@ -582,7 +582,7 @@ public class ResultsController implements Initializable {
         ImageView eventIcon = new ImageView();
         try {
             String imagePath = "";
-            switch(eventType) {
+            switch (eventType) {
                 case "goal":
                     imagePath = "/icons/football.png";
                     break;
@@ -602,10 +602,9 @@ public class ResultsController implements Initializable {
             eventIcon.setFitWidth(20);
 
             // Apply the styling from createInfoBox
-            if(eventType.equalsIgnoreCase("yellow_card")) {
+            if (eventType.equalsIgnoreCase("yellow_card")) {
                 eventIcon.setStyle("-fx-effect: innershadow(gaussian, #F3C623, 100, 0.8, 0, 0);");
             }
-
 
             // Create an info box with the styled icon
             HBox infoBox = new HBox(eventIcon);
@@ -618,18 +617,22 @@ public class ResultsController implements Initializable {
             StackPane placeholder = new StackPane();
             placeholder.setPrefSize(15, 15);
 
-            switch(eventType) {
+            switch (eventType) {
                 case "goal":
-                    placeholder.setStyle("-fx-background-color: #000000; -fx-effect: innershadow(gaussian, #3a0ca3, 100, 0.8, 0, 0);");
+                    placeholder.setStyle(
+                            "-fx-background-color: #000000; -fx-effect: innershadow(gaussian, #3a0ca3, 100, 0.8, 0, 0);");
                     break;
                 case "yellow_card":
-                    placeholder.setStyle("-fx-background-color: #FFD700; -fx-effect: innershadow(gaussian, #3a0ca3, 100, 0.8, 0, 0);");
+                    placeholder.setStyle(
+                            "-fx-background-color: #FFD700; -fx-effect: innershadow(gaussian, #3a0ca3, 100, 0.8, 0, 0);");
                     break;
                 case "red_card":
-                    placeholder.setStyle("-fx-background-color: #FF0000; -fx-effect: innershadow(gaussian, #3a0ca3, 100, 0.8, 0, 0);");
+                    placeholder.setStyle(
+                            "-fx-background-color: #FF0000; -fx-effect: innershadow(gaussian, #3a0ca3, 100, 0.8, 0, 0);");
                     break;
                 case "substitution":
-                    placeholder.setStyle("-fx-background-color: #00FF00; -fx-effect: innershadow(gaussian, #3a0ca3, 100, 0.8, 0, 0);");
+                    placeholder.setStyle(
+                            "-fx-background-color: #00FF00; -fx-effect: innershadow(gaussian, #3a0ca3, 100, 0.8, 0, 0);");
                     break;
             }
 
@@ -647,20 +650,17 @@ public class ResultsController implements Initializable {
         // Date display
         HBox dateBox = createInfoBox(
                 createImageView("/icons/calendar.png", 15, 15),
-                new Label(match.getNgayThiDau().toString())
-        );
+                new Label(match.getNgayThiDau().toString()));
 
         // Kickoff time display
         HBox kickOffBox = createInfoBox(
                 createImageView("/icons/clock.png", 14, 14),
-                new Label(match.getGioThiDau().toString())
-        );
+                new Label(match.getGioThiDau().toString()));
 
         // Venue display
         HBox venueBox = createInfoBox(
                 createImageView("/icons/stadium.png", 14, 14),
-                new Label(match.getSanThiDau())
-        );
+                new Label(match.getSanThiDau()));
 
         // Add spacers for centering
         Region leftSpacer = new Region();
@@ -671,10 +671,11 @@ public class ResultsController implements Initializable {
         matchInfo.getChildren().addAll(leftSpacer, dateBox, kickOffBox, venueBox, rightSpacer);
         return matchInfo;
     }
+
     private HBox createInfoBox(ImageView icon, Label label) {
         HBox box = new HBox(5);
         box.setAlignment(Pos.CENTER);
-//        box.setPrefWidth(width);
+        // box.setPrefWidth(width);
 
         icon.setStyle("-fx-effect: innershadow(gaussian, #991f18, 100, 0.8, 0, 0);");
         label.setAlignment(Pos.CENTER_LEFT);
@@ -683,11 +684,13 @@ public class ResultsController implements Initializable {
         box.getChildren().addAll(icon, label);
         return box;
     }
+
     private HBox createTeamsDisplay(Match match) {
         // Home team box
         VBox homeDisplay = new VBox();
         HBox homeTeamBox = new HBox(5);
-        homeTeamBox.getStyleClass().addAll("hometeam-box", match.getLogoCLB1().toLowerCase().replace(".png", "-") + "homebox");
+        homeTeamBox.getStyleClass().addAll("hometeam-box",
+                match.getLogoCLB1().toLowerCase().replace(".png", "-") + "homebox");
 
         ImageView homeLogo = createImageView("/Image/ClubLogo/" + match.getLogoCLB1(), 60, 60);
 
@@ -698,25 +701,26 @@ public class ResultsController implements Initializable {
 
         homeTeamBox.getChildren().addAll(homeLogo, homeNameLabel);
 
-        VBox homeGoals = GoalsListDisplay(match,true);
-        homeDisplay.getChildren().addAll( homeTeamBox, homeGoals);
+        VBox homeGoals = GoalsListDisplay(match, true);
+        homeDisplay.getChildren().addAll(homeTeamBox, homeGoals);
 
         // Result display
         VBox timeDisplay = new VBox();
-        Label timeLabel = new Label(match.getScoreCLB1() + " - "+ match.getScoreCLB2());
+        Label timeLabel = new Label(match.getScoreCLB1() + " - " + match.getScoreCLB2());
         timeLabel.setAlignment(Pos.CENTER);
         timeLabel.setMinHeight(80);
         timeLabel.setMinWidth(120);
-        timeLabel.setStyle("-fx-font-size: 45px; -fx-font-weight: bold; -fx-text-fill: white;-fx-background-color: #3a0ca3; -fx-border-color:none;-fx-background-radius: 0 0 10px 10px;");
+        timeLabel.setStyle(
+                "-fx-font-size: 45px; -fx-font-weight: bold; -fx-text-fill: white;-fx-background-color: #3a0ca3; -fx-border-color:none;-fx-background-radius: 0 0 10px 10px;");
         Region bottomSpacer = new Region();
-//         bottomSpacer.setPrefHeight(25); // chiều cao khoảng trống
+        // bottomSpacer.setPrefHeight(25); // chiều cao khoảng trống
         VBox.setVgrow(bottomSpacer, Priority.ALWAYS);
         timeDisplay.getChildren().addAll(timeLabel, bottomSpacer);
         // Away team box
         VBox awayDisplay = new VBox();
         HBox awayTeamBox = new HBox(5);
-        awayTeamBox.getStyleClass().addAll("awayteam-box", match.getLogoCLB2().toLowerCase().replace(".png", "-") + "awaybox");
-
+        awayTeamBox.getStyleClass().addAll("awayteam-box",
+                match.getLogoCLB2().toLowerCase().replace(".png", "-") + "awaybox");
 
         ImageView awayLogo = createImageView("/Image/ClubLogo/" + match.getLogoCLB2(), 60, 60);
 
@@ -726,7 +730,7 @@ public class ResultsController implements Initializable {
         awayNameLabel.setStyle(WHITE_BOLD_STYLE);
 
         awayTeamBox.getChildren().addAll(awayNameLabel, awayLogo);
-        VBox awayGoals = GoalsListDisplay(match,false);
+        VBox awayGoals = GoalsListDisplay(match, false);
         awayDisplay.getChildren().addAll(awayTeamBox, awayGoals);
 
         // Container for all elements
@@ -737,19 +741,19 @@ public class ResultsController implements Initializable {
         return container;
     }
 
-    private VBox GoalsListDisplay(Match match ,Boolean isHome) {
+    private VBox GoalsListDisplay(Match match, Boolean isHome) {
         VBox List = new VBox(10);
         String nameClub = "";
-        if(isHome == true){
-            List.setPadding(new Insets(10,10,5,0));
+        if (isHome == true) {
+            List.setPadding(new Insets(10, 10, 5, 0));
             nameClub = match.getTenCLB1();
-        }else{
-            List.setPadding(new Insets(10,0,5,10));
+        } else {
+            List.setPadding(new Insets(10, 0, 5, 10));
             nameClub = match.getTenCLB2();
         }
 
         List<GoalPopUpScene> goalsList = getGoalsOfMatchList(match.getId(), nameClub);
-        for(GoalPopUpScene goal :goalsList ){
+        for (GoalPopUpScene goal : goalsList) {
             VBox goalBox = createGoalsPlayer(goal.getTenCauThu(), goal.getPhutGhiBan(), isHome);
             List.getChildren().add(goalBox);
         }
@@ -757,17 +761,17 @@ public class ResultsController implements Initializable {
 
     }
 
-    private VBox createGoalsPlayer(String name, int minute, Boolean isHome){
+    private VBox createGoalsPlayer(String name, int minute, Boolean isHome) {
         VBox container = new VBox(3);
         HBox timeBox = new HBox(5);
-        Label timeLabel = new Label(minute+"'");
+        Label timeLabel = new Label(minute + "'");
         timeLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #991f18;");
         ImageView ballLogo = createImageView("/icons/football.png", 15, 15);
         ballLogo.setStyle("-fx-effect: innershadow(gaussian, #991f18, 100, 0.8, 0, 0);");
-        if(isHome){
+        if (isHome) {
             timeBox.getChildren().addAll(timeLabel, ballLogo);
             timeBox.setAlignment(Pos.CENTER_RIGHT);
-        }else{
+        } else {
             timeBox.getChildren().addAll(ballLogo, timeLabel);
             timeBox.setAlignment(Pos.CENTER_LEFT);
         }
@@ -776,21 +780,19 @@ public class ResultsController implements Initializable {
         player.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #991f18;");
 
         container.getChildren().addAll(timeBox, player);
-        if(isHome){
+        if (isHome) {
             container.setAlignment(Pos.CENTER_RIGHT);
-        }else{
+        } else {
             container.setAlignment(Pos.CENTER_LEFT);
         }
         return container;
     }
 
-
     private ImageView createImageView(String resourcePath, double height, double width) {
-        Image img=null;
+        Image img = null;
         try {
-             img = new Image(getClass().getResourceAsStream(resourcePath));
-        }
-        catch (Exception e) {
+            img = new Image(getClass().getResourceAsStream(resourcePath));
+        } catch (Exception e) {
             e.printStackTrace();
             // Fallback to a default image if the resource is not found
         }
@@ -804,10 +806,10 @@ public class ResultsController implements Initializable {
     private void openStadiumInfo(Match match) {
         // Create another popup or navigate to stadium info page
         MODEL_CLB club = new MODEL_CLB();
-        try{
+        try {
             MODEL_SAN san = service.getStadiumByName(match.getSanThiDau());
             club = service.getCLBByMaSan(san.getMaSan());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -815,9 +817,9 @@ public class ResultsController implements Initializable {
         Parent root = null;
         try {
             root = loader.load();
-            ClubsDetailController controller=loader.getController();
-            MODEL_SAN stadium=service.getStadiumById(club.getMaSan());
-            controller.setData(club,stadium);
+            ClubsDetailController controller = loader.getController();
+            MODEL_SAN stadium = service.getStadiumById(club.getMaSan());
+            controller.setData(club, stadium);
             Stage stage = new Stage();
             stage.setTitle("Club Details - " + club.getTenCLB());
             stage.setScene(new Scene(root));
@@ -838,7 +840,8 @@ public class ResultsController implements Initializable {
         private int phutGhiBan;
         private String tenCauThu;
 
-        public GoalPopUpScene() {}
+        public GoalPopUpScene() {
+        }
 
         public GoalPopUpScene(int phutGhiBan, String tenCauThu) {
             this.phutGhiBan = phutGhiBan;
@@ -862,7 +865,7 @@ public class ResultsController implements Initializable {
         }
     }
 
-    public List<GoalPopUpScene> getGoalsOfMatchList(int id, String nameClub)  {
+    public List<GoalPopUpScene> getGoalsOfMatchList(int id, String nameClub) {
         List<GoalPopUpScene> goalsList = new ArrayList<>();
         Connection conn = null;
         CallableStatement cstmt = null;
@@ -889,8 +892,18 @@ public class ResultsController implements Initializable {
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
-            if (rs != null) try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if (cstmt != null) try { cstmt.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (rs != null)
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            if (cstmt != null)
+                try {
+                    cstmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
         }
         return goalsList;
     }

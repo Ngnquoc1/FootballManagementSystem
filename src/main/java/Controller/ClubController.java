@@ -113,6 +113,7 @@ public class ClubController implements Initializable {
         compeFilter.getItems().addAll(dsMG);
         compeFilter.getSelectionModel().selectFirst();
     }
+
     private void filterClubs() throws SQLException {
         String searchText = searchField.getText().toLowerCase();
         System.out.println(searchText);
@@ -139,6 +140,37 @@ public class ClubController implements Initializable {
             loadTeams(filteredClubs);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+    
+    @FXML
+    private void showUserPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/UserPopup.fxml"));
+            Parent root = loader.load();
+
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.NONE);
+            popupStage.initStyle(StageStyle.UNDECORATED);
+
+            Scene scene = new Scene(root);
+            popupStage.setScene(scene);
+
+            popupStage.setX(userIcon.localToScreen(0, 0).getX() - 100);
+            popupStage.setY(userIcon.localToScreen(0, 0).getY() + 40);
+
+            popupStage.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) {
+                    popupStage.close();
+                }
+            });
+
+            popupStage.initOwner(userIcon.getScene().getWindow());
+
+            popupStage.show();
+        } catch (Exception e) {
+            System.err.println("Lỗi hiển thị UserPopup: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -252,7 +284,6 @@ public class ClubController implements Initializable {
         HBox.setHgrow(rightSpacer, Priority.ALWAYS);
 
         HBox hBox = new HBox(leftSpacer, teamCard, rightSpacer);
-
 
         Region topSpacer = new Region();
         Region bottomSpacer = new Region();

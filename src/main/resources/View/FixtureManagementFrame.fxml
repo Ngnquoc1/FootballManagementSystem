@@ -131,7 +131,7 @@
                      <children>
                         <VBox prefWidth="165.0">
                            <children>
-                              <Label prefHeight="27.0" prefWidth="65.0" styleClass="form-label" text="Vòng đấu">
+                              <Label prefHeight="21.0" prefWidth="85.0" styleClass="form-label" text="Vòng đấu">
                                  <font>
                                     <Font size="11.0" />
                                  </font>

@@ -16,9 +16,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.image.ImageView;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
+import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -26,6 +32,8 @@ import java.time.Period;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import javax.swing.text.IconView;
 
 public class RegistrationController implements Initializable {
 
@@ -36,8 +44,8 @@ public class RegistrationController implements Initializable {
     private ComboBox<MODEL_MUAGIAI> cboMuaGiai;
 
     @FXML
-    private Label lblTrangThaiDangKy,lblTrangThaiMuaGiai,lblTuoiToiThieu,
-                  lblTuoiToiDa,lblSoCTNuocNgoaiToiDa,lblSoCTToiThieu, lblSoCTToiDa,lblThongKeCauThu;
+    private Label lblTrangThaiDangKy, lblTrangThaiMuaGiai, lblTuoiToiThieu,
+            lblTuoiToiDa, lblSoCTNuocNgoaiToiDa, lblSoCTToiThieu, lblSoCTToiDa, lblThongKeCauThu;
 
     @FXML
     private TableView<CauThuViewModel> tableCauThu;
@@ -247,8 +255,43 @@ public class RegistrationController implements Initializable {
         updateStatistics();
     }
 
+    @FXML
+    private ImageView userIcon;
+
+    @FXML
+    private void showUserPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/UserPopup.fxml"));
+            Parent root = loader.load();
+
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.NONE);
+            popupStage.initStyle(StageStyle.UNDECORATED);
+
+            Scene scene = new Scene(root);
+            popupStage.setScene(scene);
+
+            popupStage.setX(userIcon.localToScreen(0, 0).getX() - 100);
+            popupStage.setY(userIcon.localToScreen(0, 0).getY() + 40);
+
+            popupStage.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) {
+                    popupStage.close();
+                }
+            });
+
+            popupStage.initOwner(userIcon.getScene().getWindow());
+
+            popupStage.show();
+        } catch (Exception e) {
+            System.err.println("Lỗi hiển thị UserPopup: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     private void updateStatistics() {
-        if (danhSachCauThu == null) return;
+        if (danhSachCauThu == null)
+            return;
 
         int soDaChon = 0;
         int soNuocNgoai = 0;
@@ -295,14 +338,14 @@ public class RegistrationController implements Initializable {
         MODEL_MUAGIAI selectedMuaGiai = cboMuaGiai.getValue();
 
         if (selectedCLB == null || selectedMuaGiai == null) {
-            AlertUtils.showError("Lỗi","Chưa chọn CLB hoặc mùa giải!",
+            AlertUtils.showError("Lỗi", "Chưa chọn CLB hoặc mùa giải!",
                     "Vui lòng chọn CLB và mùa giải trước khi đăng ký!");
             return;
         }
 
         // Kiểm tra trạng thái mùa giải
         if ("Đã kết thúc".equals(selectedMuaGiai.getStatus())) {
-            AlertUtils.showError("Lỗi","Mùa giải đã kết thúc!",
+            AlertUtils.showError("Lỗi", "Mùa giải đã kết thúc!",
                     "Không thể đăng ký cho mùa giải đã kết thúc!");
             return;
         }
@@ -311,25 +354,25 @@ public class RegistrationController implements Initializable {
             return;
         }
 
-        boolean ok=AlertUtils.showConfirmation("Xác nhận đăng ký",
+        boolean ok = AlertUtils.showConfirmation("Xác nhận đăng ký",
                 "Đăng ký tham gia mùa giải",
                 "Bạn có chắc chắn muốn đăng ký tham gia mùa giải này?");
         if (ok) {
-            boolean ketQua =false;
-            int maClb= selectedCLB.getMaCLB();
+            boolean ketQua = false;
+            int maClb = selectedCLB.getMaCLB();
             int maMG = selectedMuaGiai.getMaMG();
             List<CauThuViewModel> danhSachDaChon = getPlayerList();
             List<Integer> maCTList = danhSachDaChon.stream()
                     .map(CauThuViewModel::getMaCT)
                     .toList();
-             ketQua = service.addRegistration(maClb, maMG, maCTList);
+            ketQua = service.addRegistration(maClb, maMG, maCTList);
 
             if (ketQua) {
-                AlertUtils.showInformation("Thông báo","Đăng ký tham gia thành công!",
+                AlertUtils.showInformation("Thông báo", "Đăng ký tham gia thành công!",
                         "Bạn đã đăng ký tham gia mùa giải thành công!");
                 checkRegistrationStatus();
             } else {
-                AlertUtils.showError("Lỗi","Đăng ký tham gia thất bại!",
+                AlertUtils.showError("Lỗi", "Đăng ký tham gia thất bại!",
                         "Có lỗi xảy ra trong quá trình đăng ký tham gia!");
 
             }
@@ -342,30 +385,30 @@ public class RegistrationController implements Initializable {
         MODEL_MUAGIAI selectedMuaGiai = cboMuaGiai.getValue();
 
         if (selectedCLB == null || selectedMuaGiai == null) {
-            AlertUtils.showError("Lỗi","Chưa chọn CLB hoặc mùa giải!",
+            AlertUtils.showError("Lỗi", "Chưa chọn CLB hoặc mùa giải!",
                     "Vui lòng chọn CLB và mùa giải trước khi hủy đăng ký!");
             return;
         }
 
         // Kiểm tra trạng thái mùa giải
         if ("Đang diễn ra".equals(selectedMuaGiai.getStatus())) {
-            AlertUtils.showError("Lỗi","Không thể hủy đăng ký!",
+            AlertUtils.showError("Lỗi", "Không thể hủy đăng ký!",
                     "Mùa giải đang diễn ra, không thể hủy đăng ký!");
             return;
         }
 
-        boolean ok=AlertUtils.showConfirmation("Xác nhận hủy đăng ký",
+        boolean ok = AlertUtils.showConfirmation("Xác nhận hủy đăng ký",
                 "Hủy đăng ký tham gia mùa giải",
                 "Bạn có chắc chắn muốn hủy đăng ký tham gia mùa giải này?");
         if (ok) {
             boolean ketQua = service.removeRegistration(selectedCLB.getMaCLB(), selectedMuaGiai.getMaMG());
             if (ketQua) {
-                AlertUtils.showInformation("Thông báo","Hủy đăng ký thành công!",
+                AlertUtils.showInformation("Thông báo", "Hủy đăng ký thành công!",
                         "Bạn đã hủy đăng ký tham gia mùa giải thành công!");
                 checkRegistrationStatus();
                 unselectAll(null);
             } else {
-                AlertUtils.showError("Lỗi","Hủy đăng ký thất bại!",
+                AlertUtils.showError("Lỗi", "Hủy đăng ký thất bại!",
                         "Có lỗi xảy ra trong quá trình hủy đăng ký!");
             }
         }
@@ -379,7 +422,7 @@ public class RegistrationController implements Initializable {
 
     private boolean checkRules() {
         if (quyDinhHienTai == null) {
-            AlertUtils.showError("Lỗi","Chưa có quy định nào được chọn!",
+            AlertUtils.showError("Lỗi", "Chưa có quy định nào được chọn!",
                     "Vui lòng chọn mùa giải trước khi kiểm tra quy định!");
             return false;
         }
@@ -388,14 +431,14 @@ public class RegistrationController implements Initializable {
 
         // Kiểm tra số lượng cầu thủ
         if (danhSachDaChon.size() < quyDinhHienTai.getSoCTToiThieu()) {
-            AlertUtils.showError("Lỗi","Số lượng cầu thủ không đủ!",
+            AlertUtils.showError("Lỗi", "Số lượng cầu thủ không đủ!",
                     String.format("Số lượng cầu thủ phải ít nhất %d người!", quyDinhHienTai.getSoCTToiThieu()));
 
             return false;
         }
 
         if (danhSachDaChon.size() > quyDinhHienTai.getSoCTToiDa()) {
-            AlertUtils.showError("Lỗi","Số lượng cầu thủ vượt quá quy định!",
+            AlertUtils.showError("Lỗi", "Số lượng cầu thủ vượt quá quy định!",
                     String.format("Số lượng cầu thủ không được vượt quá %d người!", quyDinhHienTai.getSoCTToiDa()));
 
             return false;
@@ -406,7 +449,7 @@ public class RegistrationController implements Initializable {
         for (CauThuViewModel cauThu : danhSachDaChon) {
             if (cauThu.getTuoi() < quyDinhHienTai.getTuoiToiThieu() ||
                     cauThu.getTuoi() > quyDinhHienTai.getTuoiToiDa()) {
-                AlertUtils.showError("Lỗi","Tuổi cầu thủ không hợp lệ!",
+                AlertUtils.showError("Lỗi", "Tuổi cầu thủ không hợp lệ!",
                         String.format("Cầu thủ %s không đủ điều kiện về tuổi!", cauThu.getTenCT()));
                 return false;
             }
@@ -417,8 +460,9 @@ public class RegistrationController implements Initializable {
         }
 
         if (soCauThuNuocNgoai > quyDinhHienTai.getSoCTNuocNgoaiToiDa()) {
-            AlertUtils.showError("Lỗi","Số cầu thủ nước ngoài vượt quá quy định!",
-                    String.format("Số cầu thủ nước ngoài không được vượt quá %d người!", quyDinhHienTai.getSoCTNuocNgoaiToiDa()));
+            AlertUtils.showError("Lỗi", "Số cầu thủ nước ngoài vượt quá quy định!",
+                    String.format("Số cầu thủ nước ngoài không được vượt quá %d người!",
+                            quyDinhHienTai.getSoCTNuocNgoaiToiDa()));
             return false;
         }
 
@@ -453,7 +497,7 @@ public class RegistrationController implements Initializable {
 
             // Tạo stage mới
             Stage stage = new Stage();
-            stage.setTitle("Đăng ký cầu thủ - " + club.getTenCLB() );
+            stage.setTitle("Đăng ký cầu thủ - " + club.getTenCLB());
             stage.setScene(scene);
             stage.setResizable(false);
 
@@ -476,6 +520,7 @@ public class RegistrationController implements Initializable {
         private final SimpleStringProperty trangThai;
         private final SimpleStringProperty tenLoaiCT;
         private Service service;
+
         public CauThuViewModel(MODEL_CAUTHU cauThu) {
             service = new Service();
             this.selected = new SimpleBooleanProperty(false);
@@ -490,14 +535,16 @@ public class RegistrationController implements Initializable {
         }
 
         private int calculateAge(java.sql.Date ngaySinh) {
-            if (ngaySinh == null) return 0;
+            if (ngaySinh == null)
+                return 0;
             LocalDate birthDate = ngaySinh.toLocalDate();
             LocalDate currentDate = LocalDate.now();
             return Period.between(birthDate, currentDate).getYears();
         }
 
         private String getTenVT(int maVT) {
-            return service.getPositionById(maVT);        }
+            return service.getPositionById(maVT);
+        }
 
         private String checkStatus(MODEL_CAUTHU cauThu) {
             int tuoi = calculateAge(cauThu.getNgaysinh());
@@ -508,32 +555,80 @@ public class RegistrationController implements Initializable {
         }
 
         // Getters and Property methods
-        public SimpleBooleanProperty selectedProperty() { return selected; }
-        public boolean isSelected() { return selected.get(); }
-        public void setSelected(boolean selected) { this.selected.set(selected); }
+        public SimpleBooleanProperty selectedProperty() {
+            return selected;
+        }
 
-        public SimpleIntegerProperty maCTProperty() { return maCT; }
-        public int getMaCT() { return maCT.get(); }
+        public boolean isSelected() {
+            return selected.get();
+        }
 
-        public SimpleStringProperty tenCTProperty() { return tenCT; }
-        public String getTenCT() { return tenCT.get(); }
+        public void setSelected(boolean selected) {
+            this.selected.set(selected);
+        }
 
-        public SimpleIntegerProperty tuoiProperty() { return tuoi; }
-        public int getTuoi() { return tuoi.get(); }
+        public SimpleIntegerProperty maCTProperty() {
+            return maCT;
+        }
 
-        public SimpleStringProperty quocTichProperty() { return quocTich; }
-        public String getQuocTich() { return quocTich.get(); }
+        public int getMaCT() {
+            return maCT.get();
+        }
 
-        public SimpleIntegerProperty soAoProperty() { return soAo; }
-        public int getSoAo() { return soAo.get(); }
+        public SimpleStringProperty tenCTProperty() {
+            return tenCT;
+        }
 
-        public SimpleStringProperty viTriProperty() { return viTri; }
-        public String getViTri() { return viTri.get(); }
+        public String getTenCT() {
+            return tenCT.get();
+        }
 
-        public SimpleStringProperty trangThaiProperty() { return trangThai; }
-        public String getTrangThai() { return trangThai.get(); }
+        public SimpleIntegerProperty tuoiProperty() {
+            return tuoi;
+        }
 
-        public SimpleStringProperty tenLoaiCTProperty() { return tenLoaiCT; }
-        public String getTenLoaiCT() { return tenLoaiCT.get(); }
+        public int getTuoi() {
+            return tuoi.get();
+        }
+
+        public SimpleStringProperty quocTichProperty() {
+            return quocTich;
+        }
+
+        public String getQuocTich() {
+            return quocTich.get();
+        }
+
+        public SimpleIntegerProperty soAoProperty() {
+            return soAo;
+        }
+
+        public int getSoAo() {
+            return soAo.get();
+        }
+
+        public SimpleStringProperty viTriProperty() {
+            return viTri;
+        }
+
+        public String getViTri() {
+            return viTri.get();
+        }
+
+        public SimpleStringProperty trangThaiProperty() {
+            return trangThai;
+        }
+
+        public String getTrangThai() {
+            return trangThai.get();
+        }
+
+        public SimpleStringProperty tenLoaiCTProperty() {
+            return tenLoaiCT;
+        }
+
+        public String getTenLoaiCT() {
+            return tenLoaiCT.get();
+        }
     }
 }

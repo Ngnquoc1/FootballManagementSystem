@@ -40,14 +40,14 @@
                                 <StackPane>
                                     <children>
                                         <!-- Background circle for logo -->
-                                        <Rectangle arcHeight="150.0" arcWidth="150.0" fill="WHITE" height="150.0" stroke="#991f18" strokeWidth="3.0" width="150.0">
+                                        <Rectangle arcHeight="150.0" arcWidth="150.0" fill="WHITE" height="116.0" stroke="#991f18" strokeWidth="3.0" width="118.0">
                                             <effect>
                                                 <DropShadow color="#00000080" height="20.0" radius="9.5" width="20.0" />
                                             </effect>
                                         </Rectangle>
 
                                         <!-- Club logo -->
-                                        <ImageView fx:id="clubLogoImageView" fitHeight="130.0" fitWidth="130.0" pickOnBounds="true" preserveRatio="true" />
+                                        <ImageView fx:id="clubLogoImageView" fitHeight="115.0" fitWidth="114.0" pickOnBounds="true" preserveRatio="true" />
                                     </children>
                                 </StackPane>
 
@@ -74,7 +74,7 @@
     <bottom>
         <HBox alignment="CENTER" style="-fx-background-color: #991f18;" BorderPane.alignment="CENTER">
             <children>
-                <Label style="-fx-text-fill: white;" text="© 2023 Football Manager System" textFill="WHITE">
+                <Label style="-fx-text-fill: white;" text="© 2025 Football Manager System" textFill="WHITE">
                     <font>
                         <Font name="Arial Bold" size="12.0" />
                     </font>

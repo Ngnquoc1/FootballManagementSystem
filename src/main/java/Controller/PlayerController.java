@@ -1,10 +1,7 @@
 package Controller;
 
 
-import Model.MODEL_CAUTHU;
-import Model.MODEL_CAUTHUTHAMGIACLB;
-import Model.MODEL_CLB;
-import Model.MODEL_MUAGIAI;
+import Model.*;
 import Util.AlertUtils;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -33,6 +30,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -41,21 +39,26 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import Service.Service;
+
 public class PlayerController implements Initializable {
     @FXML
     private VBox Player_table;
     @FXML private TextField searchField;
     @FXML private ComboBox<String> compeFilter;
     @FXML private ComboBox<String> ClubFilter;
+    @FXML private Button addBtn;
 
     private String selectedClub = null;
     private String selectedCompetition = null;
     private Service service;
 
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
         service = new Service();
         // Create the header row
+        configureUIBasedOnRole();
         try {
             setFilter();
         } catch (SQLException e) {
@@ -117,6 +120,21 @@ public class PlayerController implements Initializable {
         loadPlayers();
     }
 
+
+    private void configureUIBasedOnRole() {
+        Session session = Session.getInstance();
+        int userRole = session.getRole();
+
+        // Nếu role là "A", ẩn Registry và Rules buttons
+        if (userRole == 5 || userRole == 4 || userRole == 3 || userRole == 1) {
+            if (addBtn != null) {
+                addBtn.setVisible(false);
+                addBtn.setManaged(false); // Không chiếm không gian trong layout
+            }
+
+        }
+    }
+
     public void setFilter() throws SQLException {
         List<MODEL_MUAGIAI> ds1 = service.getAllTournament();
         ArrayList<String> dsMG = new ArrayList<>();
@@ -159,7 +177,7 @@ public class PlayerController implements Initializable {
                 boolean matchesName = player.getTenCT().toLowerCase().contains(searchText);
 
                 // Tìm theo vị trí
-                String position = getPositionText(player.getMaVT()+"");
+                String position = getPositionText(player.getMaVT() + "");
                 boolean matchesPosition = position.toLowerCase().contains(searchText);
 
                 // Tìm theo quốc tịch
@@ -171,7 +189,7 @@ public class PlayerController implements Initializable {
 
             // Lọc theo CLB
             if (selectedClub != null && !selectedClub.isEmpty()) {
-                MODEL_CLB player_clb= service.getCLBByID(player.getMaCLB());
+                MODEL_CLB player_clb = service.getCLBByID(player.getMaCLB());
                 matchesClub = player_clb.getTenCLB().equals(selectedClub);
             }
 
@@ -771,14 +789,16 @@ public class PlayerController implements Initializable {
 
     @FXML
     public void openPlayerManagement() {
-        String sql="TenCLB= '" + ClubFilter.getValue()+"'";
+        String sql = "TenCLB= '" + ClubFilter.getValue() + "'";
         MODEL_CLB clb = service.getClbByCondition(sql);
         if (clb != null) {
             openPlayerRegistrationWindow(clb);
         } else {
-            AlertUtils.showWarning("Cảnh báo", "Chưa chọn CLB", "Vui lòng chọn một CLB từ CLB filter để quản lý danh sách cầu thủ.");
+            AlertUtils.showWarning("Cảnh báo", "Chưa chọn CLB",
+                    "Vui lòng chọn một CLB từ CLB filter để quản lý danh sách cầu thủ.");
         }
     }
+
     private void openPlayerRegistrationWindow(MODEL_CLB club) {
         try {
             // Tải FXML cho cửa sổ đăng ký cầu thủ
@@ -795,7 +815,7 @@ public class PlayerController implements Initializable {
 
             // Tạo stage mới
             Stage stage = new Stage();
-            stage.setTitle("Quản lý cầu thủ - " + club.getTenCLB() );
+            stage.setTitle("Quản lý cầu thủ - " + club.getTenCLB());
             stage.setScene(scene);
             stage.setResizable(false);
 
@@ -806,4 +826,37 @@ public class PlayerController implements Initializable {
         }
     }
 
+    @FXML
+    private ImageView userIcon;
+
+    @FXML
+    private void showUserPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/UserPopup.fxml"));
+            Parent root = loader.load();
+
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.NONE);
+            popupStage.initStyle(StageStyle.UNDECORATED);
+
+            Scene scene = new Scene(root);
+            popupStage.setScene(scene);
+
+            popupStage.setX(userIcon.localToScreen(0, 0).getX() - 100);
+            popupStage.setY(userIcon.localToScreen(0, 0).getY() + 40);
+
+            popupStage.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) {
+                    popupStage.close();
+                }
+            });
+
+            popupStage.initOwner(userIcon.getScene().getWindow());
+
+            popupStage.show();
+        } catch (Exception e) {
+            System.err.println("Lỗi hiển thị UserPopup: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }
