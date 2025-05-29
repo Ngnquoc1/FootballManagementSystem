@@ -94,7 +94,6 @@ public class Service {
     public MODEL_USER getCurrentUser() {
         Session session = Session.getInstance();
         String currentUsername = session.getUsername();
-        System.out.println("Lấy thông tin cho người dùng: " + currentUsername);
         return getUserByUsername(currentUsername);
     }
 
@@ -353,58 +352,39 @@ public class Service {
     }
 
     //  MATCH RESULT
-    public void insertResult(MODEL_KETQUATD model) throws SQLException {
-        Connection conn = null;
-        CallableStatement cstmt = null;
-        DatabaseConnection db = null;
+    public void insertResult(MODEL_KETQUATD model) throws SQLException  {
+        String sql = "INSERT INTO KetQuaTD (MaTD, DiemCLB1, DiemCLB2) VALUES (?, ?, ?)";
 
-        try {
-            db = DatabaseConnection.getInstance();
-            conn = db.getConnectionn();
-
-            String sql = "{call InsertMatchResult(?, ?,?)}";
-            cstmt = conn.prepareCall(sql);
+        try(CallableStatement  cstmt = conn.prepareCall(sql);) {
             cstmt.setInt(1, model.getMaTD());
             cstmt.setInt(2, model.getDiemCLB1());
             cstmt.setInt(3, model.getDiemCLB2());
             cstmt.execute();
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if (cstmt != null) try {
-                cstmt.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
+        }
+        catch (SQLException e) {
+            String sql1="MaTD = "+ model.getMaTD();
+            List<MODEL_BANTHANG> allGoals = this.getGoalByCondition(sql1);
+            for(MODEL_BANTHANG goal : allGoals) {
+                try {
+                    this.deleteGoal(goal);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
             }
-//            if (conn != null) try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+            throw new SQLException("Lỗi khi thêm kết quả trận đấu: " + e.getMessage());
         }
     }
 
     public void updateResult(MODEL_KETQUATD model) throws SQLException {
-        Connection conn = null;
-        CallableStatement cstmt = null;
-        DatabaseConnection db = null;
-
-        try {
-            db = DatabaseConnection.getInstance();
-            conn = db.getConnectionn();
-
-            String sql = "{call UpdateMatchResult(?, ?,?)}";
-            cstmt = conn.prepareCall(sql);
-            cstmt.setInt(1, model.getMaTD());
-            cstmt.setInt(2, model.getDiemCLB1());
-            cstmt.setInt(3, model.getDiemCLB2());
+        String sql = "UPDATE KetQuaTD SET DiemCLB1 = ?, DiemCLB2 = ? WHERE MaTD = ?";
+        try(CallableStatement cstmt = conn.prepareCall(sql)) {
+            cstmt.setInt(3, model.getMaTD());
+            cstmt.setInt(1, model.getDiemCLB1());
+            cstmt.setInt(2, model.getDiemCLB2());
             cstmt.execute();
 
         } catch (SQLException e) {
             throw e;
-        } finally {
-            if (cstmt != null) try {
-                cstmt.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-//            if (conn != null) try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
     }
 
@@ -412,30 +392,14 @@ public class Service {
         if (model == null || model.getMaTD() <= 0) {
             throw new SQLException("Dữ liệu không hợp lệ: Match hoặc ID không hợp lệ.");
         }
-
+        String sql = "{call DeleteMatchResultAndGoals(?)}";
         int maTD = model.getMaTD();
-        Connection conn = null;
-        CallableStatement cstmt = null;
-        DatabaseConnection db = null;
-
-        try {
-            db = DatabaseConnection.getInstance();
-            conn = db.getConnectionn();
-
-            String sql = "{call DeleteMatchResultAndGoals(?)}";
-            cstmt = conn.prepareCall(sql);
+        try(CallableStatement cstmt = conn.prepareCall(sql)) {
             cstmt.setInt(1, maTD);
-
             cstmt.execute();
             return 1; // Trả về 1 nếu xóa thành công
         } catch (SQLException e) {
             throw e; // Ném lại ngoại lệ để giao diện xử lý
-        } finally {
-            if (cstmt != null) try {
-                cstmt.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -446,18 +410,11 @@ public class Service {
         return new MODEL_KETQUATD(maTD, score1, score2);
     }
 
-    public java.util.ArrayList<MODEL_KETQUATD> getResultByCondition(String Condition) {
-        Connection conn = null;
-        Statement stmt = null;
+    public ArrayList<MODEL_KETQUATD> getResultByCondition(String Condition) {
         ResultSet rs = null;
-        DatabaseConnection db = null;
         ArrayList<MODEL_KETQUATD> ds = new ArrayList<>();
-
-        try {
-            db = DatabaseConnection.getInstance();
-            conn = db.getConnectionn();
+        try(Statement stmt = conn.createStatement()) {
             String sql = "SELECT * FROM KetQuaTD WHERE " + Condition;
-            stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 ds.add(getResultFromRs(rs));
@@ -466,17 +423,6 @@ public class Service {
             e.printStackTrace();
         } catch (Exception e) {
             throw new RuntimeException(e);
-        } finally {
-            if (rs != null) try {
-                rs.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            if (stmt != null) try {
-                stmt.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
         return ds;
     }
@@ -587,7 +533,6 @@ public class Service {
 
     public MODEL_CLB getClbByCondition(String s) {
         String sql = "SELECT * FROM CLB WHERE " + s;
-        System.out.println(sql);
         try (PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
             if (rs.next()) {
@@ -737,14 +682,6 @@ public class Service {
         return list;
     }
 
-    public void updateRanking(int MaTD) throws SQLException {
-        Connection conn = DatabaseConnection.getInstance().getConnectionn();
-        String sql = "{call UpdateRanking(?)}";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, MaTD);
-            ps.executeUpdate();
-        }
-    }
 
     public MODEL_MUAGIAI getTournamentByName(String value) {
         String sql = "SELECT * FROM MUAGIAI WHERE LOWER(TenMG) = LOWER(?)";
@@ -1327,7 +1264,6 @@ public class Service {
     public List<MODEL_CAUTHUTHAMGIACLB> getRegistedPlayersByCondition(String s) {
         List<Model.MODEL_CAUTHUTHAMGIACLB> danhSach = new ArrayList<>();
         String sql = "SELECT * FROM CAUTHU_CLB WHERE " + s;
-        System.out.println(sql);
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
@@ -1405,15 +1341,19 @@ public class Service {
         }
     }
 
-    public void insertGoal(MODEL_BANTHANG modelBanthang) throws SQLException {
-        String sql = "{call InsertGoal (?, ?, ?, ?)}";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, modelBanthang.getMaCT());
-            ps.setInt(2, modelBanthang.getMaTD());
-            ps.setInt(3, modelBanthang.getPhutGhiBan());
-            ps.setInt(4, modelBanthang.getmaLoaiBT());
-            ps.executeUpdate();
+    public int insertGoal(MODEL_BANTHANG modelBanthang) throws SQLException {
+        String sql = "{call InsertGoal (?, ?, ?, ?, ?)}";
+        int newGoalId = -1;
+        try (CallableStatement cstmt = conn.prepareCall(sql)) {
+            cstmt.setInt(1, modelBanthang.getMaCT());
+            cstmt.setInt(2, modelBanthang.getMaTD());
+            cstmt.setInt(3, modelBanthang.getPhutGhiBan());
+            cstmt.setInt(4, modelBanthang.getmaLoaiBT());
+            cstmt.registerOutParameter(5, Types.INTEGER); // Đăng ký để nhận MaBT
+            cstmt.executeUpdate();
+            newGoalId = cstmt.getInt(5); // Lấy MaBT từ OUT parameter
         }
+        return newGoalId;
     }
 
 
