@@ -731,8 +731,6 @@ AS
     v_count_quydinh NUMBER;
     v_count_thutu NUMBER;
 BEGIN
-    -- Chèn dữ liệu vào bảng QuyDinh với các giá trị mặc định
-INSERT INTO QuyDinh (MaMG) VALUES (p_maMG);
     -- Check if QuyDinh exists
     SELECT COUNT(*) INTO v_count_quydinh FROM QuyDinh WHERE MaMG = p_maMG;
     IF v_count_quydinh = 0 THEN

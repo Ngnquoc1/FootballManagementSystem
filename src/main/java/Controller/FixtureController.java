@@ -34,7 +34,7 @@ import java.util.*;
 
 public class FixtureController implements Initializable {
     @FXML
-    private Button resetBtn,addBtn;
+    private Button resetBtn, addBtn;
     @FXML
     private ScrollPane Calendar;
     @FXML
@@ -69,7 +69,6 @@ public class FixtureController implements Initializable {
         compeFilter.getItems().addAll(dsMG);
         compeFilter.getSelectionModel().selectFirst();
 
-
         List<MODEL_CLB> ds2 = service.getAllClubs();
         ArrayList<String> dsCLB = new ArrayList<>();
         for (MODEL_CLB clb : ds2) {
@@ -77,6 +76,7 @@ public class FixtureController implements Initializable {
         }
         clubFilter.getItems().addAll(dsCLB);
     }
+
     private void createFullMatch(Map<LocalDate, List<Match>> matchesByDate) {
         VBox mainContent = new VBox(20);
         mainContent.setPadding(new Insets(10));
@@ -93,7 +93,7 @@ public class FixtureController implements Initializable {
             HBox dateHeader = createDateHeader(date, dateFormatter);
             mainContent.getChildren().add(dateHeader);
 
-            //Add match rows for this date
+            // Add match rows for this date
             for (Match match : matches) {
                 HBox matchRow = createMatchRow(match);
                 mainContent.getChildren().add(matchRow);
@@ -102,6 +102,7 @@ public class FixtureController implements Initializable {
         Calendar.setContent(mainContent);
         Calendar.setFitToWidth(true);
     }
+
     private HBox createDateHeader(LocalDate date, DateTimeFormatter formatter) {
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
@@ -122,17 +123,17 @@ public class FixtureController implements Initializable {
         header.getChildren().addAll(dateLabel, spacer, leagueLabel, leagueLogo);
         return header;
     }
+
     private HBox createMatchRow(Match match) {
         HBox row = new HBox(0);
         row.getStyleClass().add("match-row");
-
 
         // Home team with logo
         Image logo1 = new Image(String.valueOf(getClass().getResource("/Image/ClubLogo/" + match.getLogoCLB1())));
         ImageView homeTeamLogo = new ImageView(logo1);
         homeTeamLogo.getStyleClass().add("team-logo");
 
-        //Home team label
+        // Home team label
         Label homeTeamLabel = new Label(match.getTenCLB1());
         homeTeamLabel.setAlignment(Pos.CENTER_RIGHT);
         homeTeamLabel.getStyleClass().add("team-label");
@@ -140,12 +141,11 @@ public class FixtureController implements Initializable {
         HBox homeGroup = new HBox(5, homeTeamLabel, homeTeamLogo);
         homeGroup.getStyleClass().add("team-group");
 
-
         // Kick-off time
         Label timeLabel = new Label(match.getFormattedGioThiDau());
         timeLabel.getStyleClass().add("time-label");
 
-        Label roundLabel=new Label(match.getTenVongDau());
+        Label roundLabel = new Label(match.getTenVongDau());
         roundLabel.getStyleClass().add("round-label");
 
         // Away team with logo
@@ -153,14 +153,13 @@ public class FixtureController implements Initializable {
         ImageView awayTeamLogo = new ImageView(logo2);
         awayTeamLogo.getStyleClass().add("team-logo");
 
-        //Away team label
+        // Away team label
         Label awayTeamLabel = new Label(match.getTenCLB2());
         awayTeamLabel.setAlignment(Pos.CENTER_LEFT);
         awayTeamLabel.getStyleClass().add("team-label");
 
         HBox awayGroup = new HBox(5, awayTeamLogo, awayTeamLabel);
         awayGroup.getStyleClass().add("team-group");
-
 
         // Stadium info
         ImageView stadiumIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/stadium.png")));
@@ -179,7 +178,6 @@ public class FixtureController implements Initializable {
         ImageView arrowIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/right-arrow-line.png")));
         arrowIcon.getStyleClass().add("arrow-icon");
 
-
         HBox info = new HBox(5);
         info.setAlignment(Pos.CENTER_LEFT);
         info.getChildren().addAll(homeGroup, timeLabel, awayGroup);
@@ -193,19 +191,19 @@ public class FixtureController implements Initializable {
         quickViewBox.getChildren().addAll(quickViewLabel, arrowIcon);
 
         row.getChildren().addAll(
-                info, venueBox, spacer, quickViewBox
-        );
+                info, venueBox, spacer, quickViewBox);
 
         row.setOnMouseClicked(event -> openMatchResult(match));
 
         return row;
     }
+
     @FXML
     public void filterByCLB() throws SQLException {
         String selectedCLB = clubFilter.getSelectionModel().getSelectedItem();
-        Map<LocalDate,List<Match>> matchesByDate = service.getUpcomingMatchs();
+        Map<LocalDate, List<Match>> matchesByDate = service.getUpcomingMatchs();
 
-        Map<LocalDate,List<Match>> filteredMatches = new HashMap<>();
+        Map<LocalDate, List<Match>> filteredMatches = new HashMap<>();
 
         for (Map.Entry<LocalDate, List<Match>> entry : matchesByDate.entrySet()) {
             List<Match> filteredList = entry.getValue().stream()
@@ -217,6 +215,7 @@ public class FixtureController implements Initializable {
         }
         createFullMatch(filteredMatches);
     }
+
     @FXML
     public void resetFilter() throws SQLException {
         Map<LocalDate, List<Match>> matchesByDate = service.getUpcomingMatchs();
@@ -224,6 +223,7 @@ public class FixtureController implements Initializable {
         compeFilter.getSelectionModel().selectFirst();
         createFullMatch(matchesByDate);
     }
+
     @FXML
     private void controlFixture() throws SQLException {
         try {
@@ -265,15 +265,15 @@ public class FixtureController implements Initializable {
             // Create the root container for our popup
             StackPane overlayRoot = new StackPane();
 
-
             // Create a semi-transparent rectangle to darken the background
-            Rectangle overlay = new Rectangle(currentScene.getWidth(), currentScene.getHeight()+40);
+            Rectangle overlay = new Rectangle(currentScene.getWidth(), currentScene.getHeight() + 40);
             overlay.setFill(Color.rgb(50, 50, 50, 0.7));
             // Create the popup content
             BorderPane popupContent = createMatchPopupContent(match);
             popupContent.setMaxWidth(700);
             popupContent.setMaxHeight(500);
-            popupContent.setStyle("-fx-background-color: white; -fx-border-color: #3a0ca3; -fx-border-width: 1px; -fx-border-radius: 5px;");
+            popupContent.setStyle(
+                    "-fx-background-color: white; -fx-border-color: #3a0ca3; -fx-border-width: 1px; -fx-border-radius: 5px;");
 
             // Position the popup in the center
             StackPane.setAlignment(popupContent, Pos.CENTER);
@@ -313,12 +313,12 @@ public class FixtureController implements Initializable {
             popupStage.setScene(popupScene);
             popupStage.setWidth(currentScene.getWidth());
             popupStage.setHeight(currentScene.getHeight());
-//       Lấy Stage gốc (giả sử currentScene là scene hiện tại)
+            // Lấy Stage gốc (giả sử currentScene là scene hiện tại)
             Window parentWindow = currentScene.getWindow();
 
             // Tính vị trí giữa dựa trên kích thước và vị trí Stage gốc
             double centerX = parentWindow.getX() + (parentWindow.getWidth() - popupStage.getWidth()) / 2;
-            double centerY = parentWindow.getY() + (parentWindow.getHeight() - popupStage.getHeight()) / 2+ 12;
+            double centerY = parentWindow.getY() + (parentWindow.getHeight() - popupStage.getHeight()) / 2 + 12;
 
             // Đặt vị trí popupStage
             popupStage.setX(centerX);
@@ -367,12 +367,12 @@ public class FixtureController implements Initializable {
         // Show the popup
         popupStage.show();
     }
-    //    private final TeamPlayerService service = new TeamPlayerService();
+
+    // private final TeamPlayerService service = new TeamPlayerService();
     private static final String BOLD_BLUE_STYLE = "-fx-font-weight: bold; -fx-text-fill: #3a0ca3;";
     private static final String WHITE_BOLD_STYLE = "-fx-font-size: 20px; -fx-text-fill: white; -fx-font-weight: bold;";
     private static final String TEAM_BOX_STYLE = "-fx-background-color: #DD3333;";
     private static final String HEADER_STYLE = "-fx-background-color: white; -fx-background-radius: 10px; -fx-border-color: none;";
-
 
     private BorderPane createMatchPopupContent(Match match) {
         BorderPane root = new BorderPane();
@@ -455,7 +455,8 @@ public class FixtureController implements Initializable {
         standingsGrid.add(pointsHeader, 2, 0);
 
         // Home team standing (example data)
-        ImageView homeTeamSmallLogo = new ImageView(new Image(getClass().getResourceAsStream("/Image/CLubLogo/" + match.getLogoCLB1())));
+        ImageView homeTeamSmallLogo = new ImageView(
+                new Image(getClass().getResourceAsStream("/Image/CLubLogo/" + match.getLogoCLB1())));
         homeTeamSmallLogo.setFitHeight(30);
         homeTeamSmallLogo.setFitWidth(30);
         Label homeTeamStanding = new Label(match.getTenCLB1());
@@ -464,9 +465,9 @@ public class FixtureController implements Initializable {
         homeTeamStandingBox.setAlignment(Pos.CENTER_LEFT);
 
         MODEL_BXH_CLB homeTeam = service.getBxhCLBByCLBName(match.getTenCLB1());
-        Label homeTeamPos = new Label(homeTeam.getHang()+""); // Get from standings data
+        Label homeTeamPos = new Label(homeTeam.getHang() + ""); // Get from standings data
         homeTeamPos.setStyle("-fx-font-size: 15px;-fx-text-fill: #991f18;");
-        Label homeTeamPts = new Label(homeTeam.getDiem()+""); // Get from standings data
+        Label homeTeamPts = new Label(homeTeam.getDiem() + ""); // Get from standings data
         homeTeamPts.setStyle("-fx-font-size: 15px;-fx-text-fill: #991f18;");
 
         standingsGrid.add(homeTeamStandingBox, 0, 1);
@@ -474,7 +475,8 @@ public class FixtureController implements Initializable {
         standingsGrid.add(homeTeamPts, 2, 1);
 
         // Away team standing (example data)
-        ImageView awayTeamSmallLogo = new ImageView(new Image(getClass().getResourceAsStream("/Image/CLubLogo/" + match.getLogoCLB2())));
+        ImageView awayTeamSmallLogo = new ImageView(
+                new Image(getClass().getResourceAsStream("/Image/CLubLogo/" + match.getLogoCLB2())));
         awayTeamSmallLogo.setFitHeight(30);
         awayTeamSmallLogo.setFitWidth(30);
         Label awayTeamStanding = new Label(match.getTenCLB2());
@@ -483,9 +485,9 @@ public class FixtureController implements Initializable {
         awayTeamStandingBox.setAlignment(Pos.CENTER_LEFT);
 
         MODEL_BXH_CLB awayTeam = service.getBxhCLBByCLBName(match.getTenCLB2());
-        Label awayTeamPos = new Label(awayTeam.getHang()+""); // Get from standings data
+        Label awayTeamPos = new Label(awayTeam.getHang() + ""); // Get from standings data
         awayTeamPos.setStyle("-fx-font-size: 15px;-fx-text-fill: #991f18;");
-        Label awayTeamPts = new Label(awayTeam.getDiem()+""); // Get from standings data
+        Label awayTeamPts = new Label(awayTeam.getDiem() + ""); // Get from standings data
         awayTeamPts.setStyle("-fx-font-size: 15px;-fx-text-fill: #991f18;");
 
         standingsGrid.add(awayTeamStandingBox, 0, 2);
@@ -498,7 +500,6 @@ public class FixtureController implements Initializable {
         return detailsBox;
     }
 
-
     private HBox createActionButtons(Match match) {
         HBox buttonBox = new HBox(15);
         buttonBox.setAlignment(Pos.CENTER);
@@ -508,17 +509,17 @@ public class FixtureController implements Initializable {
         // Stadium Info button
         HBox containerButton = new HBox(15);
         Button stadiumButton = new Button("Stadium Information");
-        stadiumButton.setStyle("-fx-border-width: none;-fx-background-color: white;-fx-text-fill: #991f18; -fx-font-size: 16px;");
+        stadiumButton.setStyle(
+                "-fx-border-width: none;-fx-background-color: white;-fx-text-fill: #991f18; -fx-font-size: 16px;");
         stadiumButton.setPrefWidth(180);
         stadiumButton.setOnAction(e -> openStadiumInfo(match));
 
         ImageView arrowLogo = createImageView("/icons/right-arrow-line.png", 20, 20);
         arrowLogo.setStyle(" -fx-effect: innershadow(gaussian, #FF9D23, 100, 0.8, 0, 0);");
-        containerButton.getChildren().addAll(stadiumButton,arrowLogo);
+        containerButton.getChildren().addAll(stadiumButton, arrowLogo);
         containerButton.setStyle("-fx-background-color: white; -fx-background-radius: 10px;");
         containerButton.setAlignment(Pos.CENTER);
         containerButton.setPadding(new Insets(2, 2, 2, 2));
-
 
         buttonBox.getChildren().addAll(containerButton);
         return buttonBox;
@@ -543,7 +544,8 @@ public class FixtureController implements Initializable {
         // Home team box
         VBox homeDisplay = new VBox();
         HBox homeTeamBox = new HBox(5);
-        homeTeamBox.getStyleClass().addAll("hometeam-box", match.getLogoCLB1().toLowerCase().replace(".png", "-") + "homebox");
+        homeTeamBox.getStyleClass().addAll("hometeam-box",
+                match.getLogoCLB1().toLowerCase().replace(".png", "-") + "homebox");
 
         ImageView homeLogo = createImageView("/Image/ClubLogo/" + match.getLogoCLB1(), 60, 60);
 
@@ -557,7 +559,7 @@ public class FixtureController implements Initializable {
         Region bottomspacer = new Region();
         VBox.setVgrow(bottomspacer, Priority.ALWAYS);
 
-        homeDisplay.getChildren().addAll( homeTeamBox, bottomspacer);
+        homeDisplay.getChildren().addAll(homeTeamBox, bottomspacer);
 
         // Result display
         VBox timeDisplay = new VBox();
@@ -565,14 +567,16 @@ public class FixtureController implements Initializable {
         timeLabel.setAlignment(Pos.CENTER);
         timeLabel.setMinHeight(80);
         timeLabel.setMinWidth(120);
-        timeLabel.setStyle("-fx-font-size: 45px; -fx-font-weight: bold; -fx-text-fill: white;-fx-background-color: #3a0ca3; -fx-border-color:none;-fx-background-radius: 0 0 10px 10px;");
+        timeLabel.setStyle(
+                "-fx-font-size: 45px; -fx-font-weight: bold; -fx-text-fill: white;-fx-background-color: #3a0ca3; -fx-border-color:none;-fx-background-radius: 0 0 10px 10px;");
         Region bottomSpacer = new Region();
         VBox.setVgrow(bottomSpacer, Priority.ALWAYS);
         timeDisplay.getChildren().addAll(timeLabel, bottomSpacer);
         // Away team box
         VBox awayDisplay = new VBox();
         HBox awayTeamBox = new HBox(5);
-        awayTeamBox.getStyleClass().addAll("awayteam-box", match.getLogoCLB2().toLowerCase().replace(".png", "-") + "awaybox");
+        awayTeamBox.getStyleClass().addAll("awayteam-box",
+                match.getLogoCLB2().toLowerCase().replace(".png", "-") + "awaybox");
 
         ImageView awayLogo = createImageView("/Image/ClubLogo/" + match.getLogoCLB2(), 60, 60);
 
@@ -594,7 +598,6 @@ public class FixtureController implements Initializable {
     }
 
 
-
     private ImageView createImageView(String resourcePath, double height, double width) {
         ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(resourcePath)));
         imageView.setFitHeight(height);
@@ -606,10 +609,10 @@ public class FixtureController implements Initializable {
     private void openStadiumInfo(Match match) {
         // Create another popup or navigate to stadium info page
         MODEL_CLB club = new MODEL_CLB();
-        try{
+        try {
             MODEL_SAN san = service.getStadiumByName(match.getSanThiDau());
             club = service.getCLBByMaSan(san.getMaSan());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -617,9 +620,9 @@ public class FixtureController implements Initializable {
         Parent root = null;
         try {
             root = loader.load();
-            ClubsDetailController controller=loader.getController();
-            MODEL_SAN stadium=service.getStadiumById(club.getMaSan());
-            controller.setData(club,stadium);
+            ClubsDetailController controller = loader.getController();
+            MODEL_SAN stadium = service.getStadiumById(club.getMaSan());
+            controller.setData(club, stadium);
             Stage stage = new Stage();
             stage.setTitle("Club Details - " + club.getTenCLB());
             stage.setScene(new Scene(root));

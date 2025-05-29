@@ -3,6 +3,7 @@ package Controller;
 import Model.MODEL_CLB;
 import Model.MODEL_MUAGIAI;
 import Model.MODEL_SAN;
+import Model.Session;
 import Service.Service;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,6 +20,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 import java.net.URL;
@@ -30,19 +34,27 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class ClubController implements Initializable {
-
-    @FXML private TextField searchField;
-    @FXML private ComboBox<String> compeFilter;
-    @FXML private Button resetBtn,addBtn;
-    @FXML private GridPane team_container;
+    @FXML
+    private ImageView userIcon;
+    @FXML
+    private TextField searchField;
+    @FXML
+    private ComboBox<String> compeFilter;
+    @FXML
+    private Button resetBtn, addBtn;
+    @FXML
+    private GridPane team_container;
 
     private ObservableList<MODEL_CLB> allClubs = FXCollections.observableArrayList();
     private ObservableList<MODEL_CLB> filteredClubs = FXCollections.observableArrayList();
 
     private Service service = new Service();
 
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        configureUIBasedOnRole();
         try {
             setFilter();
         } catch (SQLException e) {
@@ -71,11 +83,26 @@ public class ClubController implements Initializable {
 
         // Hiển thị danh sách câu lạc bộ ban đầu
         try {
-            loadTeams( allClubs);
+            loadTeams(allClubs);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+
+    private void configureUIBasedOnRole() {
+        Session session = Session.getInstance();
+        int userRole = Integer.parseInt(session.getRole());
+
+
+        if (userRole == 5 || userRole == 4 || userRole == 3 || userRole == 1) {
+            if (addBtn != null) {
+                addBtn.setVisible(false);
+                addBtn.setManaged(false); // Không chiếm không gian trong layout
+            }
+
+        }
+    }
+
     public void setFilter() throws SQLException {
         List<MODEL_MUAGIAI> ds1 = service.getAllTournament();
         ArrayList<String> dsMG = new ArrayList<>();
@@ -92,15 +119,14 @@ public class ClubController implements Initializable {
         String season = compeFilter.getValue();
 
         // Lọc câu lạc bộ theo tên
-        Predicate<MODEL_CLB> searchFilter = club ->
-                searchText.isEmpty() || club.getTenCLB().toLowerCase().contains(searchText);
-
+        Predicate<MODEL_CLB> searchFilter = club -> searchText.isEmpty()
+                || club.getTenCLB().toLowerCase().contains(searchText);
 
         filteredClubs.clear();
         filteredClubs.addAll(allClubs.stream()
                 .filter(searchFilter)
                 .collect(Collectors.toList()));
-        loadTeams( filteredClubs);
+        loadTeams(filteredClubs);
     }
 
     @FXML
@@ -113,6 +139,37 @@ public class ClubController implements Initializable {
             loadTeams(filteredClubs);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @FXML
+    private void showUserPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/UserPopup.fxml"));
+            Parent root = loader.load();
+
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.NONE);
+            popupStage.initStyle(StageStyle.UNDECORATED);
+
+            Scene scene = new Scene(root);
+            popupStage.setScene(scene);
+
+            popupStage.setX(userIcon.localToScreen(0, 0).getX() - 100);
+            popupStage.setY(userIcon.localToScreen(0, 0).getY() + 40);
+
+            popupStage.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) {
+                    popupStage.close();
+                }
+            });
+
+            popupStage.initOwner(userIcon.getScene().getWindow());
+
+            popupStage.show();
+        } catch (Exception e) {
+            System.err.println("Lỗi hiển thị UserPopup: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -130,7 +187,7 @@ public class ClubController implements Initializable {
         // Tạo động các RowConstraints dựa trên số hàng cần thiết
         for (int i = 0; i < numRows; i++) {
             RowConstraints row = new RowConstraints();
-            row.setMinHeight(150);  // Chiều cao tối thiểu cho mỗi hàng
+            row.setMinHeight(150); // Chiều cao tối thiểu cho mỗi hàng
             row.setPrefHeight(150); // Chiều cao ưu tiên
             row.setVgrow(Priority.SOMETIMES);
             team_container.getRowConstraints().add(row);
@@ -139,7 +196,7 @@ public class ClubController implements Initializable {
         // Thêm card cho từng đội bóng vào GridPane
         for (int i = 0; i < teams.size(); i++) {
             MODEL_CLB team = teams.get(i);
-            VBox teamCard =  teamCardView(team);
+            VBox teamCard = teamCardView(team);
 
             // Tính toán vị trí hàng và cột dựa trên index
             int row = i / numCols;
@@ -150,17 +207,17 @@ public class ClubController implements Initializable {
         }
 
     }
-    private VBox teamCardView(MODEL_CLB team){
+
+    private VBox teamCardView(MODEL_CLB team) {
         VBox teamCard = new VBox(5);
         teamCard.setAlignment(Pos.CENTER);
-        teamCard.setPadding(new Insets(5,10,0, 10));
+        teamCard.setPadding(new Insets(5, 10, 0, 10));
 
-        Image logo=null;
-        try{
-            logo=new Image(getClass().getResourceAsStream("/Image/ClubLogo/"+ team.getLogoCLB()));
-        }
-        catch(Exception e){
-            logo=new Image(getClass().getResourceAsStream("/Image/ClubLogo/defaultLogo.png"));
+        Image logo = null;
+        try {
+            logo = new Image(getClass().getResourceAsStream("/Image/ClubLogo/" + team.getLogoCLB()));
+        } catch (Exception e) {
+            logo = new Image(getClass().getResourceAsStream("/Image/ClubLogo/default_logo.png"));
         }
         ImageView logoView = new ImageView(logo);
         logoView.setPreserveRatio(true);
@@ -180,13 +237,13 @@ public class ClubController implements Initializable {
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         HBox content = new HBox(5);
-        content.getChildren().addAll( nameLabel,spacer, arrowLabel);
+        content.getChildren().addAll(nameLabel, spacer, arrowLabel);
 
         HBox colorBar = new HBox();
         colorBar.setPrefHeight(3);
         colorBar.getStyleClass().addAll("color-bar");
 
-        teamCard.getChildren().addAll(logoView, content,colorBar);
+        teamCard.getChildren().addAll(logoView, content, colorBar);
         teamCard.getStyleClass().add("team-card");
 
         Region leftSpacer = new Region();
@@ -204,7 +261,7 @@ public class ClubController implements Initializable {
 
         VBox wrapper = new VBox(topSpacer, hBox, bottomSpacer);
         wrapper.setOnMouseClicked(event -> {
-                handleClubClick(team);
+            handleClubClick(team);
         });
         return wrapper;
     }
@@ -215,9 +272,9 @@ public class ClubController implements Initializable {
         Parent root = null;
         try {
             root = loader.load();
-            ClubsDetailController controller=loader.getController();
-            MODEL_SAN stadium=service.getStadiumById(club.getMaSan());
-            controller.setData(club,stadium);
+            ClubsDetailController controller = loader.getController();
+            MODEL_SAN stadium = service.getStadiumById(club.getMaSan());
+            controller.setData(club, stadium);
             Stage stage = new Stage();
             stage.setTitle("Club Details - " + club.getTenCLB());
             stage.setScene(new Scene(root));
@@ -232,6 +289,7 @@ public class ClubController implements Initializable {
             alert.showAndWait();
         }
     }
+
     @FXML
     public void controlClub() {
         try {

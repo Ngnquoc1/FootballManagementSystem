@@ -21,6 +21,9 @@ import java.nio.file.Paths;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -146,7 +149,7 @@ public class TournamentManagementController {
         filteredTournaments = new FilteredList<>(tournamentsList, p -> true);
         tournamentsTableView.setItems(filteredTournaments);
 
-        List<MODEL_MUAGIAI> allList= service.getAllTournament();
+        List<MODEL_MUAGIAI> allList = service.getAllTournament();
         tournamentsList.addAll(allList);
 
         updateStatistics();
@@ -178,6 +181,7 @@ public class TournamentManagementController {
         compeFilter.getItems().addAll(dsMG);
         compeFilter.getSelectionModel().selectFirst();
     }
+
     private void createLogoDirectory() {
         File directory = new File(LOGO_DIRECTORY);
         if (!directory.exists()) {
@@ -206,7 +210,7 @@ public class TournamentManagementController {
     }
 
     @FXML
-    private void filterByLeague(){
+    private void filterByLeague() {
         String selectedLeague = compeFilter.getSelectionModel().getSelectedItem();
         if (selectedLeague != null) {
             filteredTournaments.setPredicate(tournament -> tournament.getTenMG().equals(selectedLeague));
@@ -214,6 +218,7 @@ public class TournamentManagementController {
             filteredTournaments.setPredicate(tournament -> true);
         }
     }
+
     @FXML
     private void resetFilter() {
         filteredTournaments.setPredicate(tournament -> true);
@@ -245,7 +250,6 @@ public class TournamentManagementController {
             nameField.setText(selectedTournament.getTenMG());
             startDatePicker.setValue(selectedTournament.getNgayBD());
             endDatePicker.setValue(selectedTournament.getNgayKT());
-
             logoImageView.setImage(selectedTournament.getLogo());
 
             // Reset selectedLogoFile nếu đang sử dụng logo đã lưu
@@ -287,8 +291,7 @@ public class TournamentManagementController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Chọn Logo Giải Đấu");
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Hình ảnh", "*.png", "*.jpg", "*.jpeg")
-        );
+                new FileChooser.ExtensionFilter("Hình ảnh", "*.png", "*.jpg", "*.jpeg"));
 
         Stage stage = (Stage) chooseLogoButton.getScene().getWindow();
         selectedLogoFile = fileChooser.showOpenDialog(stage);
@@ -307,7 +310,7 @@ public class TournamentManagementController {
     private void handleViewDetails() {
         MODEL_MUAGIAI selectedTournament = tournamentsTableView.getSelectionModel().getSelectedItem();
         if (selectedTournament != null) {
-            List<MODEL_VONGDAU> listVD= service.getAllRoundByTournament(selectedTournament.getMaMG());
+            List<MODEL_VONGDAU> listVD = service.getAllRoundByTournament(selectedTournament.getMaMG());
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Chi tiết giải đấu");
             alert.setHeaderText(selectedTournament.getTenMG());
@@ -326,13 +329,17 @@ public class TournamentManagementController {
             }
 
             StringBuilder content = new StringBuilder("ID: " + selectedTournament.getMaMG() + "\n" +
-                    "Ngày bắt đầu: " + selectedTournament.getNgayBD().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "\n" +
-                    "Ngày kết thúc: " + selectedTournament.getNgayKT().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "\n" +
+                    "Ngày bắt đầu: " + selectedTournament.getNgayBD().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                    + "\n" +
+                    "Ngày kết thúc: " + selectedTournament.getNgayKT().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                    + "\n" +
                     "Trạng thái: " + selectedTournament.getStatus());
             if (listVD != null && !listVD.isEmpty()) {
                 content.append("\n\nDanh sách vòng đấu:\n");
                 for (MODEL_VONGDAU vongDau : listVD) {
-                    content.append("- ").append(vongDau.getTenVD()).append(" (ID: ").append(vongDau.getMaVD()).append(") - Từ: ").append(vongDau.getNgayBD()).append(" Đến: ").append(vongDau.getNgayKT()).append("\n");
+                    content.append("- ").append(vongDau.getTenVD()).append(" (ID: ").append(vongDau.getMaVD())
+                            .append(") - Từ: ").append(vongDau.getNgayBD()).append(" Đến: ").append(vongDau.getNgayKT())
+                            .append("\n");
                 }
             } else {
                 content.append("\n\nKhông có vòng đấu nào trong giải đấu này.");
@@ -430,7 +437,8 @@ public class TournamentManagementController {
         }
     }
     private String saveLogoFile(File logoFile) {
-        if (logoFile == null) return null;
+        if (logoFile == null)
+            return null;
 
         try {
             String fileExtension = getFileExtension(logoFile.getName());
@@ -493,5 +501,39 @@ public class TournamentManagementController {
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    @FXML
+    private ImageView userIcon;
+
+    @FXML
+    private void showUserPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/UserPopup.fxml"));
+            Parent root = loader.load();
+
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.NONE);
+            popupStage.initStyle(StageStyle.UNDECORATED);
+
+            Scene scene = new Scene(root);
+            popupStage.setScene(scene);
+
+            popupStage.setX(userIcon.localToScreen(0, 0).getX() - 100);
+            popupStage.setY(userIcon.localToScreen(0, 0).getY() + 40);
+
+            popupStage.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) {
+                    popupStage.close();
+                }
+            });
+
+            popupStage.initOwner(userIcon.getScene().getWindow());
+
+            popupStage.show();
+        } catch (Exception e) {
+            System.err.println("Lỗi hiển thị UserPopup: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
