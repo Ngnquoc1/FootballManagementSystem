@@ -183,12 +183,21 @@ CREATE TABLE THUTU_UUTIEN (
                               CONSTRAINT chk_douutien CHECK (DoUuTien >= 1)
 );
 /
+CREATE TABLE VaiTro(
+                       MaVT NUMBER PRIMARY KEY,
+                       TenVaiTro VARCHAR2(50)
+);
+/
 CREATE TABLE TaiKhoan (
                           TenDangNhap VARCHAR2(50) PRIMARY KEY,
                           MatKhau VARCHAR2(100) NOT NULL,
-                          VaiTro VARCHAR2(30) CHECK (VaiTro IN ('A', 'B', 'C', 'D'))
+                          MaVT NUMBER,
+                          FOREIGN KEY (MaVT) REFERENCES VaiTro(MaVT)
 );
 /
+
+
+
 ---------------------------------------TRIGGER--------------------------------
 ---------- Ngày bắt đầu và kết thúc của vòng đấu phải nằm trong khoảng thời gian của mùa giải.
 
@@ -200,22 +209,22 @@ v_ngay_khaimac DATE;
     v_ngay_bemac DATE;
 BEGIN
     -- Lấy ngày khai mạc và bế mạc của mùa giải tương ứng
-SELECT NgayKhaiMac, NgayBeMac
-INTO v_ngay_khaimac, v_ngay_bemac
-FROM MuaGiai
-WHERE MaMG = :NEW.MaMG;
+    SELECT NgayKhaiMac, NgayBeMac
+    INTO v_ngay_khaimac, v_ngay_bemac
+    FROM MuaGiai
+    WHERE MaMG = :NEW.MaMG;
 
 -- Kiểm tra ràng buộc thời gian
-IF :NEW.NgayBD < v_ngay_khaimac OR :NEW.NgayKT > v_ngay_bemac THEN
+    IF :NEW.NgayBD < v_ngay_khaimac OR :NEW.NgayKT > v_ngay_bemac THEN
         RAISE_APPLICATION_ERROR(-20001,
                                 'Ngày bắt đầu và kết thúc của vòng đấu phải nằm trong khoảng thời gian của mùa giải.');
-END IF;
+    END IF;
 
     -- Kiểm tra NgayBD <= NgayKT
     IF :NEW.NgayBD > :NEW.NgayKT THEN
         RAISE_APPLICATION_ERROR(-20002,
                                 'Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc.');
-END IF;
+    END IF;
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
         RAISE_APPLICATION_ERROR(-20003,
@@ -225,24 +234,24 @@ END;
 ------------Thời gian trận đấu phải nằm trong khoảng thời gian diễn ra vòng đấu
 CREATE OR REPLACE TRIGGER trg_check_thoigian_trandau
     BEFORE INSERT OR UPDATE ON TranDau
-                                FOR EACH ROW
+    FOR EACH ROW
 DECLARE
-v_ngay_bd DATE;
+    v_ngay_bd DATE;
     v_ngay_kt DATE;
 BEGIN
     -- Lấy ngày bắt đầu và kết thúc của vòng đấu tương ứng
-SELECT NgayBD, NgayKT
-INTO v_ngay_bd, v_ngay_kt
-FROM VongDau
-WHERE MaVD = :NEW.MaVD;
+    SELECT NgayBD, NgayKT
+    INTO v_ngay_bd, v_ngay_kt
+    FROM VongDau
+    WHERE MaVD = :NEW.MaVD;
 
 -- Kiểm tra xem ThoiGian có nằm trong khoảng NgayBD và NgayKT hay không
-IF :NEW.ThoiGian < v_ngay_bd OR :NEW.ThoiGian > v_ngay_kt THEN
+    IF :NEW.ThoiGian < v_ngay_bd OR :NEW.ThoiGian > v_ngay_kt THEN
         RAISE_APPLICATION_ERROR(-20004,
                                 'Thời gian trận đấu phải nằm trong khoảng thời gian diễn ra vòng đấu (' ||
                                 TO_CHAR(v_ngay_bd, 'DD-MON-YYYY') || ' đến ' ||
                                 TO_CHAR(v_ngay_kt, 'DD-MON-YYYY') || ').');
-END IF;
+    END IF;
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
         RAISE_APPLICATION_ERROR(-20005,
@@ -252,41 +261,41 @@ END;
 ------------QUY ĐỊNH VỀ ĐỘ TUỔI THAM GIA MÙA GIẢI CỦA CẦU THỦ
 CREATE OR REPLACE TRIGGER trg_check_tuoi_cauthu_clb
     BEFORE INSERT OR UPDATE ON CauThu_CLB
-                                FOR EACH ROW
+    FOR EACH ROW
 DECLARE
-v_tuoi NUMBER;
+    v_tuoi NUMBER;
     v_tuoi_toithieu NUMBER;
     v_tuoi_toida NUMBER;
     v_ngay_khaimac DATE;
     v_ngay_sinh DATE;
 BEGIN
     -- Lấy ngày khai mạc mùa giải
-SELECT NgayKhaiMac
-INTO v_ngay_khaimac
-FROM MuaGiai
-WHERE MaMG = :NEW.MaMG;
+    SELECT NgayKhaiMac
+    INTO v_ngay_khaimac
+    FROM MuaGiai
+    WHERE MaMG = :NEW.MaMG;
 
 -- Lấy ngày sinh của cầu thủ
-SELECT NgaySinh
-INTO v_ngay_sinh
-FROM CauThu
-WHERE MaCT = :NEW.MaCT;
+    SELECT NgaySinh
+    INTO v_ngay_sinh
+    FROM CauThu
+    WHERE MaCT = :NEW.MaCT;
 
 -- Kiểm tra ngày sinh không NULL và không trong tương lai
-IF v_ngay_sinh IS NULL THEN
+    IF v_ngay_sinh IS NULL THEN
         RAISE_APPLICATION_ERROR(-20013, 'Ngày sinh của cầu thủ không được để trống.');
-END IF;
+    END IF;
     IF v_ngay_sinh > v_ngay_khaimac THEN
         RAISE_APPLICATION_ERROR(-20014, 'Ngày sinh không được lớn hơn ngày khai mạc mùa giải.');
-END IF;
+    END IF;
 
     -- Lấy quy định tuổi từ QuyDinh (nếu có)
-BEGIN
-SELECT NVL(TUOITOITHIEU, 16), NVL(TUOITOIDA, 40)
-INTO v_tuoi_toithieu, v_tuoi_toida
-FROM QuyDinh
-WHERE MaMG = :NEW.MaMG;
-EXCEPTION
+    BEGIN
+        SELECT NVL(TUOITOITHIEU, 16), NVL(TUOITOIDA, 40)
+        INTO v_tuoi_toithieu, v_tuoi_toida
+        FROM QuyDinh
+        WHERE MaMG = :NEW.MaMG;
+    EXCEPTION
         WHEN NO_DATA_FOUND THEN
             v_tuoi_toithieu := 16;
             v_tuoi_toida := 40;
@@ -296,21 +305,21 @@ END;
     v_tuoi := FLOOR(MONTHS_BETWEEN(v_ngay_khaimac, v_ngay_sinh) / 12);
     IF ADD_MONTHS(v_ngay_sinh, v_tuoi * 12) > v_ngay_khaimac THEN
         v_tuoi := v_tuoi - 1;
-END IF;
+    END IF;
 
     -- Kiểm tra tuổi theo quy định
     IF v_tuoi < v_tuoi_toithieu OR v_tuoi > v_tuoi_toida THEN
         RAISE_APPLICATION_ERROR(-20006,
                                 'Tuổi cầu thủ phải từ ' || v_tuoi_toithieu || ' đến ' || v_tuoi_toida ||
                                 '. Tuổi hiện tại: ' || v_tuoi);
-END IF;
+    END IF;
 
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
         RAISE_APPLICATION_ERROR(-20011,
                                 'Không tìm thấy thông tin mùa giải cho MaMG: ' || :NEW.MaMG ||
                                 ' hoặc cầu thủ cho MaCT: ' || :NEW.MaCT);
-WHEN OTHERS THEN
+    WHEN OTHERS THEN
         RAISE_APPLICATION_ERROR(-20015, 'Lỗi không xác định khi kiểm tra tuổi: ' || SQLERRM);
 END;
 /
@@ -319,9 +328,9 @@ END;
 --------QUY ĐỊNH VỀ TỔNG SỐ LƯỢNG CẦU THỦ VÀ SỐ LƯỢNG CẦU THỦ NGOẠI CHO PHÉP THAM GIA MÙA GIẢI
 CREATE OR REPLACE TRIGGER trg_check_so_cauthu_clb
     BEFORE INSERT OR UPDATE ON CauThu_CLB
-                                FOR EACH ROW
+    FOR EACH ROW
 DECLARE
-v_total_players NUMBER;
+    v_total_players NUMBER;
     v_foreign_players NUMBER;
     v_soct_toithieu NUMBER;
     v_soct_toida NUMBER;
@@ -331,36 +340,36 @@ v_total_players NUMBER;
     v_old_foreign NUMBER;
 BEGIN
     -- Lấy quy định từ bảng QuyDinh (nếu có)
-BEGIN
-SELECT NVL(SOCTTOITHIEU, 15), NVL(SOCTTOIDA, 22), NVL(SOCTNUOCNGOAITOIDA, 3)
-INTO v_soct_toithieu, v_soct_toida, v_soct_nuocngoai_toida
-FROM QuyDinh
-WHERE MaMG = NVL(:NEW.MaMG, :OLD.MaMG);
-EXCEPTION
+    BEGIN
+        SELECT NVL(SOCTTOITHIEU, 15), NVL(SOCTTOIDA, 22), NVL(SOCTNUOCNGOAITOIDA, 3)
+        INTO v_soct_toithieu, v_soct_toida, v_soct_nuocngoai_toida
+        FROM QuyDinh
+        WHERE MaMG = NVL(:NEW.MaMG, :OLD.MaMG);
+    EXCEPTION
         WHEN NO_DATA_FOUND THEN
             v_soct_toithieu := 15;
             v_soct_toida := 22;
             v_soct_nuocngoai_toida := 3;
-END;
+    END;
 
     -- Đếm tổng số cầu thủ trước khi thay đổi
-SELECT COUNT(*)
-INTO v_old_total
-FROM CauThu_CLB
-WHERE MaMG = NVL(:NEW.MaMG, :OLD.MaMG)
-  AND MaCLB = NVL(:NEW.MaCLB, :OLD.MaCLB);
+    SELECT COUNT(*)
+    INTO v_old_total
+    FROM CauThu_CLB
+    WHERE MaMG = NVL(:NEW.MaMG, :OLD.MaMG)
+      AND MaCLB = NVL(:NEW.MaCLB, :OLD.MaCLB);
 
 -- Đếm số cầu thủ nước ngoài trước khi thay đổi
-SELECT COUNT(*)
-INTO v_old_foreign
-FROM CauThu_CLB ct_clb
-         JOIN CauThu ct ON ct_clb.MaCT = ct.MaCT
-WHERE ct_clb.MaMG = NVL(:NEW.MaMG, :OLD.MaMG)
-  AND ct_clb.MaCLB = NVL(:NEW.MaCLB, :OLD.MaCLB)
-  AND ct.LoaiCT = 1;
+    SELECT COUNT(*)
+    INTO v_old_foreign
+    FROM CauThu_CLB ct_clb
+             JOIN CauThu ct ON ct_clb.MaCT = ct.MaCT
+    WHERE ct_clb.MaMG = NVL(:NEW.MaMG, :OLD.MaMG)
+      AND ct_clb.MaCLB = NVL(:NEW.MaCLB, :OLD.MaCLB)
+      AND ct.LoaiCT = 1;
 
 -- Kiểm tra khi thêm hoặc cập nhật
-IF INSERTING OR UPDATING THEN
+    IF INSERTING OR UPDATING THEN
         -- Lấy loại cầu thủ của MaCT mới
         SELECT LoaiCT
         INTO v_loai_ct
@@ -523,7 +532,7 @@ BEGIN
             v_order_by_clause := v_order_by_clause || priority_rec.TieuChi || ' DESC';
         END LOOP;
 
-    -- Nếu không có tiêu chí, sử dụng sắp xếp mặc định
+    -- Nếu không có dữ liệu trong THUTU_UUTIEN, sắp xếp mặc định theo Diem và HieuSo
     IF NOT v_found THEN
         v_order_by_clause := 'Diem DESC, HieuSo DESC, Thang DESC, Hoa DESC, Thua ASC, SoTran DESC';
     END IF;
@@ -544,7 +553,7 @@ BEGIN
         USING p_maMG, p_maMG;
 
     -- Commit giao dịch
-    COMMIT;
+COMMIT;
 
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
@@ -1029,7 +1038,43 @@ WHEN OTHERS THEN
         RAISE_APPLICATION_ERROR(-20003, 'Lỗi khi cập nhật trận đấu: ' || SQLERRM);
 END UpdateMatch;
 /
+------------------InsertMatchResult---------------------
+CREATE OR REPLACE PROCEDURE InsertMatchResult(
+    p_maTD IN NUMBER,
+    p_diemCLB1 IN NUMBER,
+    p_diemCLB2 IN NUMBER
+)
+AS
+    v_count NUMBER;
+BEGIN
+    -- Kiểm tra xem MaTD đã tồn tại chưa (khóa chính không được trùng)
+    SELECT COUNT(*) INTO v_count
+    FROM KetQuaTD
+    WHERE MaTD = p_maTD;
 
+    IF v_count > 0 THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Kết quả trận đấu với MaTD = ' || p_maTD || ' đã tồn tại.');
+    END IF;
+
+    -- Kiểm tra giá trị điểm hợp lệ (không âm)
+    IF p_diemCLB1 < 0 OR p_diemCLB2 < 0 THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Điểm số không được âm.');
+    END IF;
+
+    -- Thêm bản ghi mới
+    INSERT INTO KetQuaTD (MaTD, DiemCLB1, DiemCLB2)
+    VALUES (p_maTD, p_diemCLB1, p_diemCLB2);
+    COMMIT;
+    UpdateRanking(p_maTD);
+    -- Commit giao dịch
+    COMMIT;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE_APPLICATION_ERROR(-20003, 'Lỗi khi thêm kết quả trận đấu: ' || SQLERRM);
+END InsertMatchResult;
+/
 ------------------DeleteMatchResult---------------------
 CREATE OR REPLACE PROCEDURE DeleteMatchResultAndGoals(
     p_maTD IN NUMBER
@@ -1496,7 +1541,18 @@ select * from MuaGiai;
 select * from VongDau;
 select * from CLB;
 -----------------------------INSERT------------------------
-INSERT INTO TaiKhoan VALUES ('admin', '123', 'A');
+INSERT INTO VaiTro (MaVT, TenVaiTro) VALUES (1, 'Ban tổ chức giải đấu');
+INSERT INTO VaiTro (MaVT, TenVaiTro) VALUES (2, 'Ban quản lý câu lạc bộ');
+INSERT INTO VaiTro (MaVT, TenVaiTro) VALUES (3, 'Ban tổ chức thi đấu');
+INSERT INTO VaiTro (MaVT, TenVaiTro) VALUES (4, 'Ban phân tích và tổng hợp kết quả');
+INSERT INTO VaiTro (MaVT, TenVaiTro) VALUES (5, 'Khách hàng');
+
+INSERT INTO TaiKhoan VALUES ('admin', '123', 1);
+INSERT INTO TaiKhoan VALUES ('admin4', '1234', 2);
+INSERT INTO TaiKhoan VALUES ('admin45', '12345', 3);
+INSERT INTO TaiKhoan VALUES ('admin456', '123456', 4);
+
+
 
 INSERT INTO LOAIBANTHANG (MaLoaiBT, TenLoaiBT) VALUES (1, 'Bàn thắng thường');
 INSERT INTO LOAIBANTHANG (MaLoaiBT, TenLoaiBT) VALUES (2, 'Phạt đền');
