@@ -10,67 +10,64 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="625.0" prefWidth="800.0" style="-fx-border-color: #991f18; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.PlayerController">
+<VBox prefHeight="625.0" prefWidth="800.0" style="-fx-border-width: 2;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.PlayerController">
     <children>
-        <HBox alignment="CENTER_LEFT" prefHeight="123.0" prefWidth="800.0" styleClass="header" stylesheets="@../CSS/Player.css">
-            <children>
-                <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="149.0" styleClass="title" text="Player">
-                    <font>
-                        <Font name="System Bold" size="18.0" />
-                    </font>
-                </Label>
-                <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="42.0" prefWidth="450.0" styleClass="search-container" stylesheets="@../CSS/Player.css">
-                    <children>
-                        <Button mnemonicParsing="false" prefHeight="31.0" prefWidth="28.0" stylesheets="@../CSS/Player.css">
-                            <graphic>
-                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
-                                    <image>
-                                        <Image url="@../icons/search.png" />
-                                    </image>
-                                </ImageView>
-                            </graphic>
-                            <styleClass>
-                                <String fx:value="search-btn" />
-                                <String fx:value="button_effect" />
-                            </styleClass>
-                        </Button>
-                        <TextField fx:id="searchField" prefHeight="40.0" prefWidth="428.0" promptText="Search" style="-fx-background-color: #f5f5f5;" styleClass="search-field" stylesheets="@../CSS/Player.css" />
-                    </children>
-                    <HBox.margin>
-                        <Insets right="50.0" />
-                    </HBox.margin>
-                </HBox>
-                <Button mnemonicParsing="false" prefHeight="28.0" prefWidth="27.0" styleClass="notification">
-                    <graphic>
-                        <ImageView fx:id="userIcon" fitHeight="20.0" fitWidth="20.0" onDragDetected="#showUserPopup" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
-                            <image>
-                                <Image url="@../icons/user.png" />
-                            </image>
-                        </ImageView>
-                    </graphic>
-                </Button>
-            </children>
-        </HBox>
+      <HBox alignment="CENTER_LEFT" prefHeight="71.0" prefWidth="796.0" style="-fx-background-color: #991f18;">
+         <children>
+            <Label prefHeight="38.0" prefWidth="118.0" text="Cầu thủ" textAlignment="CENTER" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="26.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="20.0" />
+               </HBox.margin>
+            </Label>
+            <Pane prefHeight="126.0" prefWidth="594.0" HBox.hgrow="ALWAYS">
+               <children>
+                      <HBox alignment="CENTER_LEFT" layoutX="252.0" layoutY="15.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="42.0" prefWidth="369.0" styleClass="search-container" stylesheets="@../CSS/Player.css">
+                          <children>
+                              <Button mnemonicParsing="false" prefHeight="31.0" prefWidth="28.0" stylesheets="@../CSS/Player.css">
+                                  <graphic>
+                                      <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
+                                          <image>
+                                              <Image url="@../icons/search.png" />
+                                          </image>
+                                      </ImageView>
+                                  </graphic>
+                                  <styleClass>
+                                      <String fx:value="search-btn" />
+                                      <String fx:value="button_effect" />
+                                  </styleClass>
+                              </Button>
+                              <TextField fx:id="searchField" prefHeight="40.0" prefWidth="428.0" promptText="Search" style="-fx-background-color: #f5f5f5;" styleClass="search-field" stylesheets="@../CSS/Player.css" />
+                          </children>
+                      </HBox>
+               </children>
+            </Pane>
+         </children>
+      </HBox>
         <VBox prefHeight="484.0" prefWidth="649.0" stylesheets="@../CSS/Player.css">
             <children>
-                <HBox alignment="BOTTOM_LEFT" prefHeight="40.0" prefWidth="795.0" spacing="5">
+                <HBox alignment="BOTTOM_CENTER" prefHeight="131.0" prefWidth="796.0" spacing="5">
                     <children>
                         <VBox prefHeight="45.0" prefWidth="211.0" stylesheets="@../CSS/Fixtures.css">
                             <children>
-                                <Label prefHeight="18.0" prefWidth="149.0" styleClass="filter_text" text="Filter by competition" textAlignment="CENTER" />
-                                <ComboBox fx:id="compeFilter" prefHeight="14.0" prefWidth="198.0" promptText="Choose your League" style="-fx-border-color: #991f18;" styleClass="menu-button" />
+                                <Label prefHeight="18.0" prefWidth="149.0" styleClass="filter_text" text="Lọc theo giải đấu" textAlignment="CENTER" />
+                                <ComboBox fx:id="compeFilter" prefHeight="14.0" prefWidth="198.0" promptText="Tất cả giải đấu" style="-fx-border-color: #991f18;" styleClass="menu-button" />
                             </children>
                         </VBox>
                         <VBox prefHeight="45.0" prefWidth="147.0" stylesheets="@../CSS/Fixtures.css">
                             <children>
-                                <Label prefHeight="18.0" prefWidth="150.0" styleClass="filter_text" text="Filter by club" textAlignment="CENTER" />
-                                <ComboBox fx:id="ClubFilter" prefHeight="27.0" prefWidth="155.0" promptText="AllCLub" style="-fx-border-color: #991f18;" styleClass="menu-button" />
+                                <Label prefHeight="18.0" prefWidth="150.0" styleClass="filter_text" text="Lọc theo CLB" textAlignment="CENTER" />
+                                <ComboBox fx:id="ClubFilter" prefHeight="27.0" prefWidth="155.0" promptText="Tất cả CLB" style="-fx-border-color: #991f18;" styleClass="menu-button" />
                             </children>
                         </VBox>
-                        <Button fx:id="resetBtn" alignment="CENTER" mnemonicParsing="false" onAction="#resetFilter" prefHeight="21.0" prefWidth="122.0" styleClass="reset_button" text="Reset Filters">
+                        <Button fx:id="resetBtn" alignment="CENTER" mnemonicParsing="false" onAction="#resetFilter" prefHeight="21.0" prefWidth="122.0" styleClass="reset_button" text="Đặt lại lọc">
                             <graphic>
                                 <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                     <image>
@@ -79,7 +76,8 @@
                                 </ImageView>
                             </graphic>
                         </Button>
-                  <Button fx:id="addBtn" mnemonicParsing="false" onAction="#openPlayerManagement" prefHeight="28.0" prefWidth="169.0" styleClass="reset_button" text="PLayer Management" translateX="30.0">
+                  <Region prefHeight="45.0" prefWidth="70.0" />
+                  <Button fx:id="addBtn" mnemonicParsing="false" onAction="#openPlayerManagement" prefHeight="18.0" prefWidth="178.0" styleClass="reset_button" text="Quản lý cầu thủ">
                      <graphic>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                            <image>
@@ -95,7 +93,7 @@
                 </HBox>
                 <ScrollPane prefHeight="438.0" prefWidth="795.0">
                     <content>
-                        <VBox fx:id="Player_table" prefHeight="401.0" prefWidth="786.0" />
+                        <VBox fx:id="Player_table" prefHeight="409.0" prefWidth="786.0" />
                     </content>
                 </ScrollPane>
             </children>
@@ -106,9 +104,12 @@
                 <Insets top="5.0" />
             </padding>
         </VBox>
-        <HBox alignment="CENTER" prefHeight="38.0" prefWidth="900.0" style="-fx-background-color: #991f18;">
+        <HBox alignment="CENTER" prefHeight="73.0" prefWidth="800.0" style="-fx-background-color: #991f18;">
             <children>
-                <Label style="-fx-text-fill: white;" text="© 2023 Football Manager System" />
+                <Label prefHeight="44.0" prefWidth="193.0" style="-fx-text-fill: white;" text="© 2025 Football Manager System">
+               <font>
+                  <Font name="Arial Bold" size="12.0" />
+               </font></Label>
             </children>
             <padding>
                 <Insets bottom="10.0" top="10.0" />

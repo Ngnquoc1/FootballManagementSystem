@@ -3,6 +3,7 @@ package Controller;
 import Model.MODEL_BXH_CLB;
 import Model.MODEL_MUAGIAI;
 import Model.MODEL_BXH_BANTHANG;
+import Model.Session;
 import Service.Service;
 import Util.AlertUtils;
 import javafx.beans.property.SimpleStringProperty;
@@ -90,6 +91,8 @@ public class TableController {
     private Service service;
     @FXML
     private void initialize() throws SQLException {
+
+        configureUIBasedOnRole();
         service = new Service();
         // Thiết lập các ComboBox
         compeFilter.setItems(FXCollections.observableArrayList(
@@ -134,6 +137,8 @@ public class TableController {
             updateTableView();
         });
     }
+
+
 
     private void setupClubTableColumns() throws SQLException {
         String condition="TenMG = '"+compeFilter.getValue()+"'";
@@ -341,5 +346,18 @@ public class TableController {
     private void handleClose() {
         Stage stage = (Stage) closeButton.getScene().getWindow();
         stage.close();
+    }
+
+    private void configureUIBasedOnRole() {
+        Session session = Session.getInstance();
+        int userRole = session.getRole();
+
+        // Nếu role là "A", ẩn Registry và Rules buttons
+        if (userRole == 5 || userRole == 3 || userRole == 2 || userRole == 1) {
+            if (exportButton != null) {
+                exportButton.setVisible(false);
+                exportButton.setManaged(false); // Không chiếm không gian trong layout
+            }
+        }
     }
 }

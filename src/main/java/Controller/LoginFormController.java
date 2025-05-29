@@ -116,7 +116,7 @@ public class LoginFormController {
                 Session session = Session.getInstance();
                 session.setUsername(user.getUserName());
                 session.setRole(user.getVaiTro());
-                if ("A".equals(user.getVaiTro())) {
+                if (user.getVaiTro() != 0) {
                     switchScene(event, "MenuFrame");
                 }
             } else {
@@ -125,20 +125,24 @@ public class LoginFormController {
                 alert.showAndWait();
             }
         }
-        // Here you would add your authentication logic
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Login Information");
-        alert.setHeaderText(null);
-        alert.setContentText("Login attempt with username: " + username);
-        alert.showAndWait();
+//        // Here you would add your authentication logic
+//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//        alert.setTitle("Login Information");
+//        alert.setHeaderText(null);
+//        alert.setContentText("Login attempt with username: " + username);
+//        alert.showAndWait();
     }
     @FXML
-    private void handleGuestLogin() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Guest Login");
-        alert.setHeaderText(null);
-        alert.setContentText("Logging in as guest...");
-        alert.showAndWait();
+    private void handleGuestLogin(ActionEvent event) throws IOException {
+//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//        alert.setTitle("Guest Login");
+//        alert.setHeaderText(null);
+//        alert.setContentText("Logging in as guest...");
+//        alert.showAndWait();
+        Session session = Session.getInstance();
+        session.setUsername("Customer");
+        session.setRole(5);
+        switchScene(event, "MenuFrame");
     }
 }
 

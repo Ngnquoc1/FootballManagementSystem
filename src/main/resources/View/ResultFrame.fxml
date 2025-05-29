@@ -12,40 +12,37 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="625.0" prefWidth="800.0" style="-fx-border-color: #991f18; -fx-border-width: 2;" stylesheets="@../CSS/Fixtures.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ResultsController">
+<VBox prefHeight="625.0" prefWidth="800.0" style="-fx-border-width: 2;" stylesheets="@../CSS/Fixtures.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ResultsController">
    <children>
-   <Pane prefHeight="114.0" prefWidth="648.0" style="-fx-background-color: linear-gradient(to right, #f9f3ee, #f5e8e0);" stylesheets="@../CSS/Fixtures.css">
+      <HBox alignment="CENTER_LEFT" prefHeight="85.0" prefWidth="800.0" style="-fx-background-color: #991f18;">
+         <children>
+            <Label text="Kết quả trận đấu" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="26.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="20.0" />
+               </HBox.margin>
+            </Label>
+            <Pane HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
+   <Pane prefHeight="125.0" prefWidth="800.0" style="-fx-border-color: transparent transparent #991f18 transparent;" stylesheets="@../CSS/Fixtures.css">
       <children>
-         <Label alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" layoutY="14.0" prefHeight="27.0" prefWidth="102.0" styleClass="title" text="Result">
-            <font>
-               <Font name="System Bold" size="18.0" />
-            </font>
-         </Label>
-         <Button layoutX="561.0" layoutY="14.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="27.0" styleClass="notification" translateX="150.0">
-            <graphic>
-               <ImageView fx:id="userIcon" fitHeight="20.0" fitWidth="20.0" onDragDetected="#showUserPopup" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
-                  <image>
-                     <Image url="@../icons/user.png" />
-                  </image>
-               </ImageView>
-            </graphic>
-         </Button>
          <HBox layoutX="469.0" layoutY="88.0" prefHeight="21.0" prefWidth="166.0" styleClass="add_box" />
-         <HBox layoutX="14.0" layoutY="41.0" prefHeight="58.0" prefWidth="786.0" spacing="5" styleClass="filter_box">
+         <HBox layoutX="14.0" layoutY="41.0" prefHeight="71.0" prefWidth="786.0" spacing="5" styleClass="filter_box">
             <children>
                <VBox prefHeight="58.0" prefWidth="205.0" styleClass="filter_element">
                   <children>
-                     <Label prefHeight="18.0" prefWidth="149.0" styleClass="filter_text" text="Filter by competition" textAlignment="CENTER" />
-                     <ComboBox fx:id="compeFilter" prefHeight="17.0" prefWidth="180.0" style="-fx-border-color: #991f18;" styleClass="menu-button" />
+                     <ComboBox fx:id="compeFilter" prefHeight="17.0" prefWidth="180.0" promptText="Tất cả giải đấu" style="-fx-border-color: #991f18;" styleClass="menu-button" />
                   </children>
                </VBox>
-               <VBox layoutX="10.0" layoutY="10.0" prefHeight="58.0" prefWidth="226.0" styleClass="filter_element">
+               <VBox layoutX="10.0" layoutY="10.0" prefHeight="38.0" prefWidth="226.0" styleClass="filter_element">
                   <children>
-                     <Label prefHeight="18.0" prefWidth="113.0" styleClass="filter_text" text="Filter by club" />
-                     <ComboBox fx:id="clubFilter" onAction="#filterByCLB" prefHeight="14.0" prefWidth="180.0" style="-fx-border-color: #991f18;" styleClass="menu-button" />
+                     <ComboBox fx:id="clubFilter" onAction="#filterByCLB" prefHeight="14.0" prefWidth="180.0" promptText="Tất cả câu lạc bộ" style="-fx-border-color: #991f18;" styleClass="menu-button" />
                   </children>
                </VBox>
-               <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#resetFilter" prefHeight="34.0" prefWidth="117.0" styleClass="reset_button" text="Reset Filters" translateX="-10.0" translateY="16.0">
+               <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#resetFilter" prefHeight="34.0" prefWidth="117.0" styleClass="reset_button" text="Đặt lại lọc">
                   <graphic>
                      <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                         <image>
@@ -54,7 +51,7 @@
                      </ImageView>
                   </graphic>
                </Button>
-               <Button fx:id="addBtn" mnemonicParsing="false" onAction="#controlResult" prefHeight="34.0" prefWidth="166.0" styleClass="reset_button" text="Result Management" translateX="3.0" translateY="16.0">
+               <Button fx:id="addBtn" mnemonicParsing="false" onAction="#controlResult" prefHeight="34.0" prefWidth="207.0" styleClass="reset_button" text="Quản lý kết quả trận đấu">
                   <graphic>
                      <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                         <image>
@@ -65,20 +62,23 @@
                </Button>
             </children>
          </HBox>
+         <Label layoutX="14.0" layoutY="19.0" prefHeight="18.0" prefWidth="149.0" styleClass="filter_text" text="Lọc theo giải đấu" textAlignment="CENTER" />
+         <Label layoutX="224.0" layoutY="19.0" prefHeight="18.0" prefWidth="130.0" styleClass="filter_text" text="Lọc theo câu lạc bộ" />
       </children>
    </Pane>
-   <VBox prefHeight="506.0" prefWidth="795.0">
+   <VBox prefHeight="452.0" prefWidth="800.0">
       <children>
-         <ScrollPane fx:id="Calendar" prefHeight="509.0" prefWidth="795.0" />
+         <ScrollPane fx:id="Calendar" prefHeight="451.0" prefWidth="800.0" />
       </children>
    </VBox>
-      <HBox alignment="CENTER" style="-fx-background-color: #991f18;">
+      <HBox alignment="CENTER" prefHeight="67.0" prefWidth="800.0" style="-fx-background-color: #991f18;">
          <children>
-            <Label style="-fx-text-fill: white;" text="© 2023 Football Manager System" />
+            <Label prefHeight="39.0" prefWidth="188.0" text="© 2025 Football Manager System" textFill="WHITE">
+               <font>
+                  <Font name="Arial Bold" size="12.0" />
+               </font>
+            </Label>
          </children>
-         <padding>
-            <Insets bottom="10.0" top="10.0" />
-         </padding>
       </HBox>
 </children>
 </VBox>

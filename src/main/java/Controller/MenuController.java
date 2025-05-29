@@ -23,10 +23,10 @@ public class MenuController {
 
     private void configureUIBasedOnRole() {
         Session session = Session.getInstance();
-        String userRole = session.getRole();
+        int userRole = session.getRole();
 
         // Nếu role là "A", ẩn Registry và Rules buttons
-        if ("A".equals(userRole)) {
+        if (userRole == 5 || userRole == 4 || userRole == 3) {
             if (registryMenuBtn != null) {
                 registryMenuBtn.setVisible(false);
                 registryMenuBtn.setManaged(false); // Không chiếm không gian trong layout
@@ -38,6 +38,20 @@ public class MenuController {
             if(leagueMenuBtn != null) {
                 leagueMenuBtn.setVisible(false);
                 leagueMenuBtn.setManaged(false);
+            }
+        }else if (userRole == 2) {
+            if (rulesMenuBtn != null) {
+                rulesMenuBtn.setVisible(false);
+                rulesMenuBtn.setManaged(false); // Không chiếm không gian trong layout
+            }
+            if(leagueMenuBtn != null) {
+                leagueMenuBtn.setVisible(false);
+                leagueMenuBtn.setManaged(false);
+            }
+        }else{
+            if (registryMenuBtn != null) {
+                registryMenuBtn.setVisible(false);
+                registryMenuBtn.setManaged(false); // Không chiếm không gian trong layout
             }
         }
     }

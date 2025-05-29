@@ -40,7 +40,7 @@ public class Service {
                 user = new MODEL_USER();
                 user.setUserName(rs.getString("TenDangNhap"));
                 user.setPassWord(rs.getString("MatKhau"));
-                user.setVaiTro(rs.getString("VaiTro"));
+                user.setVaiTro(rs.getInt("MaVT"));
                 return user;
             }
             return user;
@@ -75,7 +75,7 @@ public class Service {
                 user = new MODEL_USER();
                 user.setUserName(rs.getString("TenDangNhap"));
                 user.setPassWord(rs.getString("MatKhau"));
-                user.setVaiTro(rs.getString("VaiTro"));
+                user.setVaiTro(rs.getInt("MaVT"));
             }
         } catch (SQLException e) {
             System.err.println("Lỗi truy vấn SQL: " + e.getMessage());

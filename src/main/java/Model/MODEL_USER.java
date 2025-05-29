@@ -10,7 +10,7 @@ package Model;
  */
 public class MODEL_USER {
     private String userName, passWord;
-    private String vaiTro;
+    private int vaiTro;
 
     public MODEL_USER() {
     };
@@ -31,28 +31,28 @@ public class MODEL_USER {
         this.passWord = passWord;
     }
 
-    public String getVaiTro() {
+    public int getVaiTro() {
         return vaiTro;
     }
 
-    public void setVaiTro(String vaiTro) {
+    public void setVaiTro(int vaiTro) {
         this.vaiTro = vaiTro;
     }
 
     public String getVaiTroText() {
-        if (vaiTro == null)
+        if (vaiTro == 0)
             return "Không xác định";
         switch (vaiTro) {
-            case "A":
-                return "Quản trị viên";
-            case "B":
-                return "Nhân viên";
-            case "C":
-                return "Quản lý";
-            case "D":
-                return "Khách";
+            case 1:
+                return "Ban tổ chức giải đấu";
+            case 2:
+                return "Ban quản lý câu lạc bộ";
+            case 3:
+                return "Ban tổ chức thi đấu";
+            case 4:
+                return "Ban phân tích và tổng hợp kết quả";
             default:
-                return "Không xác định";
+                return "Khách hàng";
         }
     }
 }

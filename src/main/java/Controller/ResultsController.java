@@ -69,10 +69,10 @@ public class ResultsController implements Initializable {
     }
     private void configureUIBasedOnRole() {
         Session session = Session.getInstance();
-        String userRole = session.getRole();
+        int userRole = session.getRole();
 
         // Nếu role là "A", ẩn Registry và Rules buttons
-        if ("A".equals(userRole)) {
+        if (userRole == 5 || userRole == 3 || userRole == 2 || userRole == 1) {
             if (addBtn != null) {
                 addBtn.setVisible(false);
                 addBtn.setManaged(false); // Không chiếm không gian trong layout
