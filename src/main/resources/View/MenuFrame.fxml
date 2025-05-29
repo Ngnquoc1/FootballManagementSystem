@@ -18,9 +18,9 @@
    <left>
       <VBox prefHeight="606.0" prefWidth="141.0" BorderPane.alignment="CENTER">
          <children>
-            <AnchorPane minWidth="166.0" prefHeight="625.0" prefWidth="166.0" styleClass="menuBar" stylesheets="@../CSS/Fixtures.css">
+            <AnchorPane minWidth="166.0" prefHeight="625.0" prefWidth="231.0" styleClass="menuBar" stylesheets="@../CSS/Fixtures.css">
                <children>
-                  <Pane layoutX="9.0" layoutY="23.0" prefHeight="54.0" prefWidth="150.0" styleClass="inner_pane" stylesheets="@../CSS/Fixtures.css">
+                  <Pane layoutX="8.0" layoutY="14.0" prefHeight="54.0" prefWidth="150.0" styleClass="inner_pane" stylesheets="@../CSS/Fixtures.css">
                      <children>
                         <ImageView fitHeight="39.0" fitWidth="42.0" layoutX="7.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -29,7 +29,7 @@
                         </ImageView>
                         <Text fill="#991f18" layoutX="43.0" layoutY="22.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="title" text="Football Manager" textAlignment="CENTER" wrappingWidth="101.99999999999994">
                            <font>
-                              <Font name="Arial Black" size="14.0" />
+                              <Font name="Arial" size="14.0" />
                            </font>
                         </Text>
                      </children>
@@ -44,7 +44,7 @@
                         </DropShadow>
                      </effect>
                   </Pane>
-                  <VBox layoutX="-5.0" layoutY="99.0" prefHeight="411.0" prefWidth="166.0" spacing="10.0">
+                  <VBox alignment="CENTER_LEFT" layoutX="-5.0" layoutY="99.0" prefHeight="411.0" prefWidth="169.0" spacing="10.0">
                      <children>
                         <Button id="homeMenuBtn" fx:id="homeMenuBtn" minWidth="144.0" mnemonicParsing="false" onAction="#clickOnHomeBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Home">
                            <graphic>
@@ -58,7 +58,7 @@
                               </ImageView>
                            </graphic>
                            <font>
-                              <Font name="Arial Black" size="11.0" />
+                              <Font name="Arial" size="12.0" />
                            </font>
                         </Button>
                         <Button id="fixtureMenuBtn" fx:id="fixtureMenuBtn" mnemonicParsing="false" onAction="#clickOnFixtureBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Fixtures">
@@ -70,7 +70,7 @@
                               </ImageView>
                            </graphic>
                            <font>
-                              <Font name="Arial Black" size="11.0" />
+                              <Font name="Arial" size="12.0" />
                            </font>
                         </Button>
                         <Button fx:id="resultMenuBtn" mnemonicParsing="false" onAction="#clickOnResultBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Results">
@@ -82,7 +82,7 @@
                               </ImageView>
                            </graphic>
                            <font>
-                              <Font name="Arial Black" size="11.0" />
+                              <Font name="Arial" size="12.0" />
                            </font>
                         </Button>
                         <Button fx:id="tableMenuBtn" mnemonicParsing="false" onAction="#clickOnTableBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="Tables">
@@ -94,12 +94,12 @@
                               </ImageView>
                            </graphic>
                            <font>
-                              <Font name="Arial Black" size="11.0" />
+                              <Font name="Arial" size="12.0" />
                            </font>
                         </Button>
                         <Button fx:id="clubMenuBtn" mnemonicParsing="false" onAction="#clickOnClubBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="Clubs">
                            <font>
-                              <Font name="Arial Black" size="11.0" />
+                              <Font name="Arial" size="12.0" />
                            </font>
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
@@ -118,7 +118,7 @@
                               </ImageView>
                            </graphic>
                            <font>
-                              <Font name="Arial Black" size="11.0" />
+                              <Font name="Arial" size="12.0" />
                            </font>
                         </Button>
                         <Button fx:id="leagueMenuBtn" mnemonicParsing="false" onAction="#clickOnLeagueBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="League ">
@@ -130,7 +130,7 @@
                               </ImageView>
                            </graphic>
                            <font>
-                              <Font name="Arial Black" size="11.0" />
+                              <Font name="Arial" size="12.0" />
                            </font>
                         </Button>
                         <Button fx:id="registryMenuBtn" mnemonicParsing="false" onAction="#clickOnRegistryBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="Registry">
@@ -142,7 +142,7 @@
                               </ImageView>
                            </graphic>
                            <font>
-                              <Font name="Arial Black" size="11.0" />
+                              <Font name="Arial" size="12.0" />
                            </font>
                         </Button>
                         <Button fx:id="rulesMenuBtn" mnemonicParsing="false" onAction="#clickOnRulesBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="Rules">
@@ -154,12 +154,12 @@
                               </ImageView>
                            </graphic>
                            <font>
-                              <Font name="Arial Black" size="11.0" />
+                              <Font name="Arial" size="12.0" />
                            </font>
                         </Button>
                      </children>
                   </VBox>
-                  <ImageView fitHeight="92.0" fitWidth="92.0" layoutX="32.0" layoutY="522.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="53.0" fitWidth="57.0" layoutX="52.0" layoutY="538.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../icons/logo.png" />
                      </image>
@@ -170,10 +170,9 @@
       </VBox>
    </left>
    <center>
-      <Pane minHeight="-Infinity" minWidth="-Infinity" prefHeight="625.0" prefWidth="800.0" BorderPane.alignment="CENTER" />
+      <Pane minHeight="-Infinity" minWidth="-Infinity" prefHeight="625.0" prefWidth="701.0" BorderPane.alignment="CENTER" />
    </center>
    <stylesheets>
-
       <URL value="@../CSS/Fixtures.css" />
    </stylesheets>
 </BorderPane>

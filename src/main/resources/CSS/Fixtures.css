@@ -5,14 +5,14 @@
 
 /*Sidebar*/
 
-.menuBar{
-    -fx-background-color:#FFFFFF;
-    -fx-border-color: #991f18;
-    -fx-border-radius: 20px 0 0 20px;
+.menuBar {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: transparent #991f18 transparent transparent;
+    -fx-border-width: 0px 2px 0px 0px;
+    -fx-border-radius: 0 0 0 0;
     -fx-background-radius: 20px 0 0 20px;
-    -fx-border-width: 1px;
     -fx-spacing: 0px;
-    -fx-alignment: Center;
+    -fx-alignment: center;
 }
 
 .inner_pane{

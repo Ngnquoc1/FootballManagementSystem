@@ -11,13 +11,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="625.0" prefWidth="800.0" style="-fx-background-color: #f9f3ee; -fx-border-color: #991f18; -fx-border-width: 2;" stylesheets="@../CSS/Fixtures.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.HomeController">
+<VBox prefHeight="625.0" prefWidth="800.0" style="-fx-background-color: #f9f3ee; -fx-border-width: 2;" stylesheets="@../CSS/Fixtures.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.HomeController">
    <children>
-      <HBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="796.0" style="-fx-background-color: #991f18;">
+      <HBox alignment="CENTER_LEFT" prefHeight="64.0" prefWidth="800.0" style="-fx-background-color: #991f18;">
          <children>
-            <Label text="DASHBOARD" textFill="WHITE">
+            <Label text="Màn hình chính" textFill="WHITE">
                <font>
-                  <Font name="System Bold" size="20.0" />
+                  <Font name="System Bold" size="26.0" />
                </font>
                <HBox.margin>
                   <Insets left="20.0" />
@@ -46,7 +46,7 @@
                <children>
                   <Label alignment="CENTER" prefHeight="40.0" prefWidth="370.0" style="-fx-background-color: #991f18;" text="KẾT QUẢ TRẬN ĐẤU GẦN NHẤT" textFill="WHITE">
                      <font>
-                        <Font name="System Bold" size="14.0" />
+                        <Font name="Arial Bold" size="14.0" />
                      </font>
                   </Label>
                   <HBox alignment="CENTER" prefHeight="110.0" prefWidth="370.0" spacing="5.0">
@@ -57,9 +57,9 @@
                         <VBox alignment="CENTER" prefHeight="100.0" prefWidth="150.0">
                            <children>
                               <ImageView fx:id="latestHomeImage" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" />
-                              <Label fx:id="latestHomeTeam" alignment="CENTER" prefHeight="30.0" prefWidth="150.0" text="Home Team" textAlignment="CENTER" wrapText="true">
+                              <Label fx:id="latestHomeTeam" alignment="CENTER" prefHeight="30.0" prefWidth="150.0" text="Đội nhà" textAlignment="CENTER" wrapText="true">
                                  <font>
-                                    <Font name="System Bold" size="12.0" />
+                                    <Font name="Arial Bold" size="12.0" />
                                  </font>
                               </Label>
                            </children>
@@ -68,18 +68,22 @@
                            <children>
                               <Label fx:id="latestScore" alignment="CENTER" prefHeight="30.0" prefWidth="70.0" text="0 - 0">
                                  <font>
-                                    <Font name="System Bold" size="18.0" />
+                                    <Font name="Arial Bold" size="18.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="latestDate" alignment="CENTER" prefHeight="20.0" prefWidth="70.0" text="Date" textAlignment="CENTER" />
+                              <Label fx:id="latestDate" alignment="CENTER" prefHeight="20.0" prefWidth="70.0" text="Date" textAlignment="CENTER">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font>
+                              </Label>
                            </children>
                         </VBox>
                         <VBox alignment="CENTER" prefHeight="100.0" prefWidth="150.0">
                            <children>
                               <ImageView fx:id="latestAwayImage" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" />
-                              <Label fx:id="latestAwayTeam" alignment="CENTER" prefHeight="30.0" prefWidth="150.0" text="Away Team" textAlignment="CENTER" wrapText="true">
+                              <Label fx:id="latestAwayTeam" alignment="CENTER" prefHeight="30.0" prefWidth="150.0" text="Đội khách" textAlignment="CENTER" wrapText="true">
                                  <font>
-                                    <Font name="System Bold" size="12.0" />
+                                    <Font name="Arial Bold" size="12.0" />
                                  </font>
                               </Label>
                            </children>
@@ -88,7 +92,7 @@
                   </HBox>
                   <Button fx:id="viewResultBtn" mnemonicParsing="false" onAction="#navigateToResultFrame" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #991f18;" text="Xem chi tiết" textFill="WHITE">
                      <font>
-                        <Font name="System Bold" size="12.0" />
+                        <Font name="Arial Bold" size="12.0" />
                      </font>
                      <VBox.margin>
                         <Insets bottom="10.0" top="5.0" />
@@ -100,7 +104,7 @@
                <children>
                   <Label alignment="CENTER" prefHeight="40.0" prefWidth="370.0" style="-fx-background-color: #991f18;" text="TRẬN ĐẤU TIẾP THEO" textFill="WHITE">
                      <font>
-                        <Font name="System Bold" size="14.0" />
+                        <Font name="Arial Bold" size="14.0" />
                      </font>
                   </Label>
                   <HBox alignment="CENTER" prefHeight="110.0" prefWidth="370.0" spacing="5.0">
@@ -111,9 +115,9 @@
                         <VBox alignment="CENTER" prefHeight="100.0" prefWidth="150.0">
                            <children>
                               <ImageView fx:id="nextHomeImage" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" />
-                              <Label fx:id="nextHomeTeam" alignment="CENTER" prefHeight="30.0" prefWidth="150.0" text="Home Team" textAlignment="CENTER" wrapText="true">
+                              <Label fx:id="nextHomeTeam" alignment="CENTER" prefHeight="30.0" prefWidth="150.0" text="Đội nhà" textAlignment="CENTER" wrapText="true">
                                  <font>
-                                    <Font name="System Bold" size="12.0" />
+                                    <Font name="Arial Bold" size="12.0" />
                                  </font>
                               </Label>
                            </children>
@@ -122,18 +126,22 @@
                            <children>
                               <Label fx:id="nextTime" alignment="CENTER" prefHeight="30.0" prefWidth="70.0" text="Time">
                                  <font>
-                                    <Font name="System Bold" size="14.0" />
+                                    <Font name="Arial Bold" size="14.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="nextDate" alignment="CENTER" prefHeight="20.0" prefWidth="70.0" text="Date" textAlignment="CENTER" />
+                              <Label fx:id="nextDate" alignment="CENTER" prefHeight="20.0" prefWidth="70.0" text="Date" textAlignment="CENTER">
+                                 <font>
+                                    <Font name="Arial" size="12.0" />
+                                 </font>
+                              </Label>
                            </children>
                         </VBox>
                         <VBox alignment="CENTER" prefHeight="100.0" prefWidth="150.0">
                            <children>
                               <ImageView fx:id="nextAwayImage" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" />
-                              <Label fx:id="nextAwayTeam" alignment="CENTER" prefHeight="30.0" prefWidth="150.0" text="Away Team" textAlignment="CENTER" wrapText="true">
+                              <Label fx:id="nextAwayTeam" alignment="CENTER" prefHeight="30.0" prefWidth="150.0" text="Đội khách" textAlignment="CENTER" wrapText="true">
                                  <font>
-                                    <Font name="System Bold" size="12.0" />
+                                    <Font name="Arial Bold" size="12.0" />
                                  </font>
                               </Label>
                            </children>
@@ -142,7 +150,7 @@
                   </HBox>
                   <Button fx:id="viewFixtureBtn" mnemonicParsing="false" onAction="#navigateToFixtureFrame" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #991f18;" text="Xem lịch thi đấu" textFill="WHITE">
                      <font>
-                        <Font name="System Bold" size="12.0" />
+                        <Font name="Arial Bold" size="12.0" />
                      </font>
                      <VBox.margin>
                         <Insets bottom="10.0" top="5.0" />
@@ -152,19 +160,19 @@
             </VBox>
          </children>
       </HBox>
-      <VBox alignment="TOP_CENTER" prefHeight="328.0" prefWidth="796.0">
+      <VBox alignment="TOP_CENTER" prefHeight="333.0" prefWidth="800.0">
          <padding>
             <Insets bottom="10.0" left="15.0" right="15.0" top="10.0" />
          </padding>
          <children>
             <Label alignment="CENTER" prefHeight="40.0" prefWidth="766.0" style="-fx-background-color: #991f18;" text="TOP 3 MÙA GIẢI" textFill="WHITE">
                <font>
-                  <Font name="System Bold" size="16.0" />
+                  <Font name="Arial Bold" size="16.0" />
                </font>
             </Label>
             <Button fx:id="viewTableBtn" mnemonicParsing="false" onAction="#navigateToTableFrame" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #991f18;" text="Xem bảng xếp hạng" textFill="WHITE">
                <font>
-                  <Font name="System Bold" size="12.0" />
+                  <Font name="Arial Bold" size="12.0" />
                </font>
                <VBox.margin>
                   <Insets bottom="15.0" top="15.0" />
@@ -176,7 +184,7 @@
                      <children>
                         <Label prefHeight="30.0" prefWidth="250.0" style="-fx-background-color: #991f18;" text="1" textFill="WHITE">
                            <font>
-                              <Font name="System Bold" size="14.0" />
+                              <Font name="Arial Bold" size="14.0" />
                            </font>
                            <padding>
                               <Insets left="20.0" />
@@ -189,7 +197,7 @@
                                     <ImageView fx:id="team1Image" fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true" />
                                     <Label fx:id="team1Name" text="Team 1">
                                        <font>
-                                          <Font name="System Bold" size="14.0" />
+                                          <Font name="Arial Bold" size="14.0" />
                                        </font>
                                        <VBox.margin>
                                           <Insets top="5.0" />
@@ -201,12 +209,12 @@
                                  <children>
                                     <Label text="Điểm">
                                        <font>
-                                          <Font size="12.0" />
+                                          <Font name="Arial" size="12.0" />
                                        </font>
                                     </Label>
                                     <Label fx:id="team1Points" text="0">
                                        <font>
-                                          <Font name="System Bold" size="24.0" />
+                                          <Font name="Arial Bold" size="24.0" />
                                        </font>
                                     </Label>
                                  </children>
@@ -219,7 +227,7 @@
                      <children>
                         <Label prefHeight="30.0" prefWidth="250.0" style="-fx-background-color: #991f18;" text="2" textFill="WHITE">
                            <font>
-                              <Font name="System Bold" size="14.0" />
+                              <Font name="Arial Bold" size="14.0" />
                            </font>
                            <padding>
                               <Insets left="20.0" />
@@ -232,7 +240,7 @@
                                     <ImageView fx:id="team2Image" fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true" />
                                     <Label fx:id="team2Name" text="Team 2">
                                        <font>
-                                          <Font name="System Bold" size="14.0" />
+                                          <Font name="Arial Bold" size="14.0" />
                                        </font>
                                        <VBox.margin>
                                           <Insets top="5.0" />
@@ -244,12 +252,12 @@
                                  <children>
                                     <Label text="Điểm">
                                        <font>
-                                          <Font size="12.0" />
+                                          <Font name="Arial" size="12.0" />
                                        </font>
                                     </Label>
                                     <Label fx:id="team2Points" text="0">
                                        <font>
-                                          <Font name="System Bold" size="24.0" />
+                                          <Font name="Arial Bold" size="24.0" />
                                        </font>
                                     </Label>
                                  </children>
@@ -262,7 +270,7 @@
                      <children>
                         <Label prefHeight="30.0" prefWidth="250.0" style="-fx-background-color: #991f18;" text="3" textFill="WHITE">
                            <font>
-                              <Font name="System Bold" size="14.0" />
+                              <Font name="Arial Bold" size="14.0" />
                            </font>
                            <padding>
                               <Insets left="20.0" />
@@ -275,7 +283,7 @@
                                     <ImageView fx:id="team3Image" fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true" />
                                     <Label fx:id="team3Name" text="Team 3">
                                        <font>
-                                          <Font name="System Bold" size="14.0" />
+                                          <Font name="Arial Bold" size="14.0" />
                                        </font>
                                        <VBox.margin>
                                           <Insets top="5.0" />
@@ -287,12 +295,12 @@
                                  <children>
                                     <Label text="Điểm">
                                        <font>
-                                          <Font size="12.0" />
+                                          <Font name="Arial" size="12.0" />
                                        </font>
                                     </Label>
                                     <Label fx:id="team3Points" text="0">
                                        <font>
-                                          <Font name="System Bold" size="24.0" />
+                                          <Font name="Arial Bold" size="24.0" />
                                        </font>
                                     </Label>
                                  </children>
@@ -305,11 +313,11 @@
             </HBox>
          </children>
       </VBox>
-      <HBox alignment="CENTER" prefHeight="35.0" prefWidth="796.0" style="-fx-background-color: #991f18;">
+      <HBox alignment="CENTER" prefHeight="45.0" prefWidth="800.0" style="-fx-background-color: #991f18;">
          <children>
             <Label text="© 2025 Football Manager System" textFill="WHITE">
                <font>
-                  <Font name="System Bold" size="12.0" />
+                  <Font name="Arial Bold" size="12.0" />
                </font>
             </Label>
          </children>

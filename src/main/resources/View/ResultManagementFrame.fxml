@@ -10,36 +10,29 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <VBox maxWidth="1.7976931348623157E308" prefHeight="696.0" prefWidth="718.0" spacing="15.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ResultManagementController">
    <children>
-      <HBox prefHeight="26.0" prefWidth="755.0" stylesheets="@../CSS/Fixtures.css">
+      <HBox alignment="CENTER_LEFT" prefHeight="85.0" prefWidth="800.0" style="-fx-background-color: #991f18;">
          <children>
-            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="236.0" styleClass="title" text="Results Management">
+            <Label text="Kết quả trận đấu" textFill="WHITE">
                <font>
-                  <Font name="System Bold" size="18.0" />
+                  <Font name="System Bold" size="26.0" />
                </font>
+               <HBox.margin>
+                  <Insets left="20.0" />
+               </HBox.margin>
             </Label>
-            <Button mnemonicParsing="false" prefHeight="28.0" prefWidth="27.0" styleClass="notification" translateX="395.0">
-               <graphic>
-                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
-                     <image>
-                        <Image url="@../icons/user.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
+            <Pane HBox.hgrow="ALWAYS" />
          </children>
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
       </HBox>
       <Separator prefHeight="0.0" prefWidth="762.0" />
       <VBox prefHeight="68.0" prefWidth="678.0">
          <children>
-            <Label prefHeight="20.0" prefWidth="56.0" text="Filter:">
+            <Label prefHeight="20.0" prefWidth="56.0" text="Lọc:">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -51,15 +44,15 @@
                <children>
                   <VBox prefHeight="58.0" prefWidth="162.0" styleClass="filter_element">
                      <children>
-                        <ComboBox fx:id="compeFilter" prefHeight="2.0" prefWidth="162.0" promptText="Filter by Competition" style="-fx-border-color: #991f18;" />
+                        <ComboBox fx:id="compeFilter" prefHeight="2.0" prefWidth="162.0" promptText="Lọc theo vòng đấu" style="-fx-border-color: #991f18;" />
                      </children>
                   </VBox>
                   <VBox layoutX="10.0" layoutY="10.0" prefHeight="58.0" prefWidth="146.0" styleClass="filter_element" translateX="10.0">
                      <children>
-                        <ComboBox fx:id="clubFilter" minWidth="-Infinity" prefHeight="11.0" prefWidth="162.0" promptText="Filter by CLB" style="-fx-border-color: #991f18;" />
+                        <ComboBox fx:id="clubFilter" minWidth="-Infinity" prefHeight="11.0" prefWidth="162.0" promptText="Lọc theo CLB" style="-fx-border-color: #991f18;" />
                      </children>
                   </VBox>
-                  <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#resetFilter" prefHeight="28.0" prefWidth="118.0" styleClass="reset_button" text="Reset Filters" translateX="19.0" translateY="-2.0">
+                  <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#resetFilter" prefHeight="28.0" prefWidth="118.0" styleClass="reset_button" text="Đặt lại lọc" translateX="19.0" translateY="-2.0">
                      <graphic>
                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                            <image>
@@ -68,7 +61,7 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button fx:id="findBtn" mnemonicParsing="false" onAction="#find" prefHeight="35.0" prefWidth="90.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Find" translateX="87.0" translateY="-3.0">
+                  <Button fx:id="findBtn" mnemonicParsing="false" onAction="#find" prefHeight="35.0" prefWidth="90.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Tìm kiếm" translateX="87.0" translateY="-3.0">
                      <opaqueInsets>
                         <Insets />
                      </opaqueInsets></Button>
@@ -82,7 +75,7 @@
       <Separator prefHeight="3.0" prefWidth="648.0" />
       <VBox prefHeight="502.0" prefWidth="643.0" spacing="15.0">
          <children>
-            <Label prefHeight="22.0" prefWidth="230.0" styleClass="title" text="Completed Matches:">
+            <Label prefHeight="22.0" prefWidth="230.0" styleClass="title" text="Danh sách kết quả trận đấu">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -99,7 +92,7 @@
                   <TableColumn fx:id="scoreCol2" prefWidth="74.40008544921875" text="Score2" />
                </columns>
             </TableView>
-            <Label prefHeight="22.0" prefWidth="230.0" styleClass="title" text="Pending Matches:">
+            <Label prefHeight="22.0" prefWidth="230.0" styleClass="title" text="Trận đấu đang chờ">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -119,8 +112,8 @@
             <Separator prefWidth="200.0" />
             <HBox alignment="CENTER" prefHeight="63.0" prefWidth="678.0" spacing="8.0">
                <children>
-                  <Button fx:id="updateBtn" alignment="CENTER" mnemonicParsing="false" onAction="#update" prefHeight="35.0" prefWidth="90.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Update" />
-                  <Button fx:id="removeBtn" mnemonicParsing="false" onAction="#remove" prefHeight="35.0" prefWidth="90.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Remove" />
+                  <Button fx:id="updateBtn" alignment="CENTER" mnemonicParsing="false" onAction="#update" prefHeight="35.0" prefWidth="90.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Cập nhật" />
+                  <Button fx:id="removeBtn" mnemonicParsing="false" onAction="#remove" prefHeight="35.0" prefWidth="90.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Xóa" />
                </children>
             </HBox>
          </children>
