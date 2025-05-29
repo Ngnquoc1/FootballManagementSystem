@@ -48,16 +48,12 @@ public class ResultsController implements Initializable {
     private ScrollPane Calendar;
     @FXML
     private ComboBox<String> compeFilter, clubFilter;
-
+    @FXML
+    private ImageView userIcon;
     private Service service = new Service();
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Session session = Session.getInstance();
-        String role = session.getRole();
-
-        if (Objects.equals(role, "A")) {
-            // Add any specific initialization for admin role here
-        }
+        configureUIBasedOnRole();
         Map<LocalDate, List<Match>> matchesByDate = null;
         try {
             matchesByDate = service.getResultedMatchs();
@@ -69,6 +65,19 @@ public class ResultsController implements Initializable {
             setFilter();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+    private void configureUIBasedOnRole() {
+        Session session = Session.getInstance();
+        String userRole = session.getRole();
+
+        // Nếu role là "A", ẩn Registry và Rules buttons
+        if ("A".equals(userRole)) {
+            if (addBtn != null) {
+                addBtn.setVisible(false);
+                addBtn.setManaged(false); // Không chiếm không gian trong layout
+            }
+
         }
     }
 
@@ -893,6 +902,37 @@ public class ResultsController implements Initializable {
             if (cstmt != null) try { cstmt.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
         return goalsList;
+    }
+
+    @FXML
+    private void showUserPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/UserPopup.fxml"));
+            Parent root = loader.load();
+
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.NONE);
+            popupStage.initStyle(StageStyle.UNDECORATED);
+
+            Scene scene = new Scene(root);
+            popupStage.setScene(scene);
+
+            popupStage.setX(userIcon.localToScreen(0, 0).getX() - 100);
+            popupStage.setY(userIcon.localToScreen(0, 0).getY() + 40);
+
+            popupStage.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) {
+                    popupStage.close();
+                }
+            });
+
+            popupStage.initOwner(userIcon.getScene().getWindow());
+
+            popupStage.show();
+        } catch (Exception e) {
+            System.err.println("Lỗi hiển thị UserPopup: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 }

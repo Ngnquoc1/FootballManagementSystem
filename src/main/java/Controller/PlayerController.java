@@ -1,10 +1,7 @@
 package Controller;
 
 
-import Model.MODEL_CAUTHU;
-import Model.MODEL_CAUTHUTHAMGIACLB;
-import Model.MODEL_CLB;
-import Model.MODEL_MUAGIAI;
+import Model.*;
 import Util.AlertUtils;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -47,15 +44,51 @@ public class PlayerController implements Initializable {
     @FXML private TextField searchField;
     @FXML private ComboBox<String> compeFilter;
     @FXML private ComboBox<String> ClubFilter;
+    @FXML private Button addBtn;
+    @FXML
+    private ImageView userIcon;
 
     private String selectedClub = null;
     private String selectedCompetition = null;
     private Service service;
 
+    @FXML
+    private void showUserPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/UserPopup.fxml"));
+            Parent root = loader.load();
+
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.NONE);
+            popupStage.initStyle(StageStyle.UNDECORATED);
+
+            Scene scene = new Scene(root);
+            popupStage.setScene(scene);
+
+            popupStage.setX(userIcon.localToScreen(0, 0).getX() - 100);
+            popupStage.setY(userIcon.localToScreen(0, 0).getY() + 40);
+
+            popupStage.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) {
+                    popupStage.close();
+                }
+            });
+
+            popupStage.initOwner(userIcon.getScene().getWindow());
+
+            popupStage.show();
+        } catch (Exception e) {
+            System.err.println("Lỗi hiển thị UserPopup: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
         service = new Service();
         // Create the header row
+        configureUIBasedOnRole();
         try {
             setFilter();
         } catch (SQLException e) {
@@ -115,6 +148,21 @@ public class PlayerController implements Initializable {
         });
 
         loadPlayers();
+    }
+
+
+    private void configureUIBasedOnRole() {
+        Session session = Session.getInstance();
+        String userRole = session.getRole();
+
+        // Nếu role là "A", ẩn Registry và Rules buttons
+        if ("A".equals(userRole)) {
+            if (addBtn != null) {
+                addBtn.setVisible(false);
+                addBtn.setManaged(false); // Không chiếm không gian trong layout
+            }
+
+        }
     }
 
     public void setFilter() throws SQLException {

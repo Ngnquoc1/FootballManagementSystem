@@ -3,6 +3,7 @@ package Controller;
 import Model.MODEL_CLB;
 import Model.MODEL_MUAGIAI;
 import Model.MODEL_SAN;
+import Model.Session;
 import Service.Service;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,6 +20,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.net.URL;
@@ -35,14 +37,47 @@ public class ClubController implements Initializable {
     @FXML private ComboBox<String> compeFilter;
     @FXML private Button resetBtn,addBtn;
     @FXML private GridPane team_container;
-
+    @FXML
+    private ImageView userIcon;
     private ObservableList<MODEL_CLB> allClubs = FXCollections.observableArrayList();
     private ObservableList<MODEL_CLB> filteredClubs = FXCollections.observableArrayList();
 
     private Service service = new Service();
 
+
+    @FXML
+    private void showUserPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/UserPopup.fxml"));
+            Parent root = loader.load();
+
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.NONE);
+            popupStage.initStyle(StageStyle.UNDECORATED);
+
+            Scene scene = new Scene(root);
+            popupStage.setScene(scene);
+
+            popupStage.setX(userIcon.localToScreen(0, 0).getX() - 100);
+            popupStage.setY(userIcon.localToScreen(0, 0).getY() + 40);
+
+            popupStage.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) {
+                    popupStage.close();
+                }
+            });
+
+            popupStage.initOwner(userIcon.getScene().getWindow());
+
+            popupStage.show();
+        } catch (Exception e) {
+            System.err.println("Lỗi hiển thị UserPopup: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        configureUIBasedOnRole();
         try {
             setFilter();
         } catch (SQLException e) {
@@ -76,6 +111,21 @@ public class ClubController implements Initializable {
             throw new RuntimeException(e);
         }
     }
+
+    private void configureUIBasedOnRole() {
+        Session session = Session.getInstance();
+        String userRole = session.getRole();
+
+        // Nếu role là "A", ẩn Registry và Rules buttons
+        if ("A".equals(userRole)) {
+            if (addBtn != null) {
+                addBtn.setVisible(false);
+                addBtn.setManaged(false); // Không chiếm không gian trong layout
+            }
+
+        }
+    }
+
     public void setFilter() throws SQLException {
         List<MODEL_MUAGIAI> ds1 = service.getAllTournament();
         ArrayList<String> dsMG = new ArrayList<>();

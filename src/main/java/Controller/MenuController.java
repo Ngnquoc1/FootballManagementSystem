@@ -1,5 +1,6 @@
 package Controller;
 
+import Model.Session;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
@@ -14,7 +15,31 @@ public class MenuController {
     @FXML
     public void initialize() {
         mainContent.setUserData(this);
+
+        configureUIBasedOnRole();
+
         clickOnHomeBtn();
+    }
+
+    private void configureUIBasedOnRole() {
+        Session session = Session.getInstance();
+        String userRole = session.getRole();
+
+        // Nếu role là "A", ẩn Registry và Rules buttons
+        if ("A".equals(userRole)) {
+            if (registryMenuBtn != null) {
+                registryMenuBtn.setVisible(false);
+                registryMenuBtn.setManaged(false); // Không chiếm không gian trong layout
+            }
+            if (rulesMenuBtn != null) {
+                rulesMenuBtn.setVisible(false);
+                rulesMenuBtn.setManaged(false); // Không chiếm không gian trong layout
+            }
+            if(leagueMenuBtn != null) {
+                leagueMenuBtn.setVisible(false);
+                leagueMenuBtn.setManaged(false);
+            }
+        }
     }
 
     @FXML

@@ -48,7 +48,7 @@
             </HBox>
             <Button mnemonicParsing="false" prefHeight="28.0" prefWidth="27.0" styleClass="notification">
                <graphic>
-                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
+                  <ImageView fx:id="userIcon" fitHeight="20.0" fitWidth="20.0" onDragDetected="#showUserPopup" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                      <image>
                         <Image url="@../icons/user.png" />
                      </image>
@@ -59,9 +59,9 @@
       </HBox>
       <VBox prefHeight="484.0" prefWidth="649.0" stylesheets="@../CSS/Fixtures.css">
          <children>
-            <HBox prefHeight="78.0" prefWidth="795.0" spacing="5">
+            <HBox alignment="BOTTOM_LEFT" prefHeight="78.0" prefWidth="795.0" spacing="5">
                <children>
-                  <VBox prefHeight="54.0" prefWidth="228.0">
+                  <VBox prefHeight="45.0" prefWidth="224.0">
                      <children>
                         <Label prefHeight="18.0" prefWidth="149.0" styleClass="filter_text" text="Filter by competition" textAlignment="CENTER" />
                         <ComboBox fx:id="compeFilter" prefHeight="27.0" prefWidth="197.0" promptText="Choose your League" style="-fx-border-color: #991f18;" styleClass="menu-button" />
@@ -87,7 +87,7 @@
                   </Button>
                </children>
                <padding>
-                  <Insets bottom="10.0" left="44.0" right="5.0" top="10.0" />
+                  <Insets bottom="10.0" left="20.0" right="5.0" top="10.0" />
                </padding>
             </HBox>
             <ScrollPane prefHeight="438.0" prefWidth="795.0">

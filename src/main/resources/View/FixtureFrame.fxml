@@ -21,9 +21,9 @@
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
-            <Button layoutX="561.0" layoutY="14.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="27.0" styleClass="notification" translateX="150.0">
+            <Button  layoutX="561.0" layoutY="14.0" mnemonicParsing="false" onAction="#showUserPopup" prefHeight="28.0" prefWidth="27.0" styleClass="notification" translateX="150.0">
                <graphic>
-                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
+                  <ImageView fx:id="userIcon" fitHeight="20.0" fitWidth="20.0" onDragDetected="#showUserPopup" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                      <image>
                         <Image url="@../icons/user.png" />
                      </image>
