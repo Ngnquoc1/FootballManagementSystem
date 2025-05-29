@@ -21,6 +21,8 @@ import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 import java.net.URL;
@@ -32,49 +34,24 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class ClubController implements Initializable {
-
-    @FXML private TextField searchField;
-    @FXML private ComboBox<String> compeFilter;
-    @FXML private Button resetBtn,addBtn;
-    @FXML private GridPane team_container;
     @FXML
     private ImageView userIcon;
+    @FXML
+    private TextField searchField;
+    @FXML
+    private ComboBox<String> compeFilter;
+    @FXML
+    private Button resetBtn, addBtn;
+    @FXML
+    private GridPane team_container;
+
     private ObservableList<MODEL_CLB> allClubs = FXCollections.observableArrayList();
     private ObservableList<MODEL_CLB> filteredClubs = FXCollections.observableArrayList();
 
     private Service service = new Service();
 
 
-    @FXML
-    private void showUserPopup() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/UserPopup.fxml"));
-            Parent root = loader.load();
 
-            Stage popupStage = new Stage();
-            popupStage.initModality(Modality.NONE);
-            popupStage.initStyle(StageStyle.UNDECORATED);
-
-            Scene scene = new Scene(root);
-            popupStage.setScene(scene);
-
-            popupStage.setX(userIcon.localToScreen(0, 0).getX() - 100);
-            popupStage.setY(userIcon.localToScreen(0, 0).getY() + 40);
-
-            popupStage.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-                if (!isNowFocused) {
-                    popupStage.close();
-                }
-            });
-
-            popupStage.initOwner(userIcon.getScene().getWindow());
-
-            popupStage.show();
-        } catch (Exception e) {
-            System.err.println("Lỗi hiển thị UserPopup: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         configureUIBasedOnRole();
@@ -136,21 +113,21 @@ public class ClubController implements Initializable {
         compeFilter.getItems().addAll(dsMG);
         compeFilter.getSelectionModel().selectFirst();
     }
+
     private void filterClubs() throws SQLException {
         String searchText = searchField.getText().toLowerCase();
         System.out.println(searchText);
         String season = compeFilter.getValue();
 
         // Lọc câu lạc bộ theo tên
-        Predicate<MODEL_CLB> searchFilter = club ->
-                searchText.isEmpty() || club.getTenCLB().toLowerCase().contains(searchText);
-
+        Predicate<MODEL_CLB> searchFilter = club -> searchText.isEmpty()
+                || club.getTenCLB().toLowerCase().contains(searchText);
 
         filteredClubs.clear();
         filteredClubs.addAll(allClubs.stream()
                 .filter(searchFilter)
                 .collect(Collectors.toList()));
-        loadTeams( filteredClubs);
+        loadTeams(filteredClubs);
     }
 
     @FXML
@@ -163,6 +140,37 @@ public class ClubController implements Initializable {
             loadTeams(filteredClubs);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+    
+    @FXML
+    private void showUserPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/UserPopup.fxml"));
+            Parent root = loader.load();
+
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.NONE);
+            popupStage.initStyle(StageStyle.UNDECORATED);
+
+            Scene scene = new Scene(root);
+            popupStage.setScene(scene);
+
+            popupStage.setX(userIcon.localToScreen(0, 0).getX() - 100);
+            popupStage.setY(userIcon.localToScreen(0, 0).getY() + 40);
+
+            popupStage.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) {
+                    popupStage.close();
+                }
+            });
+
+            popupStage.initOwner(userIcon.getScene().getWindow());
+
+            popupStage.show();
+        } catch (Exception e) {
+            System.err.println("Lỗi hiển thị UserPopup: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -180,7 +188,7 @@ public class ClubController implements Initializable {
         // Tạo động các RowConstraints dựa trên số hàng cần thiết
         for (int i = 0; i < numRows; i++) {
             RowConstraints row = new RowConstraints();
-            row.setMinHeight(150);  // Chiều cao tối thiểu cho mỗi hàng
+            row.setMinHeight(150); // Chiều cao tối thiểu cho mỗi hàng
             row.setPrefHeight(150); // Chiều cao ưu tiên
             row.setVgrow(Priority.SOMETIMES);
             team_container.getRowConstraints().add(row);
@@ -189,7 +197,7 @@ public class ClubController implements Initializable {
         // Thêm card cho từng đội bóng vào GridPane
         for (int i = 0; i < teams.size(); i++) {
             MODEL_CLB team = teams.get(i);
-            VBox teamCard =  teamCardView(team);
+            VBox teamCard = teamCardView(team);
 
             // Tính toán vị trí hàng và cột dựa trên index
             int row = i / numCols;
@@ -200,17 +208,17 @@ public class ClubController implements Initializable {
         }
 
     }
-    private VBox teamCardView(MODEL_CLB team){
+
+    private VBox teamCardView(MODEL_CLB team) {
         VBox teamCard = new VBox(5);
         teamCard.setAlignment(Pos.CENTER);
-        teamCard.setPadding(new Insets(5,10,0, 10));
+        teamCard.setPadding(new Insets(5, 10, 0, 10));
 
-        Image logo=null;
-        try{
-            logo=new Image(getClass().getResourceAsStream("/Image/ClubLogo/"+ team.getLogoCLB()));
-        }
-        catch(Exception e){
-            logo=new Image(getClass().getResourceAsStream("/Image/ClubLogo/default_logo.png"));
+        Image logo = null;
+        try {
+            logo = new Image(getClass().getResourceAsStream("/Image/ClubLogo/" + team.getLogoCLB()));
+        } catch (Exception e) {
+            logo = new Image(getClass().getResourceAsStream("/Image/ClubLogo/default_logo.png"));
         }
         ImageView logoView = new ImageView(logo);
         logoView.setPreserveRatio(true);
@@ -230,13 +238,13 @@ public class ClubController implements Initializable {
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         HBox content = new HBox(5);
-        content.getChildren().addAll( nameLabel,spacer, arrowLabel);
+        content.getChildren().addAll(nameLabel, spacer, arrowLabel);
 
         HBox colorBar = new HBox();
         colorBar.setPrefHeight(3);
         colorBar.getStyleClass().addAll("color-bar");
 
-        teamCard.getChildren().addAll(logoView, content,colorBar);
+        teamCard.getChildren().addAll(logoView, content, colorBar);
         teamCard.getStyleClass().add("team-card");
 
         Region leftSpacer = new Region();
@@ -246,7 +254,6 @@ public class ClubController implements Initializable {
 
         HBox hBox = new HBox(leftSpacer, teamCard, rightSpacer);
 
-
         Region topSpacer = new Region();
         Region bottomSpacer = new Region();
         VBox.setVgrow(topSpacer, Priority.ALWAYS);
@@ -254,7 +261,7 @@ public class ClubController implements Initializable {
 
         VBox wrapper = new VBox(topSpacer, hBox, bottomSpacer);
         wrapper.setOnMouseClicked(event -> {
-                handleClubClick(team);
+            handleClubClick(team);
         });
         return wrapper;
     }
@@ -265,9 +272,9 @@ public class ClubController implements Initializable {
         Parent root = null;
         try {
             root = loader.load();
-            ClubsDetailController controller=loader.getController();
-            MODEL_SAN stadium=service.getStadiumById(club.getMaSan());
-            controller.setData(club,stadium);
+            ClubsDetailController controller = loader.getController();
+            MODEL_SAN stadium = service.getStadiumById(club.getMaSan());
+            controller.setData(club, stadium);
             Stage stage = new Stage();
             stage.setTitle("Club Details - " + club.getTenCLB());
             stage.setScene(new Scene(root));
@@ -282,6 +289,7 @@ public class ClubController implements Initializable {
             alert.showAndWait();
         }
     }
+
     @FXML
     public void controlClub() {
         try {

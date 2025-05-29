@@ -58,7 +58,7 @@
                                  <children>
                                     <Label styleClass="field-label" text="Tìm kiếm" />
                                     <TextField fx:id="searchClubField" promptText="Enter Club's Name" text="Nhập tên CLB" HBox.hgrow="ALWAYS" />
-                                    <Button fx:id="searchButton" onAction="#searchClub" styleClass="secondary-button" text="Find" />
+                                    <Button fx:id="searchButton" onAction="#searchClub" styleClass="secondary-button" text="Tìm kiếm" />
                                  </children>
                               </HBox>
                               <Label styleClass="hint-text" text="If you want to UPDATE, Let's find CLB to fill the form automatically " />

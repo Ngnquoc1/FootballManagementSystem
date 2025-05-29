@@ -17,9 +17,7 @@
 
 .inner_pane{
     -fx-background-color: transparent;
-    -fx-border-color:   #991f18;
-    -fx-border-width: 1px;
-    -fx-border-radius: 20px;
+
     -fx-background-radius: 20px;
     -fx-alignment: center;
     -fx-text-fill:  #991f18;

@@ -11,10 +11,15 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.Cursor?>
 
-<VBox fx:id="mainContent" prefHeight="625.0" prefWidth="800.0" style="-fx-background-color: linear-gradient(to bottom, #ffffff, #f0f0f0, #e6e6e6); -fx-border-width: 2;" stylesheets="@../CSS/Fixtures.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.FixtureController">
+<VBox fx:id="mainContent" prefHeight="625.0" prefWidth="800.0"
+   style="-fx-background-color: linear-gradient(to bottom, #ffffff, #f0f0f0, #e6e6e6); -fx-border-width: 2;"
+   stylesheets="@../CSS/Fixtures.css" xmlns="http://javafx.com/javafx/23.0.1"
+   xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.FixtureController">
    <children>
-      <HBox alignment="CENTER_LEFT" prefHeight="62.0" prefWidth="800.0" style="-fx-background-color: #991f18;">
+      <HBox alignment="CENTER_LEFT" prefHeight="62.0" prefWidth="800.0"
+         style="-fx-background-color: #991f18;">
          <children>
             <Label text="Lịch thi đấu" textFill="WHITE">
                <font>
@@ -26,33 +31,57 @@
             </Label>
             <Pane HBox.hgrow="ALWAYS" />
          </children>
+         <ImageView fx:id="userIcon" fitHeight="35.0" fitWidth="35.0"
+            onMouseClicked="#showUserPopup" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@../icons/user.png" />
+            </image>
+            <cursor>
+               <Cursor fx:constant="HAND" />
+            </cursor>
+            <HBox.margin>
+               <Insets right="20.0" />
+            </HBox.margin>
+         </ImageView>
       </HBox>
-      <Pane prefHeight="100.0" prefWidth="800.0" style="-fx-border-color: transparent transparent #991f18 transparent;" stylesheets="@../CSS/Fixtures.css">
+      <Pane prefHeight="100.0" prefWidth="800.0"
+         style="-fx-border-color: transparent transparent #991f18 transparent;"
+         stylesheets="@../CSS/Fixtures.css">
          <children>
             <HBox layoutX="14.0" layoutY="40.0" prefHeight="59.0" prefWidth="787.0" spacing="5">
                <children>
                   <VBox prefHeight="59.0" prefWidth="219.0" styleClass="filter_element">
                      <children>
-                        <ComboBox fx:id="compeFilter" prefHeight="28.0" prefWidth="187.0" promptText="Tất cả giải đấu" style="-fx-border-color: #991f18;" styleClass="menu-button" />
+                        <ComboBox fx:id="compeFilter" prefHeight="28.0" prefWidth="187.0"
+                           promptText="Tất cả giải đấu" style="-fx-border-color: #991f18;"
+                           styleClass="menu-button" />
                      </children>
                   </VBox>
                   <VBox layoutX="10.0" layoutY="10.0" prefHeight="43.0" prefWidth="211.0">
                      <children>
-                        <ComboBox fx:id="clubFilter" onAction="#filterByCLB" prefHeight="8.0" prefWidth="180.0" promptText="Tất cả câu lạc bộ" style="-fx-border-color: #991f18;" styleClass="menu-button" />
+                        <ComboBox fx:id="clubFilter" onAction="#filterByCLB" prefHeight="8.0"
+                           prefWidth="180.0" promptText="Tất cả câu lạc bộ"
+                           style="-fx-border-color: #991f18;" styleClass="menu-button" />
                      </children>
                   </VBox>
-                  <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#resetFilter" prefHeight="34.0" prefWidth="117.0" styleClass="reset_button" text="Đặt lại lọc">
+                  <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#resetFilter"
+                     prefHeight="34.0" prefWidth="117.0" styleClass="reset_button"
+                     text="Đặt lại lọc">
                      <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true"
+                           preserveRatio="true" styleClass="iconBtn">
                            <image>
                               <Image url="@../icons/undo.png" />
                            </image>
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button fx:id="addBtn" mnemonicParsing="false" onAction="#controlFixture" prefHeight="34.0" prefWidth="179.0" styleClass="reset_button" text="Quản lý lịch thi đấu">
+                  <Button fx:id="addBtn" mnemonicParsing="false" onAction="#controlFixture"
+                     prefHeight="34.0" prefWidth="179.0" styleClass="reset_button"
+                     text="Quản lý lịch thi đấu">
                      <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
+                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true"
+                           preserveRatio="true" styleClass="iconBtn">
                            <image>
                               <Image url="@../icons/appointment.png" />
                            </image>
@@ -61,16 +90,20 @@
                   </Button>
                </children>
             </HBox>
-            <Label layoutX="14.0" layoutY="14.0" prefHeight="28.0" prefWidth="149.0" styleClass="filter_text" text="Lọc theo giải đấu" textAlignment="CENTER" />
-            <Label layoutX="236.0" layoutY="19.0" prefHeight="18.0" prefWidth="131.0" styleClass="filter_text" text="Lọc theo câu lạc bộ" />
+            <Label layoutX="14.0" layoutY="14.0" prefHeight="28.0" prefWidth="149.0"
+               styleClass="filter_text" text="Lọc theo giải đấu" textAlignment="CENTER" />
+            <Label layoutX="236.0" layoutY="19.0" prefHeight="18.0" prefWidth="131.0"
+               styleClass="filter_text" text="Lọc theo câu lạc bộ" />
          </children>
       </Pane>
       <VBox>
          <children>
-            <ScrollPane fx:id="Calendar" prefHeight="428.0" prefWidth="796.0" style="-fx-background-color: linear-gradient(to bottom, #ffffff, #f0f0f0, #e6e6e6);;" />
+            <ScrollPane fx:id="Calendar" prefHeight="428.0" prefWidth="796.0"
+               style="-fx-background-color: linear-gradient(to bottom, #ffffff, #f0f0f0, #e6e6e6);;" />
          </children>
       </VBox>
-      <HBox alignment="CENTER" prefHeight="40.0" prefWidth="800.0" style="-fx-background-color: #991f18;">
+      <HBox alignment="CENTER" prefHeight="40.0" prefWidth="800.0"
+         style="-fx-background-color: #991f18;">
          <children>
             <Label text="© 2025 Football Manager System" textFill="WHITE">
                <font>

@@ -19,6 +19,9 @@ import java.nio.file.Paths;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,36 +36,62 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class TournamentManagementController {
-    @FXML private Label totalTournamentsLabel;
-    @FXML private Label activeTournamentsLabel;
-    @FXML private Label upcomingTournamentsLabel;
+    @FXML
+    private Label totalTournamentsLabel;
+    @FXML
+    private Label activeTournamentsLabel;
+    @FXML
+    private Label upcomingTournamentsLabel;
 
-    @FXML private TextField searchField;
-    @FXML private ComboBox<String> compeFilter;
+    @FXML
+    private TextField searchField;
+    @FXML
+    private ComboBox<String> compeFilter;
 
-    @FXML private TableView<MODEL_MUAGIAI> tournamentsTableView;
-    @FXML private TableColumn<MODEL_MUAGIAI, Integer> idColumn;
-    @FXML private TableColumn<MODEL_MUAGIAI, String> nameColumn;
-    @FXML private TableColumn<MODEL_MUAGIAI, LocalDate> startDateColumn;
-    @FXML private TableColumn<MODEL_MUAGIAI, LocalDate> endDateColumn;
-    @FXML private TableColumn<MODEL_MUAGIAI, String> statusColumn;
-    @FXML private TableColumn<MODEL_MUAGIAI, Void> logoColumn;
+    @FXML
+    private TableView<MODEL_MUAGIAI> tournamentsTableView;
+    @FXML
+    private TableColumn<MODEL_MUAGIAI, Integer> idColumn;
+    @FXML
+    private TableColumn<MODEL_MUAGIAI, String> nameColumn;
+    @FXML
+    private TableColumn<MODEL_MUAGIAI, LocalDate> startDateColumn;
+    @FXML
+    private TableColumn<MODEL_MUAGIAI, LocalDate> endDateColumn;
+    @FXML
+    private TableColumn<MODEL_MUAGIAI, String> statusColumn;
+    @FXML
+    private TableColumn<MODEL_MUAGIAI, Void> logoColumn;
 
-    @FXML private TextField idField;
-    @FXML private TextField nameField;
-    @FXML private DatePicker startDatePicker;
-    @FXML private DatePicker endDatePicker;
-    @FXML private ImageView logoImageView;
-    @FXML private Button chooseLogoButton;
+    @FXML
+    private TextField idField;
+    @FXML
+    private TextField nameField;
+    @FXML
+    private DatePicker startDatePicker;
+    @FXML
+    private DatePicker endDatePicker;
+    @FXML
+    private ImageView logoImageView;
+    @FXML
+    private Button chooseLogoButton;
 
-    @FXML private Button addButton;
-    @FXML private Button editButton;
-    @FXML private Button deleteButton;
-    @FXML private Button viewDetailsButton;
-    @FXML private Button saveButton;
-    @FXML private Button cancelButton;
-    @FXML private Button searchButton;
-    @FXML private Button clearButton;
+    @FXML
+    private Button addButton;
+    @FXML
+    private Button editButton;
+    @FXML
+    private Button deleteButton;
+    @FXML
+    private Button viewDetailsButton;
+    @FXML
+    private Button saveButton;
+    @FXML
+    private Button cancelButton;
+    @FXML
+    private Button searchButton;
+    @FXML
+    private Button clearButton;
 
     private ObservableList<MODEL_MUAGIAI> tournamentsList = FXCollections.observableArrayList();
     private FilteredList<MODEL_MUAGIAI> filteredTournaments;
@@ -143,7 +172,7 @@ public class TournamentManagementController {
         filteredTournaments = new FilteredList<>(tournamentsList, p -> true);
         tournamentsTableView.setItems(filteredTournaments);
 
-        List<MODEL_MUAGIAI> allList= service.getAllTournament();
+        List<MODEL_MUAGIAI> allList = service.getAllTournament();
         tournamentsList.addAll(allList);
 
         updateStatistics();
@@ -152,19 +181,21 @@ public class TournamentManagementController {
         enableForm(false);
 
         // Xử lý sự kiện khi chọn một giải đấu trong bảng
-        tournamentsTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                editButton.setDisable(false);
-                deleteButton.setDisable(false);
-                viewDetailsButton.setDisable(false);
-            } else {
-                editButton.setDisable(true);
-                deleteButton.setDisable(true);
-                viewDetailsButton.setDisable(false);
-            }
-        });
+        tournamentsTableView.getSelectionModel().selectedItemProperty()
+                .addListener((obs, oldSelection, newSelection) -> {
+                    if (newSelection != null) {
+                        editButton.setDisable(false);
+                        deleteButton.setDisable(false);
+                        viewDetailsButton.setDisable(false);
+                    } else {
+                        editButton.setDisable(true);
+                        deleteButton.setDisable(true);
+                        viewDetailsButton.setDisable(false);
+                    }
+                });
         createLogoDirectory();
     }
+
     private void setFilter() throws SQLException {
 
         List<MODEL_MUAGIAI> ds1 = service.getAllTournament();
@@ -175,6 +206,7 @@ public class TournamentManagementController {
         compeFilter.getItems().addAll(dsMG);
         compeFilter.getSelectionModel().selectFirst();
     }
+
     private void createLogoDirectory() {
         File directory = new File(LOGO_DIRECTORY);
         if (!directory.exists()) {
@@ -203,7 +235,7 @@ public class TournamentManagementController {
     }
 
     @FXML
-    private void filterByLeague(){
+    private void filterByLeague() {
         String selectedLeague = compeFilter.getSelectionModel().getSelectedItem();
         if (selectedLeague != null) {
             filteredTournaments.setPredicate(tournament -> tournament.getTenMG().equals(selectedLeague));
@@ -211,6 +243,7 @@ public class TournamentManagementController {
             filteredTournaments.setPredicate(tournament -> true);
         }
     }
+
     @FXML
     private void resetFilter() {
         filteredTournaments.setPredicate(tournament -> true);
@@ -271,7 +304,7 @@ public class TournamentManagementController {
                         System.err.println("Không thể xóa file logo: " + e.getMessage());
                     }
                 }
-                int ok=service.deleteTournament(selectedTournament);
+                int ok = service.deleteTournament(selectedTournament);
                 tournamentsList.remove(selectedTournament);
                 updateStatistics();
             }
@@ -283,8 +316,7 @@ public class TournamentManagementController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Chọn Logo Giải Đấu");
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Hình ảnh", "*.png", "*.jpg", "*.jpeg")
-        );
+                new FileChooser.ExtensionFilter("Hình ảnh", "*.png", "*.jpg", "*.jpeg"));
 
         Stage stage = (Stage) chooseLogoButton.getScene().getWindow();
         selectedLogoFile = fileChooser.showOpenDialog(stage);
@@ -303,7 +335,7 @@ public class TournamentManagementController {
     private void handleViewDetails() {
         MODEL_MUAGIAI selectedTournament = tournamentsTableView.getSelectionModel().getSelectedItem();
         if (selectedTournament != null) {
-            List<MODEL_VONGDAU> listVD= service.getAllRoundByTournament(selectedTournament.getMaMG());
+            List<MODEL_VONGDAU> listVD = service.getAllRoundByTournament(selectedTournament.getMaMG());
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Chi tiết giải đấu");
             alert.setHeaderText(selectedTournament.getTenMG());
@@ -322,13 +354,17 @@ public class TournamentManagementController {
             }
 
             StringBuilder content = new StringBuilder("ID: " + selectedTournament.getMaMG() + "\n" +
-                    "Ngày bắt đầu: " + selectedTournament.getNgayBD().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "\n" +
-                    "Ngày kết thúc: " + selectedTournament.getNgayKT().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "\n" +
+                    "Ngày bắt đầu: " + selectedTournament.getNgayBD().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                    + "\n" +
+                    "Ngày kết thúc: " + selectedTournament.getNgayKT().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                    + "\n" +
                     "Trạng thái: " + selectedTournament.getStatus());
             if (listVD != null && !listVD.isEmpty()) {
                 content.append("\n\nDanh sách vòng đấu:\n");
                 for (MODEL_VONGDAU vongDau : listVD) {
-                    content.append("- ").append(vongDau.getTenVD()).append(" (ID: ").append(vongDau.getMaVD()).append(") - Từ: ").append(vongDau.getNgayBD()).append(" Đến: ").append(vongDau.getNgayKT()).append("\n");
+                    content.append("- ").append(vongDau.getTenVD()).append(" (ID: ").append(vongDau.getMaVD())
+                            .append(") - Từ: ").append(vongDau.getNgayBD()).append(" Đến: ").append(vongDau.getNgayKT())
+                            .append("\n");
                 }
             } else {
                 content.append("\n\nKhông có vòng đấu nào trong giải đấu này.");
@@ -427,8 +463,10 @@ public class TournamentManagementController {
             showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể mở màn hình quản lý vòng đấu", e.getMessage());
         }
     }
+
     private String saveLogoFile(File logoFile) {
-        if (logoFile == null) return null;
+        if (logoFile == null)
+            return null;
 
         try {
             String fileExtension = getFileExtension(logoFile.getName());
@@ -491,5 +529,39 @@ public class TournamentManagementController {
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    @FXML
+    private ImageView userIcon;
+
+    @FXML
+    private void showUserPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/UserPopup.fxml"));
+            Parent root = loader.load();
+
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.NONE);
+            popupStage.initStyle(StageStyle.UNDECORATED);
+
+            Scene scene = new Scene(root);
+            popupStage.setScene(scene);
+
+            popupStage.setX(userIcon.localToScreen(0, 0).getX() - 100);
+            popupStage.setY(userIcon.localToScreen(0, 0).getY() + 40);
+
+            popupStage.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) {
+                    popupStage.close();
+                }
+            });
+
+            popupStage.initOwner(userIcon.getScene().getWindow());
+
+            popupStage.show();
+        } catch (Exception e) {
+            System.err.println("Lỗi hiển thị UserPopup: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
