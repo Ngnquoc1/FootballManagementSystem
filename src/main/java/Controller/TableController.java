@@ -50,16 +50,12 @@ public class TableController {
     private Tab clubTab;
     @FXML
     private Tab scorerTab;
-    @FXML
-    private Tab bracketTab;
 
     // Thông tin giải đấu
     @FXML
     private Label competitionInfoLabel;
     @FXML
     private Label scorerCompetitionInfoLabel;
-    @FXML
-    private Label bracketCompetitionInfoLabel;
 
     // Bảng xếp hạng CLB
     @FXML
@@ -96,36 +92,7 @@ public class TableController {
     private TableColumn<MODEL_BXH_BANTHANG, Integer> scorerGoalsColumn;
     @FXML
     private TableColumn<MODEL_BXH_BANTHANG, Integer> scorerPenaltyColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_BANTHANG, Integer> scorerMatchesColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_BANTHANG, Integer> scorerMinutesColumn;
 
-    // Bảng xếp hạng theo nhánh
-    @FXML
-    private ComboBox<String> bracketComboBox;
-    @FXML
-    private TableView<MODEL_BXH_CLB> bracketTableView;
-    @FXML
-    private TableColumn<MODEL_BXH_CLB, Integer> bracketRankColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_CLB, String> bracketClubColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_CLB, Integer> bracketPlayedColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_CLB, Integer> bracketWonColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_CLB, Integer> bracketDrawnColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_CLB, Integer> bracketLostColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_CLB, Integer> bracketGFColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_CLB, Integer> bracketGAColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_CLB, Integer> bracketGDColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_CLB, Integer> bracketPointsColumn;
 
     // Nút xuất báo cáo và đóng
     @FXML
@@ -135,11 +102,9 @@ public class TableController {
 
     // Dữ liệu
     private ObservableList<MODEL_BXH_CLB> vleagueClubRankings = FXCollections.observableArrayList();
-    private ObservableList<MODEL_BXH_CLB> nationalCupClubRankings = FXCollections.observableArrayList();
     private ObservableList<MODEL_BXH_BANTHANG> vleagueScorerRankings = FXCollections.observableArrayList();
     private ObservableList<MODEL_BXH_BANTHANG> nationalCupScorerRankings = FXCollections.observableArrayList();
-    private ObservableList<MODEL_BXH_CLB> bracketARankings = FXCollections.observableArrayList();
-    private ObservableList<MODEL_BXH_CLB> bracketBRankings = FXCollections.observableArrayList();
+
 
     private Service service;
 
@@ -151,12 +116,10 @@ public class TableController {
         compeFilter.setItems(FXCollections.observableArrayList(
                 service.getAllTournament().stream().map(MODEL_MUAGIAI::getTenMG).toList()));
         rankingTypeFilter.setItems(FXCollections.observableArrayList("BXH CLB", "Vua phá lưới"));
-        bracketComboBox.setItems(FXCollections.observableArrayList("Nhánh A", "Nhánh B"));
 
         // Thiết lập giá trị mặc định
         compeFilter.getSelectionModel().selectFirst();
         rankingTypeFilter.setValue("BXH CLB");
-        bracketComboBox.setValue("Nhánh A");
 
         // Thiết lập các cột cho bảng xếp hạng CLB
         setupClubTableColumns();
@@ -171,7 +134,6 @@ public class TableController {
         // Xử lý sự kiện khi thay đổi giải đấu hoặc loại BXH
         compeFilter.setOnAction(e -> handleFilterChange());
         rankingTypeFilter.setOnAction(e -> handleFilterChange());
-        // bracketComboBox.setOnAction(e -> updateBracketTableView());
 
         // Xử lý sự kiện khi chuyển tab
         tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
@@ -179,9 +141,6 @@ public class TableController {
                 rankingTypeFilter.setValue("BXH CLB");
             } else if (newTab == scorerTab) {
                 rankingTypeFilter.setValue("Vua phá lưới");
-            } else if (newTab == bracketTab) {
-                compeFilter.setValue("Cúp Quốc Gia");
-                rankingTypeFilter.setValue("BXH CLB");
             }
             updateTableView();
         });
@@ -313,19 +272,6 @@ public class TableController {
             } else {
                 tabPane.getSelectionModel().select(scorerTab);
                 scorerTableView.setItems(vleagueScorerRankings);
-            }
-        } else if ("Cúp Quốc Gia".equals(competition)) {
-            competitionInfoLabel.setText("Cúp Quốc Gia 2023");
-            scorerCompetitionInfoLabel.setText("Cúp Quốc Gia 2023 - Vua phá lưới");
-            bracketCompetitionInfoLabel.setText("Cúp Quốc Gia 2023");
-
-            if ("BXH CLB".equals(rankingType)) {
-                tabPane.getSelectionModel().select(bracketTab);
-                // updateBracketTableView();
-                clubLegendBox.setVisible(false);
-            } else {
-                tabPane.getSelectionModel().select(scorerTab);
-                scorerTableView.setItems(nationalCupScorerRankings);
             }
         }
     }
