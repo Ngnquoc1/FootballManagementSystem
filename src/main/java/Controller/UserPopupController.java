@@ -34,7 +34,8 @@ public class UserPopupController {
 
             MODEL_USER currentUser = service.getUserByUsername(currentUsername);
             if (currentUser != null) {
-                roleLabel.setText(currentUser.getVaiTroText());
+                String tenVT=(service.getRoleById(currentUser.getVaiTro())).getTenVaiTro();
+                roleLabel.setText(tenVT);
             } else {
                 roleLabel.setText("Không xác định");
             }

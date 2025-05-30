@@ -1552,8 +1552,6 @@ INSERT INTO TaiKhoan VALUES ('admin4', '1234', 2);
 INSERT INTO TaiKhoan VALUES ('admin45', '12345', 3);
 INSERT INTO TaiKhoan VALUES ('admin456', '123456', 4);
 
-
-
 INSERT INTO LOAIBANTHANG (MaLoaiBT, TenLoaiBT) VALUES (1, 'Bàn thắng thường');
 INSERT INTO LOAIBANTHANG (MaLoaiBT, TenLoaiBT) VALUES (2, 'Phạt đền');
 INSERT INTO LOAIBANTHANG (MaLoaiBT, TenLoaiBT) VALUES (3, 'Đá phạt');

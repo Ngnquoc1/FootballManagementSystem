@@ -3,6 +3,7 @@ package Controller;
 import Model.*;
 import Service.Service;
 
+import Util.AlertUtils;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -43,9 +44,7 @@ public class FixtureController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Session session = Session.getInstance();
-        String role = session.getRole();
-//        addBtn.setVisible(Objects.equals(role, "A"));
+        configureUIBasedOnRole();
         try {
             setFilter();
         } catch (SQLException e) {
@@ -59,6 +58,21 @@ public class FixtureController implements Initializable {
         }
         createFullMatch(matchesByDate);
     }
+
+    private void configureUIBasedOnRole() {
+        Session session = Session.getInstance();
+        int userRole = session.getRole();
+
+
+        if (userRole == 5 || userRole == 4 || userRole == 2 || userRole == 1) {
+            if (addBtn != null) {
+                addBtn.setVisible(false);
+                addBtn.setManaged(false); // Không chiếm không gian trong layout
+            }
+
+        }
+    }
+
     private void setFilter() throws SQLException {
 
         List<MODEL_MUAGIAI> ds1 = service.getAllTournament();
@@ -630,11 +644,40 @@ public class FixtureController implements Initializable {
             stage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Unable to load club details");
-            alert.setContentText("An error occurred while trying to display the club details.");
-            alert.showAndWait();
+            AlertUtils.showError("Error", "Unable to load club details",
+                    "An error occurred while trying to display the club details.");
+
+        }
+    }
+    @FXML ImageView userIcon;
+    @FXML
+    private void showUserPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/UserPopup.fxml"));
+            Parent root = loader.load();
+
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.NONE);
+            popupStage.initStyle(StageStyle.UNDECORATED);
+
+            Scene scene = new Scene(root);
+            popupStage.setScene(scene);
+
+            popupStage.setX(userIcon.localToScreen(0, 0).getX() - 100);
+            popupStage.setY(userIcon.localToScreen(0, 0).getY() + 40);
+
+            popupStage.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) {
+                    popupStage.close();
+                }
+            });
+
+            popupStage.initOwner(userIcon.getScene().getWindow());
+
+            popupStage.show();
+        } catch (Exception e) {
+            System.err.println("Lỗi hiển thị UserPopup: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

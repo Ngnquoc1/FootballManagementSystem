@@ -40,7 +40,7 @@ public class Service {
                 user = new MODEL_USER();
                 user.setUserName(rs.getString("TenDangNhap"));
                 user.setPassWord(rs.getString("MatKhau"));
-                user.setVaiTro(rs.getString("VaiTro"));
+                user.setVaiTro(rs.getInt("MaVT"));
                 return user;
             }
             return user;
@@ -75,7 +75,7 @@ public class Service {
                 user = new MODEL_USER();
                 user.setUserName(rs.getString("TenDangNhap"));
                 user.setPassWord(rs.getString("MatKhau"));
-                user.setVaiTro(rs.getString("VaiTro"));
+                user.setVaiTro(rs.getInt("MaVT"));
             }
         } catch (SQLException e) {
             System.err.println("Lỗi truy vấn SQL: " + e.getMessage());
@@ -90,11 +90,23 @@ public class Service {
         }
         return user;
     }
-
-    public MODEL_USER getCurrentUser() {
-        Session session = Session.getInstance();
-        String currentUsername = session.getUsername();
-        return getUserByUsername(currentUsername);
+    public MODEL_VAITRO getRoleById(int roleId) {
+        MODEL_VAITRO role = null;
+        ResultSet rs = null;
+        String sql = "SELECT * FROM VaiTro WHERE MaVT = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, roleId);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                role = new MODEL_VAITRO();
+                role.setMaVaiTro(rs.getInt("MaVT"));
+                role.setTenVaiTro(rs.getString("TenVaiTro"));
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi truy vấn SQL: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return role;
     }
 
     //    MATCH-View

@@ -3,7 +3,7 @@ package Model;
 public class Session {
     private static Session instance;
     private String username;
-    private String role;
+    private int role;
 
     private Session() {}
 
@@ -22,16 +22,15 @@ public class Session {
         this.username = username;
     }
 
-    public String getRole() {
+    public int getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(int role) {
         this.role = role;
     }
 
     public void clear() {
         username = null;
-        role = null;
     }
 }

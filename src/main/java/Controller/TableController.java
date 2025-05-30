@@ -146,6 +146,7 @@ public class TableController {
     @FXML
     private void initialize() throws SQLException {
         service = new Service();
+        configureUIBasedOnRole();
         // Thiết lập các ComboBox
         compeFilter.setItems(FXCollections.observableArrayList(
                 service.getAllTournament().stream().map(MODEL_MUAGIAI::getTenMG).toList()));
@@ -162,9 +163,6 @@ public class TableController {
 
         // Thiết lập các cột cho bảng xếp hạng Vua phá lưới
         setupScorerTableColumns();
-        //
-        // Thiết lập các cột cho bảng xếp hạng theo nhánh
-        // setupBracketTableColumns();
 
         // Tạo dữ liệu mẫu
         // Hiển thị dữ liệu ban đầu
@@ -295,39 +293,7 @@ public class TableController {
         });
     }
 
-    // private void setupBracketTableColumns() {
-    // bracketRankColumn.setCellValueFactory(new PropertyValueFactory<>("rank"));
-    // bracketClubColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-    // bracketPlayedColumn.setCellValueFactory(new
-    // PropertyValueFactory<>("played"));
-    // bracketWonColumn.setCellValueFactory(new PropertyValueFactory<>("won"));
-    // bracketDrawnColumn.setCellValueFactory(new PropertyValueFactory<>("drawn"));
-    // bracketLostColumn.setCellValueFactory(new PropertyValueFactory<>("lost"));
-    // bracketGFColumn.setCellValueFactory(new PropertyValueFactory<>("goalsFor"));
-    // bracketGAColumn.setCellValueFactory(new
-    // PropertyValueFactory<>("goalsAgainst"));
-    // bracketGDColumn.setCellValueFactory(new
-    // PropertyValueFactory<>("goalDifference"));
-    // bracketPointsColumn.setCellValueFactory(new
-    // PropertyValueFactory<>("points"));
-    //
-    // // Thiết lập màu nền cho các hàng dựa trên thứ hạng
-    // bracketTableView.setRowFactory(tv -> new TableRow<MODEL_BXH_CLB>() {
-    // @Override
-    // protected void updateItem(MODEL_BXH_CLB item, boolean empty) {
-    // super.updateItem(item, empty);
-    // if (item == null || empty) {
-    // setStyle("");
-    // } else {
-    // if (item.getHang() <= 2) {
-    // setStyle("-fx-background-color: rgba(76, 175, 80, 0.2);"); // Đi tiếp
-    // } else {
-    // setStyle("");
-    // }
-    // }
-    // }
-    // });
-    // }
+
     private void handleFilterChange() {
         updateTableView();
     }
@@ -363,16 +329,6 @@ public class TableController {
             }
         }
     }
-
-    // private void updateBracketTableView() {
-    // String bracket = bracketComboBox.getValue();
-    //
-    // if ("Nhánh A".equals(bracket)) {
-    // bracketTableView.setItems(bracketARankings);
-    // } else if ("Nhánh B".equals(bracket)) {
-    // bracketTableView.setItems(bracketBRankings);
-    // }
-    // }
 
     @FXML
     private void handleRefresh() {

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -8,6 +9,8 @@
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -15,16 +18,10 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.Cursor?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
 
-<VBox prefHeight="625.0" prefWidth="800.0" style="-fx-background-color: white;"
-    xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
-    fx:controller="Controller.RulesManagementController">
+<VBox prefHeight="625.0" prefWidth="800.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.RulesManagementController">
     <children>
-        <HBox alignment="CENTER_LEFT" prefHeight="85.0" prefWidth="800.0"
-            style="-fx-background-color: #991f18;">
+        <HBox alignment="CENTER_LEFT" prefHeight="85.0" prefWidth="800.0" style="-fx-background-color: #991f18;">
             <children>
                 <Label text="Quản lý quy định giải đấu" textFill="WHITE">
                     <font>
@@ -37,8 +34,7 @@
                 <Pane HBox.hgrow="ALWAYS" />
 
 
-                <ImageView fx:id="userIcon" fitHeight="35.0" fitWidth="35.0"
-                    onMouseClicked="#showUserPopup" pickOnBounds="true" preserveRatio="true">
+                <ImageView fx:id="userIcon" fitHeight="35.0" fitWidth="35.0" onMouseClicked="#showUserPopup" pickOnBounds="true" preserveRatio="true">
                     <image>
                         <Image url="@../icons/user.png" />
                     </image>
@@ -53,8 +49,7 @@
         </HBox>
 
         <!-- Selection Section -->
-        <VBox spacing="15.0"
-            style="-fx-border-color: #cccccc; -fx-border-width: 0 0 1 0; -fx-padding: 20;">
+        <VBox spacing="15.0" style="-fx-border-color: #cccccc; -fx-border-width: 0 0 1 0; -fx-padding: 20;">
             <children>
                 <Label text="Chọn mùa giải" textFill="#333333">
                     <font>
@@ -63,10 +58,7 @@
                 </Label>
                 <HBox alignment="CENTER_LEFT" spacing="15.0">
                     <children>
-                        <ComboBox fx:id="cboMuaGiai" onAction="#chonMuaGiai" prefHeight="31.0"
-                            prefWidth="362.0" promptText="Chọn mùa giải để xem/chỉnh sửa quy định"
-                            style="-fx-border-radius: 3; -fx-font-size: 14px;"
-                            stylesheets="@../CSS/Fixtures.css" />
+                        <ComboBox fx:id="cboMuaGiai" onAction="#chonMuaGiai" prefHeight="31.0" prefWidth="362.0" promptText="Chọn mùa giải để xem/chỉnh sửa quy định" style="-fx-border-radius: 3; -fx-font-size: 14px;" stylesheets="@../CSS/Fixtures.css" />
                         <Label fx:id="lblTrangThaiMuaGiai" text="" textFill="#666666">
                             <font>
                                 <Font name="System Bold" size="14.0" />
@@ -188,7 +180,6 @@
               <children>
                   <Button mnemonicParsing="false" onAction="#apDungMacDinh" prefWidth="150.0" style="-fx-background-color: #4caf50; -fx-text-fill: white; -fx-font-size: 14px;" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Áp dụng mặc định" />
                   <Button mnemonicParsing="false" onAction="#capNhatQuyDinh" prefWidth="150.0" style="-fx-background-color: #9e1b1b; -fx-text-fill: white; -fx-font-size: 14px;" styleClass="ManagementBtn" text="Cập nhật quy định" />
-                  <Button mnemonicParsing="false" onAction="#lamMoi" prefWidth="150.0" style="-fx-background-color: #666666; -fx-text-fill: white; -fx-font-size: 14px;" styleClass="ManagementBtn" text="Làm mới" />
               </children>
           </HBox>
     </children>
