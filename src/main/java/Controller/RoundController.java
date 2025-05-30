@@ -25,7 +25,7 @@ public class RoundController {
 
     @FXML private TableView<MODEL_VONGDAU> roundsTableView;
     @FXML private TableColumn<MODEL_VONGDAU, Integer> idColumn;
-    @FXML private TableColumn<MODEL_VONGDAU, String> nameColumn;  // Đã thay đổi kiểu generic
+    @FXML private TableColumn<MODEL_VONGDAU, String> nameColumn;
     @FXML private TableColumn<MODEL_VONGDAU, Date> startDateColumn;
     @FXML private TableColumn<MODEL_VONGDAU, Date> endDateColumn;
     @FXML private TableColumn<MODEL_VONGDAU, String> statusColumn;

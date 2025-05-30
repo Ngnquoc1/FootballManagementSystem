@@ -505,20 +505,11 @@ CREATE OR REPLACE PROCEDURE RecalculateRankingPositions(
     p_maMG IN NUMBER
 )
 AS
-    TYPE club_ranking_t IS TABLE OF BANGXEPHANG_CLB%ROWTYPE INDEX BY PLS_INTEGER;
-    v_clubs club_ranking_t;
-    v_temp_clubs club_ranking_t;
-    v_tieu_chi NVARCHAR2(50);
-    v_do_uu_tien NUMBER;
+    v_order_by_clause VARCHAR2(1000) := '';
     v_found BOOLEAN := FALSE;
 BEGIN
-    -- Lấy dữ liệu từ BANGXEPHANG_CLB vào mảng
-SELECT * BULK COLLECT INTO v_clubs
-FROM BANGXEPHANG_CLB
-WHERE MaMG = p_maMG;
-
--- Kiểm tra xem có dữ liệu trong THUTU_UUTIEN không
-FOR priority_rec IN (
+    -- Kiểm tra xem có dữ liệu trong THUTU_UUTIEN không và xây dựng chuỗi ORDER BY
+    FOR priority_rec IN (
         SELECT TieuChi, DoUuTien
         FROM THUTU_UUTIEN
         WHERE MaMG = p_maMG
@@ -526,95 +517,39 @@ FOR priority_rec IN (
         )
         LOOP
             v_found := TRUE;
-            v_tieu_chi := priority_rec.TieuChi;
-            v_do_uu_tien := priority_rec.DoUuTien;
-
-            -- Sắp xếp mảng v_clubs theo tiêu chí hiện tại
-        FOR i IN 1 .. v_clubs.COUNT - 1 LOOP
-                    FOR j IN i + 1 .. v_clubs.COUNT LOOP
-                        DECLARE
-                        v_swap BOOLEAN := FALSE;
-                        BEGIN
-                                IF v_tieu_chi = 'Diem' THEN
-                                    IF v_clubs(i).Diem < v_clubs(j).Diem THEN
-                                        v_swap := TRUE;
-                                    ELSIF v_clubs(i).Diem = v_clubs(j).Diem THEN
-                                        -- Nếu bằng nhau, giữ nguyên để tiêu chí tiếp theo xử lý
-                                        CONTINUE;
-                                    END IF;
-                                ELSIF v_tieu_chi = 'HieuSo' THEN
-                                    IF v_clubs(i).Diem = v_clubs(j).Diem AND v_clubs(i).HieuSo < v_clubs(j).HieuSo THEN
-                                        v_swap := TRUE;
-                                    ELSIF v_clubs(i).HieuSo = v_clubs(j).HieuSo THEN
-                                        CONTINUE;
-                                    END IF;
-                                ELSIF v_tieu_chi = 'Thang' THEN
-                                    IF v_clubs(i).Diem = v_clubs(j).Diem AND v_clubs(i).HieuSo = v_clubs(j).HieuSo
-                                        AND v_clubs(i).Thang < v_clubs(j).Thang THEN
-                                        v_swap := TRUE;
-                                    ELSIF v_clubs(i).Thang = v_clubs(j).Thang THEN
-                                        CONTINUE;
-                                    END IF;
-                                ELSIF v_tieu_chi = 'SoTran' THEN
-                                    IF v_clubs(i).Diem = v_clubs(j).Diem AND v_clubs(i).HieuSo = v_clubs(j).HieuSo
-                                        AND v_clubs(i).Thang = v_clubs(j).Thang AND v_clubs(i).SoTran < v_clubs(j).SoTran THEN
-                                        v_swap := TRUE;
-                                    ELSIF v_clubs(i).SoTran = v_clubs(j).SoTran THEN
-                                        CONTINUE;
-                                    END IF;
-                                ELSIF v_tieu_chi = 'Hoa' THEN
-                                    IF v_clubs(i).Diem = v_clubs(j).Diem AND v_clubs(i).HieuSo = v_clubs(j).HieuSo
-                                        AND v_clubs(i).Thang = v_clubs(j).Thang AND v_clubs(i).SoTran = v_clubs(j).SoTran
-                                        AND v_clubs(i).Hoa < v_clubs(j).Hoa THEN
-                                        v_swap := TRUE;
-                                    ELSIF v_clubs(i).Hoa = v_clubs(j).Hoa THEN
-                                        CONTINUE;
-                                    END IF;
-                                ELSIF v_tieu_chi = 'Thua' THEN
-                                    IF v_clubs(i).Diem = v_clubs(j).Diem AND v_clubs(i).HieuSo = v_clubs(j).HieuSo
-                                        AND v_clubs(i).Thang = v_clubs(j).Thang AND v_clubs(i).SoTran = v_clubs(j).SoTran
-                                        AND v_clubs(i).Hoa = v_clubs(j).Hoa AND v_clubs(i).Thua < v_clubs(j).Thua THEN
-                                        v_swap := TRUE;
-                                    END IF;
-                                END IF;
-
-                                -- Hoán đổi nếu cần
-                                IF v_swap THEN
-                                    v_temp_clubs(i) := v_clubs(i);
-                                    v_clubs(i) := v_clubs(j);
-                                    v_clubs(j) := v_temp_clubs(i);
-                                END IF;
-                        END;
-                    END LOOP;
+            IF v_order_by_clause IS NOT NULL THEN
+                v_order_by_clause := v_order_by_clause || ', ';
+            END IF;
+            v_order_by_clause := v_order_by_clause || priority_rec.TieuChi || ' DESC';
         END LOOP;
-END LOOP;
 
-    -- Nếu không có dữ liệu trong THUTU_UUTIEN, sắp xếp mặc định theo Diem và HieuSo
+    -- Nếu không có tiêu chí, sử dụng sắp xếp mặc định
     IF NOT v_found THEN
-        FOR i IN 1 .. v_clubs.COUNT - 1 LOOP
-                FOR j IN i + 1 .. v_clubs.COUNT LOOP
-                        IF v_clubs(i).Diem < v_clubs(j).Diem THEN
-                            v_temp_clubs(i) := v_clubs(i);
-                            v_clubs(i) := v_clubs(j);
-                            v_clubs(j) := v_temp_clubs(i);
-                        ELSIF v_clubs(i).Diem = v_clubs(j).Diem AND v_clubs(i).HieuSo < v_clubs(j).HieuSo THEN
-                            v_temp_clubs(i) := v_clubs(i);
-                            v_clubs(i) := v_clubs(j);
-                            v_clubs(j) := v_temp_clubs(i);
-                        END IF;
-                END LOOP;
-        END LOOP;
+        v_order_by_clause := 'Diem DESC, HieuSo DESC, Thang DESC, Hoa DESC, Thua ASC, SoTran DESC';
     END IF;
 
-    -- Cập nhật thứ hạng vào BANGXEPHANG_CLB
-FOR i IN 1 .. v_clubs.COUNT LOOP
-UPDATE BANGXEPHANG_CLB
-SET Hang = i
-WHERE MaMG = p_maMG AND MaCLB = v_clubs(i).MaCLB;
-END LOOP;
+    -- Sử dụng MERGE để cập nhật thứ hạng dựa trên thứ tự đã sắp xếp
+    EXECUTE IMMEDIATE '
+        MERGE INTO BANGXEPHANG_CLB bxh
+        USING (
+            SELECT MaCLB,
+                   ROW_NUMBER() OVER (ORDER BY ' || v_order_by_clause || ') AS new_hang
+            FROM BANGXEPHANG_CLB
+            WHERE MaMG = :1
+        ) ranked
+        ON (bxh.MaMG = :2 AND bxh.MaCLB = ranked.MaCLB)
+        WHEN MATCHED THEN
+            UPDATE SET bxh.Hang = ranked.new_hang
+    '
+        USING p_maMG, p_maMG;
 
+    -- Commit giao dịch
+    COMMIT;
 
 EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        -- Nếu không có dữ liệu trong THUTU_UUTIEN, đã xử lý ở trên, nên không cần ném lỗi
+        NULL;
     WHEN OTHERS THEN
         ROLLBACK;
         RAISE_APPLICATION_ERROR(-20004, 'Lỗi khi tính lại thứ hạng: ' || SQLERRM);
@@ -790,9 +725,29 @@ CREATE OR REPLACE PROCEDURE InsertQuyDinhForMuaGiai(
     p_maMG IN NUMBER
 )
 AS
+    TYPE arr_tieuchi IS VARRAY(6) OF NVARCHAR2(50);
+    arr arr_tieuchi := arr_tieuchi('Diem', 'HieuSo', 'Thang', 'Hoa', 'Thua', 'SoTran');
+    v_douutien NUMBER := 1;
+    v_count_quydinh NUMBER;
+    v_count_thutu NUMBER;
 BEGIN
     -- Chèn dữ liệu vào bảng QuyDinh với các giá trị mặc định
 INSERT INTO QuyDinh (MaMG) VALUES (p_maMG);
+    -- Check if QuyDinh exists
+    SELECT COUNT(*) INTO v_count_quydinh FROM QuyDinh WHERE MaMG = p_maMG;
+    IF v_count_quydinh = 0 THEN
+        INSERT INTO QuyDinh (MaMG) VALUES (p_maMG);
+    END IF;
+
+    -- Check if THUTU_UUTIEN exists
+    SELECT COUNT(*) INTO v_count_thutu FROM THUTU_UUTIEN WHERE MaMG = p_maMG;
+    IF v_count_thutu = 0 THEN
+        FOR i IN 1 .. arr.COUNT LOOP
+                INSERT INTO THUTU_UUTIEN(MaMG, TieuChi, DoUuTien)
+                VALUES (p_maMG, arr(i), v_douutien);
+                v_douutien := v_douutien + 1;
+            END LOOP;
+    END IF;
 
 EXCEPTION
     WHEN OTHERS THEN
@@ -1630,6 +1585,7 @@ select * from BANGXEPHANG_BANTHANG;
 delete from CLB_THAMGIAMUAGIAI;
 delete from BANGXEPHANG_CLB;
 delete from BANGXEPHANG_BANTHANG;
+select * from THUTU_UUTIEN where MaMG=1;
 UPDATE BANGXEPHANG_CLB
 SET SOTRAN=0,THANG=0, Hoa=0, THUA=0, HIEUSO=0, DIEM=0,HANG=0
 WHERE MaMG = 1 AND MaCLB IN (1, 2);

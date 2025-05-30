@@ -1,8 +1,10 @@
 package Controller;
 
 import Model.MODEL_MUAGIAI;
+import Model.MODEL_THUTU_UUTIEN;
 import Model.MODEL_VONGDAU;
 import Service.Service;
+import Util.AlertUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -66,6 +68,7 @@ public class TournamentManagementController {
 
     private ObservableList<MODEL_MUAGIAI> tournamentsList = FXCollections.observableArrayList();
     private FilteredList<MODEL_MUAGIAI> filteredTournaments;
+    private List<MODEL_THUTU_UUTIEN> defaultPriority;
     private MODEL_MUAGIAI currentModel;
     private boolean isEditing = false;
     private int nextId = 1;
@@ -242,6 +245,7 @@ public class TournamentManagementController {
             nameField.setText(selectedTournament.getTenMG());
             startDatePicker.setValue(selectedTournament.getNgayBD());
             endDatePicker.setValue(selectedTournament.getNgayKT());
+
             logoImageView.setImage(selectedTournament.getLogo());
 
             // Reset selectedLogoFile nếu đang sử dụng logo đã lưu
@@ -252,16 +256,11 @@ public class TournamentManagementController {
     }
 
     @FXML
-    private void handleDeleteTournament() throws SQLException {
+    private void handleDeleteTournament()  {
         MODEL_MUAGIAI selectedTournament = tournamentsTableView.getSelectionModel().getSelectedItem();
         if (selectedTournament != null) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Xác nhận xóa");
-            alert.setHeaderText(null);
-            alert.setContentText("Bạn có chắc chắn muốn xóa giải đấu này?");
-
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
+            boolean choose= AlertUtils.showConfirmation("Xác nhận xóa","", "Bạn có chắc chắn muốn xóa giải đấu này?");
+            if (choose) {
                 // Xóa file logo nếu có
                 String logoFileName = selectedTournament.getLogoFileName();
                 if (logoFileName != null && !logoFileName.isEmpty()) {
@@ -271,9 +270,14 @@ public class TournamentManagementController {
                         System.err.println("Không thể xóa file logo: " + e.getMessage());
                     }
                 }
-                int ok=service.deleteTournament(selectedTournament);
-                tournamentsList.remove(selectedTournament);
-                updateStatistics();
+                try {
+                    service.deleteTournament(selectedTournament);
+                    tournamentsList.remove(selectedTournament);
+                    updateStatistics();
+                } catch (SQLException e) {
+                    AlertUtils.showError("Lỗi", "Không thể xóa giải đấu","Giải đấu này đang được tổ chức. Vui lòng xóa các vòng đấu liên quan trước.");
+                }
+
             }
         }
     }
@@ -387,12 +391,10 @@ public class TournamentManagementController {
             if (selectedLogoFile != null) {
                 logoFileName = saveLogoFile(selectedLogoFile);
             }
-
             MODEL_MUAGIAI newTournament = new MODEL_MUAGIAI(id, name, startDate, endDate, logoFileName);
             service.insertTournament(newTournament);
             service.insertDefaultQD(newTournament.getMaMG());
             tournamentsList.add(newTournament);
-
             savedTournament = newTournament;
         }
 

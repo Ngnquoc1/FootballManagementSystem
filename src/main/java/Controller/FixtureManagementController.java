@@ -79,6 +79,20 @@ public class FixtureManagementController implements Initializable {
         compeForm.getItems().addAll(dsMG);
         compeFilter.getSelectionModel().selectFirst();
 
+        clubFilter.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            clubFilter.getItems().clear();
+            if (compeFilter.getValue() != null) {
+                MODEL_MUAGIAI mg = service.getTournamentByName(compeFilter.getValue());
+                List<Integer> dsClbIds = service.getRegistedClubIdsByTournament(mg.getMaMG());
+                for (Integer clbId : dsClbIds) {
+                    MODEL_CLB clb = service.getCLBByID(clbId);
+                    if (clb != null) {
+                        clubFilter.getItems().add(clb.getTenCLB());
+                    }
+                }
+            }
+        });
+
         roundForm.addEventFilter( MouseEvent.MOUSE_CLICKED, event -> {;
             if (compeForm.getValue() != null) {
                 MODEL_MUAGIAI mg= service.getTournamentByName(compeForm.getValue());

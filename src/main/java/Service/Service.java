@@ -403,7 +403,7 @@ public class Service {
         }
     }
 
-    public MODEL_KETQUATD getResultFromRs(java.sql.ResultSet rs) throws Exception {
+    public MODEL_KETQUATD getResultFromRs(ResultSet rs) throws Exception {
         int maTD = rs.getInt("MaTD");
         int score1 = rs.getInt("DiemCLB1");
         int score2 = rs.getInt("DiemCLB2");
@@ -484,7 +484,7 @@ public class Service {
             cstmt.setString(5, newClub.getEmail());
 
             // Register the OUT parameter for MaCLB
-            cstmt.registerOutParameter(6, java.sql.Types.NUMERIC);
+            cstmt.registerOutParameter(6, Types.NUMERIC);
 
             // Execute the procedure
             cstmt.execute();
@@ -745,9 +745,21 @@ public class Service {
     }
 
     public void insertTournament(MODEL_MUAGIAI modelMuagiai) throws SQLException {
+        String sql1="SELECT NVL(MAX(MaMG),0) FROM MuaGiai";
+        int nextId = 0;
+        try (PreparedStatement ps = conn.prepareStatement(sql1)) {
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                nextId = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException("Lỗi khi lấy ID tiếp theo cho MuaGiai: " + e.getMessage());
+        }
+
         String sql = "INSERT INTO MuaGiai (MaMG, TenMG, NgayKhaiMac, NgayBeMac, LogoMG) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, modelMuagiai.getMaMG());
+            ps.setInt(1,nextId+1);
             ps.setString(2, modelMuagiai.getTenMG());
             ps.setDate(3, Date.valueOf(modelMuagiai.getNgayBD()));
             ps.setDate(4, Date.valueOf(modelMuagiai.getNgayKT()));
@@ -879,7 +891,7 @@ public class Service {
             cstmt.setLong(3, newStadium.getSucChua());
 
             // Register the OUT parameter for MaSan
-            cstmt.registerOutParameter(4, java.sql.Types.NUMERIC);
+            cstmt.registerOutParameter(4, Types.NUMERIC);
 
             // Execute the procedure
             cstmt.execute();
@@ -1040,7 +1052,7 @@ public class Service {
         try (CallableStatement cstmt = conn.prepareCall(query)) {
             // Set the IN parameters
             cstmt.setString(1, player.getTenCT());
-            cstmt.setDate(2, new java.sql.Date(player.getNgaysinh().getTime()));
+            cstmt.setDate(2, new Date(player.getNgaysinh().getTime()));
             cstmt.setString(3, player.getQuocTich());
             cstmt.setString(4, player.getAvatar());
             cstmt.setInt(5, player.getSoAo());
@@ -1049,7 +1061,7 @@ public class Service {
             cstmt.setInt(8, player.getMaVT());
 
             // Register the OUT parameter for MaCT
-            cstmt.registerOutParameter(9, java.sql.Types.NUMERIC);
+            cstmt.registerOutParameter(9, Types.NUMERIC);
 
             // Execute the procedure
             cstmt.execute();
@@ -1071,7 +1083,7 @@ public class Service {
                 PreparedStatement pstmt = conn.prepareStatement(query)) {
 
             pstmt.setString(1, player.getTenCT());
-            pstmt.setDate(2, new java.sql.Date(player.getNgaysinh().getTime()));
+            pstmt.setDate(2, new Date(player.getNgaysinh().getTime()));
             pstmt.setString(3, player.getQuocTich());
             pstmt.setInt(4, player.getSoAo());
             pstmt.setInt(5, player.getMaVT());
@@ -1262,12 +1274,12 @@ public class Service {
     }
 
     public List<MODEL_CAUTHUTHAMGIACLB> getRegistedPlayersByCondition(String s) {
-        List<Model.MODEL_CAUTHUTHAMGIACLB> danhSach = new ArrayList<>();
+        List<MODEL_CAUTHUTHAMGIACLB> danhSach = new ArrayList<>();
         String sql = "SELECT * FROM CAUTHU_CLB WHERE " + s;
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-                Model.MODEL_CAUTHUTHAMGIACLB cauThu = new Model.MODEL_CAUTHUTHAMGIACLB();
+                MODEL_CAUTHUTHAMGIACLB cauThu = new MODEL_CAUTHUTHAMGIACLB();
                 cauThu.setMaMG(rs.getInt("MaMG"));
                 cauThu.setMaCLB(rs.getInt("MaCLB"));
                 cauThu.setMaCT(rs.getInt("MaCT"));
@@ -1552,4 +1564,43 @@ public class Service {
         }
         return null;
     }
+
+    public List<MODEL_THUTU_UUTIEN> getPriorityOrderByTournament(int maMG) {
+        List<MODEL_THUTU_UUTIEN> list = new ArrayList<>();
+        String sql = "SELECT TieuChi, DoUuTien FROM THUTU_UUTIEN WHERE MaMG = ? ORDER BY DoUuTien ASC";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, maMG);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String tenTTUT = rs.getString("TieuChi");
+                int thuTu = rs.getInt("DoUuTien");
+                list.add(new MODEL_THUTU_UUTIEN(maMG, tenTTUT, thuTu));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public boolean savePriorityOrder(int maMG, List<MODEL_THUTU_UUTIEN> list) {
+        String updateSql ="UPDATE THUTU_UUTIEN SET DoUuTien = ? WHERE MaMG = ? AND TieuChi = ?";
+        try{
+            conn.setAutoCommit(false);
+            try (PreparedStatement updatePs = conn.prepareStatement(updateSql)) {
+                for (MODEL_THUTU_UUTIEN item : list) {
+                    updatePs.setInt(1, item.getThuTu());
+                    updatePs.setInt(2, maMG);
+                    updatePs.setString(3, item.getTenTTUT());
+                    updatePs.addBatch();
+                }
+                updatePs.executeBatch();
+            }
+            conn.commit();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }
