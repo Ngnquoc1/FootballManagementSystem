@@ -364,7 +364,7 @@ public class TournamentManagementController {
         MODEL_MUAGIAI savedTournament = null;
 
         if (isEditing && currentModel != null) {
-            // Cập nhật giải đấu hiện tại
+            // Cập nhật gig đấu hiện tại
             currentModel.setTenMG(name);
             currentModel.setNgayBD(startDate);
             currentModel.setNgayKT(endDate);
@@ -399,9 +399,10 @@ public class TournamentManagementController {
                 logoFileName = saveLogoFile(selectedLogoFile);
             }
             MODEL_MUAGIAI newTournament = new MODEL_MUAGIAI(id, name, startDate, endDate, logoFileName);
-            service.insertTournament(newTournament);
+            int newID=service.insertTournament(newTournament);
             service.insertDefaultQD(newTournament.getMaMG());
             tournamentsList.add(newTournament);
+            newTournament.setMaMG(newID);
             savedTournament = newTournament;
         }
 

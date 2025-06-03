@@ -46,7 +46,6 @@ public class RoundController {
     private ObservableList<MODEL_VONGDAU> roundsList = FXCollections.observableArrayList();
     private MODEL_VONGDAU currentRound;
     private boolean isEditing = false;
-    private int nextId = 1;
     private Service service = new Service();
     @FXML
     private void initialize() {
@@ -189,16 +188,13 @@ public class RoundController {
             roundsList.clear();
             roundsList.addAll(rounds);
 
-            // Cập nhật nextId
-            if (!rounds.isEmpty()) {
-                nextId = service.getNextIdVD();
-            }
 
             // Cập nhật tổng số vòng đấu
             updateTotalRounds();
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tải danh sách vòng đấu", e.getMessage());
         }
+        enableForm(false);
     }
 
     private void updateTotalRounds() {
@@ -290,7 +286,6 @@ public class RoundController {
             } else {
                 // Tạo vòng đấu mới
                 MODEL_VONGDAU newRound = new MODEL_VONGDAU();
-                newRound.setMaVD(nextId);
                 newRound.setTenVD(name);  // Không cần ép kiểu nữa
                 newRound.setMaMG(tournament.getMaMG());
                 newRound.setNgayBD(Date.valueOf(startDate));
@@ -302,9 +297,7 @@ public class RoundController {
                     showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể thêm vòng đấu", "Đã xảy ra lỗi khi thêm vòng đấu vào cơ sở dữ liệu.");
                     return;
                 }
-
                 roundsList.add(newRound);
-                nextId = service.getNextIdVD();
             }
 
             updateTotalRounds();

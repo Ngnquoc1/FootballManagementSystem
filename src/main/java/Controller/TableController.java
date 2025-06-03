@@ -1,9 +1,6 @@
 package Controller;
 
-import Model.MODEL_BXH_CLB;
-import Model.MODEL_MUAGIAI;
-import Model.MODEL_BXH_BANTHANG;
-import Model.Session;
+import Model.*;
 import Service.Service;
 import Util.AlertUtils;
 import javafx.beans.property.SimpleStringProperty;
@@ -15,19 +12,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.scene.Node;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -101,12 +94,13 @@ public class TableController {
     private Button closeButton;
 
     // Dữ liệu
-    private ObservableList<MODEL_BXH_CLB> vleagueClubRankings = FXCollections.observableArrayList();
-    private ObservableList<MODEL_BXH_BANTHANG> vleagueScorerRankings = FXCollections.observableArrayList();
-    private ObservableList<MODEL_BXH_BANTHANG> nationalCupScorerRankings = FXCollections.observableArrayList();
+    private final ObservableList<MODEL_BXH_CLB> vleagueClubRankings = FXCollections.observableArrayList();
+    private final ObservableList<MODEL_BXH_BANTHANG> vleagueScorerRankings = FXCollections.observableArrayList();
 
 
     private Service service;
+    @FXML
+    private ImageView userIcon;
 
     @FXML
     private void initialize() throws SQLException {
@@ -203,7 +197,6 @@ public class TableController {
 
         scorerRankColumn.setCellValueFactory(new PropertyValueFactory<>("Hang"));
         scorerNameColumn.setCellValueFactory(cellData -> {
-            ;
             try {
                 int maCauThu = cellData.getValue().getMaCT();
                 String playerName = service.getPlayerById(maCauThu).getTenCT();
@@ -213,7 +206,6 @@ public class TableController {
             }
         });
         scorerClubColumn.setCellValueFactory(cellData -> {
-            ;
             try {
                 int maCT = cellData.getValue().getMaCT();
                 String condition1 = "MaCT = " + maCT + " AND MaMG = " + maMG;
@@ -252,28 +244,32 @@ public class TableController {
         });
     }
 
-
     private void handleFilterChange() {
         updateTableView();
+
     }
 
     private void updateTableView() {
         String competition = compeFilter.getValue();
         String rankingType = rankingTypeFilter.getValue();
-
-        if ("V-League 2025".equals(competition)) {
-            competitionInfoLabel.setText("V-League 2025");
-            scorerCompetitionInfoLabel.setText("V-League 2025 - Vua phá lưới");
-
-            if ("BXH CLB".equals(rankingType)) {
-                tabPane.getSelectionModel().select(clubTab);
-                clubTableView.setItems(vleagueClubRankings);
-                clubLegendBox.setVisible(true);
-            } else {
-                tabPane.getSelectionModel().select(scorerTab);
-                scorerTableView.setItems(vleagueScorerRankings);
-            }
+        MODEL_MUAGIAI selectedTournament = service.getTournamentByName(competition);
+        competitionInfoLabel.setText(competition);
+        scorerCompetitionInfoLabel.setText(competition + " - Vua phá lưới");
+        List<MODEL_BXH_CLB> clubParticipation = service.getBxhCLBByTournamentId(selectedTournament.getMaMG());
+        vleagueClubRankings.clear();
+        vleagueClubRankings.addAll(clubParticipation);
+        List<MODEL_BXH_BANTHANG> scorerParticipation = service.getBxhBanThangByTournamentId(selectedTournament.getMaMG());
+        vleagueScorerRankings.clear();
+        vleagueScorerRankings.addAll(scorerParticipation);
+        if ("BXH CLB".equals(rankingType)) {
+            tabPane.getSelectionModel().select(clubTab);
+            clubTableView.setItems(vleagueClubRankings);
+            clubLegendBox.setVisible(true);
+        } else {
+            tabPane.getSelectionModel().select(scorerTab);
+            scorerTableView.setItems(vleagueScorerRankings);
         }
+
     }
 
     @FXML
@@ -317,9 +313,6 @@ public class TableController {
             }
         }
     }
-
-    @FXML
-    private ImageView userIcon;
 
     @FXML
     private void showUserPopup() {

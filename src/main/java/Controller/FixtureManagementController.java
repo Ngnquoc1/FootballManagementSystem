@@ -331,7 +331,7 @@ public class FixtureManagementController implements Initializable {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            AlertUtils.showError("Error", "Lỗi cơ sở dữ liệu", "Không thể thực hiện thao tác với cơ sở dữ liệu: ");
+            AlertUtils.showError("Error", "Lỗi cơ sở dữ liệu", e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             AlertUtils.showError("Error", "Lỗi dữ liệu", "Dữ liệu nhập không hợp lệ: " );

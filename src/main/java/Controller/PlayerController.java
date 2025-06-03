@@ -30,7 +30,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
-import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -197,9 +196,9 @@ public class PlayerController implements Initializable {
             // Lọc theo mùa giải
             if (selectedCompetition != null && !selectedCompetition.isEmpty()) {
                 String sql = "MaCT = " + player.getMaCT();
-                List<MODEL_CAUTHUTHAMGIACLB> registedPlayers = service.getRegistedPlayersByCondition(sql);
+                List<MODEL_CAUTHUTHAMGIA_GIAIDAU> registedPlayers = service.getRegistedPlayersByCondition(sql);
                 if (!registedPlayers.isEmpty()) {
-                    MODEL_CAUTHUTHAMGIACLB ct_clb = registedPlayers.getFirst();
+                    MODEL_CAUTHUTHAMGIA_GIAIDAU ct_clb = registedPlayers.getFirst();
                     MODEL_MUAGIAI mgi = service.getTournamentByID(ct_clb.getMaMG());
                     matchesCompetition = mgi.getTenMG().equals(selectedCompetition);
                 } else {
@@ -546,13 +545,19 @@ public class PlayerController implements Initializable {
     private PlayerClubData fetchPlayerClubData(int playerId) {
         PlayerClubData data = new PlayerClubData();
         try {
-            String sql="MaCT= "+playerId;
-            MODEL_CAUTHUTHAMGIACLB ct_clb = service.getRegistedPlayersByCondition(sql).get(0);
-
-            data.clb = service.getCLBByID(data.ctclb.getMaCLB());
+            String sql = "MaCT= " + playerId;
+            List<MODEL_CAUTHUTHAMGIA_GIAIDAU> registedPlayers = service.getRegistedPlayersByCondition(sql);
+            if (!registedPlayers.isEmpty()) {
+                data.ctclb = registedPlayers.get(0);
+                data.clb = service.getCLBByID(data.ctclb.getMaCLB());
+            } else {
+                data.ctclb = null;
+                data.clb = null;
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            // Consider logging the error properly instead of printStackTrace
+            data.ctclb = null;
+            data.clb = null;
         }
         return data;
     }
@@ -783,7 +788,7 @@ public class PlayerController implements Initializable {
 
     // Helper class to hold related data
     private static class PlayerClubData {
-        MODEL_CAUTHUTHAMGIACLB ctclb = new MODEL_CAUTHUTHAMGIACLB();
+        MODEL_CAUTHUTHAMGIA_GIAIDAU ctclb = new MODEL_CAUTHUTHAMGIA_GIAIDAU();
         MODEL_CLB clb = new MODEL_CLB();
     }
 

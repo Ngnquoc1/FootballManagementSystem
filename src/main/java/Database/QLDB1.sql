@@ -1,22 +1,21 @@
---DROP TABLE THUTU_UUTIEN CASCADE CONSTRAINTS;
---DROP TABLE BANGXEPHANG_BANTHANG CASCADE CONSTRAINTS;
---DROP TABLE BANGXEPHANG_CLB CASCADE CONSTRAINTS;
---DROP TABLE QuyDinh CASCADE CONSTRAINTS;
---DROP TABLE BanThang CASCADE CONSTRAINTS;
---DROP TABLE KetQuaTD CASCADE CONSTRAINTS;
---DROP TABLE TranDau CASCADE CONSTRAINTS;
---DROP TABLE CAUTHU_CLB CASCADE CONSTRAINTS;
---DROP TABLE CauThu CASCADE CONSTRAINTS;
---DROP TABLE LoaiCauThu CASCADE CONSTRAINTS;
---DROP TABLE ViTriTD CASCADE CONSTRAINTS;
---DROP TABLE CLB_THAMGIAMUAGIAI CASCADE CONSTRAINTS;
---DROP TABLE CLB CASCADE CONSTRAINTS;
---DROP TABLE SAN CASCADE CONSTRAINTS;
---DROP TABLE VongDau CASCADE CONSTRAINTS;
---DROP TABLE MuaGiai CASCADE CONSTRAINTS;
---DROP TABLE LoaiBanThang CASCADE CONSTRAINTS;
---DROP TABLE TaiKhoan CASCADE CONSTRAINTS;
-
+-- DROP TABLE THUTU_UUTIEN CASCADE CONSTRAINTS;
+-- DROP TABLE BANGXEPHANG_BANTHANG CASCADE CONSTRAINTS;
+-- DROP TABLE BANGXEPHANG_CLB CASCADE CONSTRAINTS;
+-- DROP TABLE QuyDinh CASCADE CONSTRAINTS;
+-- DROP TABLE BanThang CASCADE CONSTRAINTS;
+-- DROP TABLE KetQuaTD CASCADE CONSTRAINTS;
+-- DROP TABLE TranDau CASCADE CONSTRAINTS;
+-- DROP TABLE CAUTHU_THAMGIAMUAGIAI CASCADE CONSTRAINTS;
+-- DROP TABLE CauThu CASCADE CONSTRAINTS;
+-- DROP TABLE LoaiCauThu CASCADE CONSTRAINTS;
+-- DROP TABLE ViTriTD CASCADE CONSTRAINTS;
+-- DROP TABLE CLB_THAMGIAMUAGIAI CASCADE CONSTRAINTS;
+-- DROP TABLE CLB CASCADE CONSTRAINTS;
+-- DROP TABLE SAN CASCADE CONSTRAINTS;
+-- DROP TABLE VongDau CASCADE CONSTRAINTS;
+-- DROP TABLE MuaGiai CASCADE CONSTRAINTS;
+-- DROP TABLE LoaiBanThang CASCADE CONSTRAINTS;
+-- DROP TABLE TaiKhoan CASCADE CONSTRAINTS;
 
 CREATE TABLE MuaGiai (
                          MaMG NUMBER PRIMARY KEY,
@@ -91,14 +90,14 @@ CREATE TABLE CauThu(
 );
 
 /
-CREATE TABLE CAUTHU_CLB (
+CREATE TABLE CAUTHU_THAMGIAMUAGIAI (
                             MaMG NUMBER NOT NULL,
                             MaCLB NUMBER NOT NULL,
                             MaCT NUMBER NOT NULL,
                             PRIMARY KEY (MaMG, MaCLB, MaCT),
                             FOREIGN KEY (MaMG) REFERENCES MuaGiai(MaMG),
                             FOREIGN KEY (MaCT) REFERENCES CauThu(MaCT),
-                            CONSTRAINT chk_unique_cauthu_clb UNIQUE (MaCT, MaMG)
+                            CONSTRAINT chk_unique_CAUTHU_THAMGIAMUAGIAI UNIQUE (MaCT, MaMG)
 );
 /
 CREATE TABLE TranDau (
@@ -174,10 +173,10 @@ CREATE TABLE BANGXEPHANG_BANTHANG (
 );
 /
 CREATE TABLE THUTU_UUTIEN (
-                              MaTTU NUMBER PRIMARY KEY,
                               MaMG NUMBER NOT NULL,
-                              TieuChi NVARCHAR2(50) NOT NULL,
-                              DoUuTien NUMBER NOT NULL,
+                              TieuChi NVARCHAR2(50) NOT NULL ,
+                              DoUuTien NUMBER NOT NULL ,
+                                PRIMARY KEY (MaMG, TieuChi),
                               FOREIGN KEY (MaMG) REFERENCES MuaGiai(MaMG),
                               CONSTRAINT chk_tieuchi CHECK (TieuChi IN ('Diem', 'HieuSo', 'SoTran', 'Thang', 'Hoa', 'Thua')),
                               CONSTRAINT chk_douutien CHECK (DoUuTien >= 1)
@@ -246,7 +245,7 @@ BEGIN
     WHERE MaVD = :NEW.MaVD;
 
 -- Kiểm tra xem ThoiGian có nằm trong khoảng NgayBD và NgayKT hay không
-    IF :NEW.ThoiGian < v_ngay_bd OR :NEW.ThoiGian > v_ngay_kt THEN
+    IF TRUNC(:NEW.ThoiGian) < TRUNC(v_ngay_bd) OR TRUNC(:NEW.ThoiGian) > TRUNC(v_ngay_kt) THEN
         RAISE_APPLICATION_ERROR(-20004,
                                 'Thời gian trận đấu phải nằm trong khoảng thời gian diễn ra vòng đấu (' ||
                                 TO_CHAR(v_ngay_bd, 'DD-MON-YYYY') || ' đến ' ||
@@ -258,9 +257,10 @@ EXCEPTION
                                 'Không tìm thấy vòng đấu tương ứng với MaVD: ' || :NEW.MaVD);
 END;
 /
+commit;
 ------------QUY ĐỊNH VỀ ĐỘ TUỔI THAM GIA MÙA GIẢI CỦA CẦU THỦ
-CREATE OR REPLACE TRIGGER trg_check_tuoi_cauthu_clb
-    BEFORE INSERT OR UPDATE ON CauThu_CLB
+CREATE OR REPLACE TRIGGER trg_check_tuoi_CAUTHU_THAMGIAMUAGIAI
+    BEFORE INSERT OR UPDATE ON CAUTHU_THAMGIAMUAGIAI
     FOR EACH ROW
 DECLARE
     v_tuoi NUMBER;
@@ -321,86 +321,6 @@ EXCEPTION
                                 ' hoặc cầu thủ cho MaCT: ' || :NEW.MaCT);
     WHEN OTHERS THEN
         RAISE_APPLICATION_ERROR(-20015, 'Lỗi không xác định khi kiểm tra tuổi: ' || SQLERRM);
-END;
-/
-
-
---------QUY ĐỊNH VỀ TỔNG SỐ LƯỢNG CẦU THỦ VÀ SỐ LƯỢNG CẦU THỦ NGOẠI CHO PHÉP THAM GIA MÙA GIẢI
-CREATE OR REPLACE TRIGGER trg_check_so_cauthu_clb
-    BEFORE INSERT OR UPDATE ON CauThu_CLB
-    FOR EACH ROW
-DECLARE
-    v_total_players NUMBER;
-    v_foreign_players NUMBER;
-    v_soct_toithieu NUMBER;
-    v_soct_toida NUMBER;
-    v_soct_nuocngoai_toida NUMBER;
-    v_loai_ct NUMBER;
-    v_old_total NUMBER;
-    v_old_foreign NUMBER;
-BEGIN
-    -- Lấy quy định từ bảng QuyDinh (nếu có)
-    BEGIN
-        SELECT NVL(SOCTTOITHIEU, 15), NVL(SOCTTOIDA, 22), NVL(SOCTNUOCNGOAITOIDA, 3)
-        INTO v_soct_toithieu, v_soct_toida, v_soct_nuocngoai_toida
-        FROM QuyDinh
-        WHERE MaMG = NVL(:NEW.MaMG, :OLD.MaMG);
-    EXCEPTION
-        WHEN NO_DATA_FOUND THEN
-            v_soct_toithieu := 15;
-            v_soct_toida := 22;
-            v_soct_nuocngoai_toida := 3;
-    END;
-
-    -- Đếm tổng số cầu thủ trước khi thay đổi
-    SELECT COUNT(*)
-    INTO v_old_total
-    FROM CauThu_CLB
-    WHERE MaMG = NVL(:NEW.MaMG, :OLD.MaMG)
-      AND MaCLB = NVL(:NEW.MaCLB, :OLD.MaCLB);
-
--- Đếm số cầu thủ nước ngoài trước khi thay đổi
-    SELECT COUNT(*)
-    INTO v_old_foreign
-    FROM CauThu_CLB ct_clb
-             JOIN CauThu ct ON ct_clb.MaCT = ct.MaCT
-    WHERE ct_clb.MaMG = NVL(:NEW.MaMG, :OLD.MaMG)
-      AND ct_clb.MaCLB = NVL(:NEW.MaCLB, :OLD.MaCLB)
-      AND ct.LoaiCT = 1;
-
--- Kiểm tra khi thêm hoặc cập nhật
-    IF INSERTING OR UPDATING THEN
-        -- Lấy loại cầu thủ của MaCT mới
-        SELECT LoaiCT
-        INTO v_loai_ct
-        FROM CauThu
-        WHERE MaCT = :NEW.MaCT;
-
-        -- Đếm tổng số cầu thủ sau khi thêm (dự kiến)
-        v_total_players := v_old_total + 1;
-        -- Đếm số cầu thủ nước ngoài sau khi thêm (dự kiến)
-        v_foreign_players := v_old_foreign + CASE WHEN v_loai_ct = 1 THEN 1 ELSE 0 END;
-        -- Kiểm tra tổng số cầu thủ
-        IF v_total_players > v_soct_toida THEN
-            RAISE_APPLICATION_ERROR(-20007,
-                                    'Số lượng cầu thủ của CLB trong mùa giải sẽ vượt quá tối đa (' || v_soct_toida || ').');
-        END IF;
-
-        -- Kiểm tra số cầu thủ nước ngoài
-        IF v_loai_ct = 1 AND v_foreign_players >= v_soct_nuocngoai_toida THEN
-            RAISE_APPLICATION_ERROR(-20008,
-                                    'Số cầu thủ nước ngoài của CLB sẽ vượt quá tối đa (' || v_soct_nuocngoai_toida || ').');
-        END IF;
-
-END IF;
-
-EXCEPTION
-    WHEN NO_DATA_FOUND THEN
-        RAISE_APPLICATION_ERROR(-20010,
-                                'Không tìm thấy thông tin cầu thủ cho MaCT: ' || NVL(:NEW.MaCT, :OLD.MaCT) ||
-                                ' hoặc quy định cho MaMG: ' || NVL(:NEW.MaMG, :OLD.MaMG));
-WHEN OTHERS THEN
-        RAISE_APPLICATION_ERROR(-20011, 'Lỗi không xác định khi kiểm tra số lượng cầu thủ: ' || SQLERRM);
 END;
 /
 
@@ -552,15 +472,11 @@ BEGIN
     '
         USING p_maMG, p_maMG;
 
-    -- Commit giao dịch
-COMMIT;
-
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
         -- Nếu không có dữ liệu trong THUTU_UUTIEN, đã xử lý ở trên, nên không cần ném lỗi
         NULL;
     WHEN OTHERS THEN
-        ROLLBACK;
         RAISE_APPLICATION_ERROR(-20004, 'Lỗi khi tính lại thứ hạng: ' || SQLERRM);
 END RecalculateRankingPositions;
 /
@@ -728,6 +644,7 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20001, 'Lỗi trong UpdateBXH_OnKetQuaTD trigger: ' || SQLERRM || ' tại MaTD = ' || NVL(v_maTD, 'NULL'));
 END UpdateBXH_OnKetQuaTD;
 /
+
 ----------------------------------------------------MUAGIAI------------------------------
 -----------InsertDefaultRules---------------------------------
 CREATE OR REPLACE PROCEDURE InsertQuyDinhForMuaGiai(
@@ -761,8 +678,6 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20035, 'Lỗi khi thêm quy định cho mùa giải: ' || SQLERRM);
 END InsertQuyDinhForMuaGiai;
 /
-
-
 
 ----------------------------------------------------MATCH------------------------------
 ------------------GetUpComingMatchesByCondition-------------------
@@ -1158,7 +1073,7 @@ MERGE INTO BANGXEPHANG_BANTHANG bxh
             cclb.MaMG,bt.MaCT,COUNT(*) AS SoBanThang,
             SUM(CASE WHEN lbt.TenLoaiBT LIKE '%Phạt đền%' THEN 1 ELSE 0 END) AS Penalty
         FROM BANTHANG bt
-                 JOIN CAUTHU_CLB cclb ON bt.MaCT = cclb.MaCT AND cclb.MaMG = 1
+                 JOIN CAUTHU_THAMGIAMUAGIAI cclb ON bt.MaCT = cclb.MaCT AND cclb.MaMG = 1
                  JOIN LoaiBanThang lbt ON bt.MaLoaiBT = lbt.MaLoaiBT
         GROUP BY cclb.MaMG, bt.MaCT
     ) src
@@ -1179,7 +1094,7 @@ MERGE INTO BANGXEPHANG_BANTHANG bxh
         FROM (
                  SELECT cclb.MaMG, bt.MaCT
                  FROM BANTHANG bt
-                          JOIN CAUTHU_CLB cclb ON bt.MaCT = cclb.MaCT AND cclb.MaMG = p_maMG
+                          JOIN CAUTHU_THAMGIAMUAGIAI cclb ON bt.MaCT = cclb.MaCT AND cclb.MaMG = p_maMG
                  GROUP BY cclb.MaMG, bt.MaCT
              ) src
         WHERE bxh.MaMG = src.MaMG AND bxh.MaCT = src.MaCT
@@ -1431,11 +1346,11 @@ BEGIN
     -- Insert new players if not exists
     FOR i IN 1 .. p_player_ids.COUNT LOOP
             BEGIN
-                INSERT INTO CAUTHU_CLB (MaCT, MaCLB, MaMG)
+                INSERT INTO CAUTHU_THAMGIAMUAGIAI (MaCT, MaCLB, MaMG)
                 SELECT p_player_ids(i), p_maCLB, p_maMG
                 FROM DUAL
                 WHERE NOT EXISTS (
-                    SELECT 1 FROM CAUTHU_CLB
+                    SELECT 1 FROM CAUTHU_THAMGIAMUAGIAI
                     WHERE MaCT = p_player_ids(i) AND MaCLB = p_maCLB AND MaMG = p_maMG
                 );
             EXCEPTION
@@ -1444,7 +1359,7 @@ BEGIN
         END LOOP;
 
     -- Delete players not in the input list
-    DELETE FROM CAUTHU_CLB
+    DELETE FROM CAUTHU_THAMGIAMUAGIAI
     WHERE MaCLB = p_maCLB
       AND MaMG = p_maMG
       AND (p_player_ids IS NULL OR MaCT NOT IN (SELECT COLUMN_VALUE FROM TABLE(p_player_ids)));
@@ -1456,12 +1371,12 @@ BEGIN
     WHERE MaMG = p_maMG;
 
     SELECT COUNT(*) INTO v_count
-    FROM CAUTHU_CLB
+    FROM CAUTHU_THAMGIAMUAGIAI
     WHERE MaCLB = p_maCLB AND MaMG = p_maMG;
 
     SELECT COUNT(*)
     INTO v_foreign_count
-    FROM CAUTHU_CLB ct_clb
+    FROM CAUTHU_THAMGIAMUAGIAI ct_clb
              JOIN CauThu ct ON ct_clb.MaCT = ct.MaCT
     WHERE ct_clb.MaCLB = p_maCLB AND ct_clb.MaMG = p_maMG AND ct.LoaiCT = 1;
 
@@ -1500,8 +1415,8 @@ BEGIN
     DELETE FROM BANGXEPHANG_CLB
     WHERE MaCLB = p_maCLB AND MaMG = p_maMG;
 
-    -- Delete from CAUTHU_CLB
-    DELETE FROM CAUTHU_CLB
+    -- Delete from CAUTHU_THAMGIAMUAGIAI
+    DELETE FROM CAUTHU_THAMGIAMUAGIAI
     WHERE MaCLB = p_maCLB AND MaMG = p_maMG;
 
     -- Delete from CLB_THAMGIAMUAGIAI
@@ -1546,7 +1461,9 @@ INSERT INTO VaiTro (MaVT, TenVaiTro) VALUES (2, 'Ban quản lý câu lạc bộ'
 INSERT INTO VaiTro (MaVT, TenVaiTro) VALUES (3, 'Ban tổ chức thi đấu');
 INSERT INTO VaiTro (MaVT, TenVaiTro) VALUES (4, 'Ban phân tích và tổng hợp kết quả');
 INSERT INTO VaiTro (MaVT, TenVaiTro) VALUES (5, 'Khách hàng');
+INSERT INTO VaiTro (MaVT, TenVaiTro) VALUES (6, 'admin');
 
+INSERT INTO TaiKhoan VALUES ('0', '0', 6);
 INSERT INTO TaiKhoan VALUES ('admin', '123', 1);
 INSERT INTO TaiKhoan VALUES ('admin4', '1234', 2);
 INSERT INTO TaiKhoan VALUES ('admin45', '12345', 3);
@@ -1623,6 +1540,8 @@ INSERT INTO CauThu (MaCT, TenCT, NgaySinh, QuocTich, Avatar, SoAo, LoaiCT, MaCLB
 
 commit;
 select * from MuaGiai;
+select * from QuyDinh;
+select * from THUTU_UUTIEN;
 select * from SAN;
 select * from CLB;
 select * from CauThu;
@@ -1631,9 +1550,14 @@ select * from CLB_THAMGIAMUAGIAI;
 select * from BANGXEPHANG_CLB;
 select * from TranDau;
 select * from KETQUATD;
-select * from CAUTHU_CLB ;
+select * from CAUTHU_THAMGIAMUAGIAI ;
 select * from BANTHANG;
 select * from BANGXEPHANG_BANTHANG;
+commit;
+delete from MuaGiai;
+delete from QuyDinh;
+delete from TranDau;
+delete from KetQuaTD;
 delete from CLB_THAMGIAMUAGIAI;
 delete from BANGXEPHANG_CLB;
 delete from BANGXEPHANG_BANTHANG;
@@ -1641,3 +1565,4 @@ select * from THUTU_UUTIEN where MaMG=1;
 UPDATE BANGXEPHANG_CLB
 SET SOTRAN=0,THANG=0, Hoa=0, THUA=0, HIEUSO=0, DIEM=0,HANG=0
 WHERE MaMG = 1 AND MaCLB IN (1, 2);
+Insert into KetQuaTD(MaTD, DiemCLB1, DiemCLB2) Values (2,1,0);

@@ -1,13 +1,11 @@
 package Model;
 
-import java.util.Date;
-
-public class MODEL_CAUTHUTHAMGIACLB {
+public class MODEL_CAUTHUTHAMGIA_GIAIDAU {
     private int maMG,maCLB,maCT;
     private boolean selected;
-    public MODEL_CAUTHUTHAMGIACLB() {}
+    public MODEL_CAUTHUTHAMGIA_GIAIDAU() {}
 
-    public MODEL_CAUTHUTHAMGIACLB(int maCT,int maMG,int maCLB) {
+    public MODEL_CAUTHUTHAMGIA_GIAIDAU(int maCT, int maMG, int maCLB) {
         this.maCT = maCT;
         this.maMG = maCLB;
         this.maCLB = maCLB;

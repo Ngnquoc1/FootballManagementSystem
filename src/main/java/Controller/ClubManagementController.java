@@ -71,8 +71,8 @@ public class ClubManagementController implements Initializable {
     @FXML private ImageView tournamentLogo;
 
     // Danh sách cầu thủ
-    private ObservableList<MODEL_CAUTHUTHAMGIACLB> playersList = FXCollections.observableArrayList();
-    private ObservableList<MODEL_CAUTHUTHAMGIACLB> selectedPlayersList = FXCollections.observableArrayList();
+    private ObservableList<MODEL_CAUTHUTHAMGIA_GIAIDAU> playersList = FXCollections.observableArrayList();
+    private ObservableList<MODEL_CAUTHUTHAMGIA_GIAIDAU> selectedPlayersList = FXCollections.observableArrayList();
 
     // File logo đã chọn
     private File selectedLogoFile;
@@ -469,8 +469,6 @@ public class ClubManagementController implements Initializable {
                 AlertUtils.showInformation("Thông báo", "Đã thêm CLB",
                         "CLB " + clubName + " đã được thêm thành công.");
             }
-
-            closeForm();
         } catch (Exception e) {
             AlertUtils.showError("Lỗi", "Không thể Thêm / Cập nhật CLB", e.getMessage());
         }

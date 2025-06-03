@@ -354,12 +354,14 @@ public class PlayerManagementController implements Initializable {
                 String logoFileName = null;
 
                 if (selectedAvaFile != null) {
+                    assert player != null;
                     logoFileName = saveAvaFile(selectedAvaFile, player.getTenCT());
                     if (logoFileName != null) {
                         player.setAvatar(logoFileName);
                     }
                 }
                 else{
+                    assert player != null;
                     player.setAvatar("default_ava.png");
                     AlertUtils.showError("Error", "Avatar Error", "Please choose an avatar.");
                     return;

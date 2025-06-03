@@ -3,6 +3,7 @@ package Controller;
 import Service.Service;
 import Model.MODEL_USER;
 import Model.Session;
+import Util.AlertUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -102,13 +103,8 @@ public class LoginFormController {
     private void handleSignIn(ActionEvent event) throws IOException {
         String username = userNameField.getText();
         String password = passwordField.getText();
-
         if (username.isEmpty() || password.isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Login Error");
-            alert.setHeaderText(null);
-            alert.setContentText("Please enter both username and password");
-            alert.showAndWait();
+            AlertUtils.showError("Login Error", null, "Please enter both username and password");
         } else {
             MODEL_USER user = new MODEL_USER();
             user = service.Login(username, password);
@@ -116,9 +112,7 @@ public class LoginFormController {
                 Session session = Session.getInstance();
                 session.setUsername(user.getUserName());
                 session.setRole(user.getVaiTro());
-                if (user.getVaiTro() != 0) {
-                    switchScene(event, "MenuFrame");
-                }
+                switchScene(event, "MenuFrame");
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setContentText("Invalid username or password!");

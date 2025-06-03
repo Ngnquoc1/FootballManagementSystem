@@ -170,7 +170,7 @@ public class GoalManagementController {
 
         Integer maCLB = teamToClbIdMap.get(selectedTeam);
         if (maCLB != null) {
-            List<MODEL_CAUTHUTHAMGIACLB> playersInTeam = service.getRegistedPlayersByCondition("MaCLB = " + maCLB);
+            List<MODEL_CAUTHUTHAMGIA_GIAIDAU> playersInTeam = service.getRegistedPlayersByCondition("MaCLB = " + maCLB);
             List<MODEL_CAUTHU> players=new ArrayList<>();
             if (playersInTeam.isEmpty()) {
                 playerComboBox.setItems(FXCollections.observableArrayList());
