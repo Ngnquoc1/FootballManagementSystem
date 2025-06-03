@@ -546,6 +546,7 @@ public class PlayerController implements Initializable {
         try {
             String sql = "MaCT= " + playerId;
             MODEL_CAUTHUTHAMGIACLB ct_clb = service.getRegistedPlayersByCondition(sql).get(0);
+            data.ctclb = ct_clb;
 
             data.clb = service.getCLBByID(data.ctclb.getMaCLB());
         } catch (Exception e) {

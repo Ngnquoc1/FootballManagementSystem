@@ -48,7 +48,7 @@ public class MenuController {
                 leagueMenuBtn.setVisible(false);
                 leagueMenuBtn.setManaged(false);
             }
-        }else{
+        }else if (userRole == 1) {
             if (registryMenuBtn != null) {
                 registryMenuBtn.setVisible(false);
                 registryMenuBtn.setManaged(false); // Không chiếm không gian trong layout
