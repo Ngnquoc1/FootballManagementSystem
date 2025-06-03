@@ -1,5 +1,6 @@
 package Controller;
 
+
 import Model.*;
 import Util.AlertUtils;
 import javafx.event.Event;
@@ -29,7 +30,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
-import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -47,12 +47,10 @@ public class PlayerController implements Initializable {
     @FXML private ComboBox<String> ClubFilter;
     @FXML private Button addBtn;
 
-
     private String selectedClub = null;
     private String selectedCompetition = null;
     private Service service;
 
-    
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -198,9 +196,9 @@ public class PlayerController implements Initializable {
             // Lọc theo mùa giải
             if (selectedCompetition != null && !selectedCompetition.isEmpty()) {
                 String sql = "MaCT = " + player.getMaCT();
-                List<MODEL_CAUTHUTHAMGIACLB> registedPlayers = service.getRegistedPlayersByCondition(sql);
+                List<MODEL_CAUTHUTHAMGIA_GIAIDAU> registedPlayers = service.getRegistedPlayersByCondition(sql);
                 if (!registedPlayers.isEmpty()) {
-                    MODEL_CAUTHUTHAMGIACLB ct_clb = registedPlayers.getFirst();
+                    MODEL_CAUTHUTHAMGIA_GIAIDAU ct_clb = registedPlayers.getFirst();
                     MODEL_MUAGIAI mgi = service.getTournamentByID(ct_clb.getMaMG());
                     matchesCompetition = mgi.getTenMG().equals(selectedCompetition);
                 } else {
@@ -272,7 +270,7 @@ public class PlayerController implements Initializable {
         }
     }
 
-    private void loadPlayers() {
+    private void loadPlayers(){
         Player_table.getChildren().add(createHeaderRow());
 
         List<MODEL_CAUTHU> playersList = new ArrayList<>();
@@ -289,7 +287,8 @@ public class PlayerController implements Initializable {
         headerRow.setStyle(
                 "-fx-border-color: transparent transparent #b8b8ff transparent;" +
                         "-fx-border-width: 0 0 1px 0;" +
-                        "-fx-border-style: solid;");
+                        "-fx-border-style: solid;"
+        );
 
         Label playerLabel = new Label("Player");
         Label positionLabel = new Label("Position");
@@ -316,7 +315,8 @@ public class PlayerController implements Initializable {
                 spacer1,
                 positionLabel,
                 spacer2,
-                nationalityLabel);
+                nationalityLabel
+        );
 
         // Set appropriate widths
         playerLabel.setPrefWidth(250);
@@ -342,6 +342,7 @@ public class PlayerController implements Initializable {
         }
         playerImage.getStyleClass().add("player_image");
 
+
         // Player name with image
         HBox playerNameBox = new HBox(10);
         Label nameLabel = new Label(player.getTenCT());
@@ -351,15 +352,15 @@ public class PlayerController implements Initializable {
         playerNameBox.setAlignment(Pos.CENTER_LEFT);
 
         // Position label
-        String position = "";
-        if (player.getMaVT() == 4) {
+        String position ="";
+        if(player.getMaVT() == 4){
             position = "GoalKeeper";
-        } else if (player.getMaVT() == 2) {
+        }else if(player.getMaVT() == 2){
             position = "Midfielder";
-        } else if (player.getMaVT() == 1) {
+        }else if(player.getMaVT() == 1){
             position = "Forward";
-        } else {
-            position = "Defender";
+        }else{
+            position ="Defender";
         }
         Label positionLabel = new Label(position);
         positionLabel.getStyleClass().add("player_info");
@@ -368,8 +369,7 @@ public class PlayerController implements Initializable {
         // NationalityLogo từ trang https://www.countryflags.com/image-overview/
         ImageView flagImage = new ImageView();
         try {
-            Image flag = new Image(
-                    getClass().getResourceAsStream("/Image/NationLogo/" + player.getQuocTich() + ".png"));
+            Image flag = new Image(getClass().getResourceAsStream("/Image/NationLogo/" + player.getQuocTich() + ".png"));
             flagImage.setImage(flag);
         } catch (Exception e) {
             // Create a placeholder for missing flag
@@ -377,6 +377,7 @@ public class PlayerController implements Initializable {
             flagImage.setImage(flag);
         }
         flagImage.getStyleClass().add("flag_image");
+
 
         HBox nationalityBox = new HBox(10);
         Label nationalityLabel = new Label(player.getQuocTich());
@@ -395,7 +396,8 @@ public class PlayerController implements Initializable {
                 spacer1,
                 positionLabel,
                 spacer2,
-                nationalityBox);
+                nationalityBox
+        );
 
         // Set appropriate widths
         playerNameBox.setPrefWidth(250);
@@ -418,15 +420,15 @@ public class PlayerController implements Initializable {
             // Create the root container for our popup
             StackPane overlayRoot = new StackPane();
 
+
             // Create a semi-transparent rectangle to darken the background
-            Rectangle overlay = new Rectangle(currentScene.getWidth(), currentScene.getHeight() + 40);
+            Rectangle overlay = new Rectangle(currentScene.getWidth(), currentScene.getHeight()+40);
             overlay.setFill(Color.rgb(50, 50, 50, 0.7));
             // Create the popup content
             VBox popupContent = createPlayerPopupContent(player);
             popupContent.setMaxWidth(700);
             popupContent.setMaxHeight(500);
-            popupContent.setStyle(
-                    "-fx-background-color: white; -fx-border-color: #991f18; -fx-border-width: 1px; -fx-border-radius: 5px;");
+            popupContent.setStyle("-fx-background-color: white; -fx-border-color: #991f18; -fx-border-width: 1px; -fx-border-radius: 5px;");
 
             // Position the popup in the center
             StackPane.setAlignment(popupContent, Pos.CENTER);
@@ -466,12 +468,12 @@ public class PlayerController implements Initializable {
             popupStage.setScene(popupScene);
             popupStage.setWidth(currentScene.getWidth());
             popupStage.setHeight(currentScene.getHeight());
-            // Lấy Stage gốc (giả sử currentScene là scene hiện tại)
+//       Lấy Stage gốc (giả sử currentScene là scene hiện tại)
             Window parentWindow = currentScene.getWindow();
 
             // Tính vị trí giữa dựa trên kích thước và vị trí Stage gốc
             double centerX = parentWindow.getX() + (parentWindow.getWidth() - popupStage.getWidth()) / 2;
-            double centerY = parentWindow.getY() + (parentWindow.getHeight() - popupStage.getHeight()) / 2 + 12;
+            double centerY = parentWindow.getY() + (parentWindow.getHeight() - popupStage.getHeight()) / 2+ 12;
 
             // Đặt vị trí popupStage
             popupStage.setX(centerX);
@@ -485,7 +487,6 @@ public class PlayerController implements Initializable {
             openRegularPopup(player);
         }
     }
-
     // Helper method to check if a mouse event is inside a node
     private boolean isClickInsideNode(MouseEvent event, Node node) {
         Point2D point = new Point2D(event.getX(), event.getY());
@@ -519,7 +520,6 @@ public class PlayerController implements Initializable {
         // Show the popup
         popupStage.show();
     }
-
     private VBox createPlayerPopupContent(MODEL_CAUTHU player) {
         // Fetch related data
         PlayerClubData clubData = fetchPlayerClubData(player.getMaCT());
@@ -536,7 +536,8 @@ public class PlayerController implements Initializable {
         mainContainer.getChildren().addAll(
                 headerSection,
                 clubDetailsSection,
-                personalDetailsSection);
+                personalDetailsSection
+        );
 
         return mainContainer;
     }
@@ -545,13 +546,18 @@ public class PlayerController implements Initializable {
         PlayerClubData data = new PlayerClubData();
         try {
             String sql = "MaCT= " + playerId;
-            MODEL_CAUTHUTHAMGIACLB ct_clb = service.getRegistedPlayersByCondition(sql).get(0);
-            data.ctclb = ct_clb;
-
-            data.clb = service.getCLBByID(data.ctclb.getMaCLB());
+            List<MODEL_CAUTHUTHAMGIA_GIAIDAU> registedPlayers = service.getRegistedPlayersByCondition(sql);
+            if (!registedPlayers.isEmpty()) {
+                data.ctclb = registedPlayers.get(0);
+                data.clb = service.getCLBByID(data.ctclb.getMaCLB());
+            } else {
+                data.ctclb = null;
+                data.clb = null;
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            // Consider logging the error properly instead of printStackTrace
+            data.ctclb = null;
+            data.clb = null;
         }
         return data;
     }
@@ -582,7 +588,8 @@ public class PlayerController implements Initializable {
         ImageView playerImage = new ImageView();
         Image image = loadImageWithFallback(
                 "/Image/PlayerAva/" + player.getAvatar(),
-                "/Image/PlayerAva/default_ava.png");
+                "/Image/PlayerAva/default_ava.png"
+        );
 
         playerImage.setImage(image);
         playerImage.setFitWidth(160);
@@ -713,7 +720,8 @@ public class PlayerController implements Initializable {
         ImageView clubImage = new ImageView();
         Image image = loadImageWithFallback(
                 "/Image/ClubLogo/" + clb.getLogoCLB(),
-                "/Image/ClubLogo/default_logo.png");
+                "/Image/ClubLogo/default_logo.png"
+        );
 
         clubImage.setImage(image);
         clubImage.getStyleClass().add("detail_image");
@@ -736,7 +744,8 @@ public class PlayerController implements Initializable {
         ImageView flagImage = new ImageView();
         Image image = loadImageWithFallback(
                 "/Image/NationLogo/" + player.getQuocTich() + ".png",
-                "/Image/NationLogo/England.png");
+                "/Image/NationLogo/England.png"
+        );
 
         flagImage.setImage(image);
         flagImage.getStyleClass().add("detail_image");
@@ -765,14 +774,10 @@ public class PlayerController implements Initializable {
 
     private String getPositionDisplayName(int positionCode) {
         switch (positionCode) {
-            case 4:
-                return "GoalKeeper";
-            case 2:
-                return "Midfielder";
-            case 1:
-                return "Forward";
-            default:
-                return "Defender";
+            case 4: return "GoalKeeper";
+            case 2: return "Midfielder";
+            case 1: return "Forward";
+            default: return "Defender";
         }
     }
 
@@ -783,7 +788,7 @@ public class PlayerController implements Initializable {
 
     // Helper class to hold related data
     private static class PlayerClubData {
-        MODEL_CAUTHUTHAMGIACLB ctclb = new MODEL_CAUTHUTHAMGIACLB();
+        MODEL_CAUTHUTHAMGIA_GIAIDAU ctclb = new MODEL_CAUTHUTHAMGIA_GIAIDAU();
         MODEL_CLB clb = new MODEL_CLB();
     }
 

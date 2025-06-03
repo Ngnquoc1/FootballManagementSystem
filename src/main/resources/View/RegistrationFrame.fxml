@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxWidth="-Infinity" prefHeight="625.0" prefWidth="800.0" style="-fx-background-color: white; -fx-border-color: #991f18; -fx-border-width: 2\;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.RegistrationController">
+<VBox maxWidth="-Infinity" prefHeight="625.0" prefWidth="800.0" style="-fx-background-color: white; -fx-border-color: #991f18; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.RegistrationController">
     <children>
         <HBox alignment="CENTER_LEFT" prefHeight="103.0" prefWidth="0.0" style="-fx-background-color: #991f18;" VBox.vgrow="ALWAYS">
             <children>

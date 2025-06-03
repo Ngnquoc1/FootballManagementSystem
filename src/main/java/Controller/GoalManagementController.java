@@ -2,6 +2,7 @@ package Controller;
 
 import Service.Service;
 import Model.*;
+import Util.AlertUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -169,7 +170,7 @@ public class GoalManagementController {
 
         Integer maCLB = teamToClbIdMap.get(selectedTeam);
         if (maCLB != null) {
-            List<MODEL_CAUTHUTHAMGIACLB> playersInTeam = service.getRegistedPlayersByCondition("MaCLB = " + maCLB);
+            List<MODEL_CAUTHUTHAMGIA_GIAIDAU> playersInTeam = service.getRegistedPlayersByCondition("MaCLB = " + maCLB);
             List<MODEL_CAUTHU> players=new ArrayList<>();
             if (playersInTeam.isEmpty()) {
                 playerComboBox.setItems(FXCollections.observableArrayList());
@@ -279,7 +280,7 @@ public class GoalManagementController {
                         updateScore();
                     } catch (SQLException e) {
                         e.printStackTrace();
-                        showErrorAlert("Lỗi khi xóa bàn thắng: " + e.getMessage());
+                        AlertUtils.showError("Error","", "Lỗi khi xóa bàn thắng: " + e.getMessage());
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -291,7 +292,7 @@ public class GoalManagementController {
     @FXML
     private void handleSave() {
         if (!validateForm()) {
-            showErrorAlert("Vui lòng điền đầy đủ thông tin bàn thắng!");
+            AlertUtils.showError("Error", "Thông tin không hợp lệ", "Vui lòng điền đầy đủ thông tin và kiểm tra lại.");
             return;
         }
 
@@ -317,16 +318,13 @@ public class GoalManagementController {
                 goalsList.set(goalsList.indexOf(currentGoal), goal);
             } else {
                 // Thêm bàn thắng mới
-                service.insertGoal(goal);
-                goalsList.add(goal);
-
-                // Cập nhật MaBT sau khi thêm (cần truy vấn lại vì MaBT tự tăng)
-                List<MODEL_BANTHANG> updatedGoals = service.getGoalByCondition(
-                        "MaTD = " + maTD + " AND MaCT = " + maCT + " AND PhutGhiBan = " + phutGhiBan
-                );
-                if (!updatedGoals.isEmpty()) {
-                    goal.setMaBT(updatedGoals.getFirst().getMaBT());
+                int newId=service.insertGoal(goal);
+                if(newId == -1) {
+                AlertUtils.showError("Error", "Lỗi khi thêm bàn thắng", "Không thể thêm bàn thắng mới. Vui lòng thử lại.");
+                return;
                 }
+                goalsList.add(goal);
+                goal.setMaBT(newId);
             }
 
             // Cập nhật tỉ số
@@ -336,10 +334,10 @@ public class GoalManagementController {
             resetForm();
             enableForm(false);
         } catch (NumberFormatException e) {
-            showErrorAlert("Phút ghi bàn phải là một số nguyên!");
+            AlertUtils.showError("Error", "Thông tin không hợp lệ", "Phút ghi bàn phải là một số nguyên!");
         } catch (SQLException e) {
             e.printStackTrace();
-            showErrorAlert("Lỗi khi lưu bàn thắng: " + e.getMessage());
+            AlertUtils.showError("Error", "Lỗi cơ sở dữ liệu", "Không thể lưu bàn thắng. Vui lòng kiểm tra kết nối cơ sở dữ liệu.");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -360,22 +358,15 @@ public class GoalManagementController {
             int score1 = Integer.parseInt(scores[0].trim());
             int score2 = Integer.parseInt(scores[1].trim());
 
-            // Call the save method in ResultManagementController
             if (resultManagementController != null) {
                 resultManagementController.save(maTD, score1, score2);
             }
 
             // Close the current stage
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Hoàn thành");
-            alert.setHeaderText(null);
-            alert.setContentText("Đã lưu thông tin bàn thắng thành công!");
-            alert.showAndWait();
-
             Stage stage = (Stage) finishButton.getScene().getWindow();
             stage.close();
         } catch (Exception e) {
-            showErrorAlert("Lỗi khi lưu thông tin: " + e.getMessage());
+            AlertUtils.showError("Error", "Lỗi khi lưu thông tin", "Không thể lưu thông tin bàn thắng. Vui lòng kiểm tra lại.");
         }
 
     }
@@ -412,11 +403,5 @@ public class GoalManagementController {
         cancelButton.setDisable(!enable);
     }
 
-    private void showErrorAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Lỗi");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
+
 }

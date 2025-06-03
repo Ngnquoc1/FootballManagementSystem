@@ -1,9 +1,6 @@
 package Controller;
 
-import Model.MODEL_BXH_CLB;
-import Model.MODEL_MUAGIAI;
-import Model.MODEL_BXH_BANTHANG;
-import Model.Session;
+import Model.*;
 import Service.Service;
 import Util.AlertUtils;
 import javafx.beans.property.SimpleStringProperty;
@@ -15,19 +12,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.scene.Node;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -50,16 +43,12 @@ public class TableController {
     private Tab clubTab;
     @FXML
     private Tab scorerTab;
-    @FXML
-    private Tab bracketTab;
 
     // Thông tin giải đấu
     @FXML
     private Label competitionInfoLabel;
     @FXML
     private Label scorerCompetitionInfoLabel;
-    @FXML
-    private Label bracketCompetitionInfoLabel;
 
     // Bảng xếp hạng CLB
     @FXML
@@ -96,36 +85,7 @@ public class TableController {
     private TableColumn<MODEL_BXH_BANTHANG, Integer> scorerGoalsColumn;
     @FXML
     private TableColumn<MODEL_BXH_BANTHANG, Integer> scorerPenaltyColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_BANTHANG, Integer> scorerMatchesColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_BANTHANG, Integer> scorerMinutesColumn;
 
-    // Bảng xếp hạng theo nhánh
-    @FXML
-    private ComboBox<String> bracketComboBox;
-    @FXML
-    private TableView<MODEL_BXH_CLB> bracketTableView;
-    @FXML
-    private TableColumn<MODEL_BXH_CLB, Integer> bracketRankColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_CLB, String> bracketClubColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_CLB, Integer> bracketPlayedColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_CLB, Integer> bracketWonColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_CLB, Integer> bracketDrawnColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_CLB, Integer> bracketLostColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_CLB, Integer> bracketGFColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_CLB, Integer> bracketGAColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_CLB, Integer> bracketGDColumn;
-    @FXML
-    private TableColumn<MODEL_BXH_CLB, Integer> bracketPointsColumn;
 
     // Nút xuất báo cáo và đóng
     @FXML
@@ -134,39 +94,32 @@ public class TableController {
     private Button closeButton;
 
     // Dữ liệu
-    private ObservableList<MODEL_BXH_CLB> vleagueClubRankings = FXCollections.observableArrayList();
-    private ObservableList<MODEL_BXH_CLB> nationalCupClubRankings = FXCollections.observableArrayList();
-    private ObservableList<MODEL_BXH_BANTHANG> vleagueScorerRankings = FXCollections.observableArrayList();
-    private ObservableList<MODEL_BXH_BANTHANG> nationalCupScorerRankings = FXCollections.observableArrayList();
-    private ObservableList<MODEL_BXH_CLB> bracketARankings = FXCollections.observableArrayList();
-    private ObservableList<MODEL_BXH_CLB> bracketBRankings = FXCollections.observableArrayList();
+    private final ObservableList<MODEL_BXH_CLB> vleagueClubRankings = FXCollections.observableArrayList();
+    private final ObservableList<MODEL_BXH_BANTHANG> vleagueScorerRankings = FXCollections.observableArrayList();
+
 
     private Service service;
+    @FXML
+    private ImageView userIcon;
 
     @FXML
     private void initialize() throws SQLException {
-
-        configureUIBasedOnRole();
         service = new Service();
+        configureUIBasedOnRole();
         // Thiết lập các ComboBox
         compeFilter.setItems(FXCollections.observableArrayList(
                 service.getAllTournament().stream().map(MODEL_MUAGIAI::getTenMG).toList()));
         rankingTypeFilter.setItems(FXCollections.observableArrayList("BXH CLB", "Vua phá lưới"));
-        bracketComboBox.setItems(FXCollections.observableArrayList("Nhánh A", "Nhánh B"));
 
         // Thiết lập giá trị mặc định
         compeFilter.getSelectionModel().selectFirst();
         rankingTypeFilter.setValue("BXH CLB");
-        bracketComboBox.setValue("Nhánh A");
 
         // Thiết lập các cột cho bảng xếp hạng CLB
         setupClubTableColumns();
 
         // Thiết lập các cột cho bảng xếp hạng Vua phá lưới
         setupScorerTableColumns();
-        //
-        // Thiết lập các cột cho bảng xếp hạng theo nhánh
-        // setupBracketTableColumns();
 
         // Tạo dữ liệu mẫu
         // Hiển thị dữ liệu ban đầu
@@ -175,7 +128,6 @@ public class TableController {
         // Xử lý sự kiện khi thay đổi giải đấu hoặc loại BXH
         compeFilter.setOnAction(e -> handleFilterChange());
         rankingTypeFilter.setOnAction(e -> handleFilterChange());
-        // bracketComboBox.setOnAction(e -> updateBracketTableView());
 
         // Xử lý sự kiện khi chuyển tab
         tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
@@ -183,15 +135,10 @@ public class TableController {
                 rankingTypeFilter.setValue("BXH CLB");
             } else if (newTab == scorerTab) {
                 rankingTypeFilter.setValue("Vua phá lưới");
-            } else if (newTab == bracketTab) {
-                compeFilter.setValue("Cúp Quốc Gia");
-                rankingTypeFilter.setValue("BXH CLB");
             }
             updateTableView();
         });
     }
-
-
 
     private void setupClubTableColumns() throws SQLException {
         String condition = "TenMG = '" + compeFilter.getValue() + "'";
@@ -250,7 +197,6 @@ public class TableController {
 
         scorerRankColumn.setCellValueFactory(new PropertyValueFactory<>("Hang"));
         scorerNameColumn.setCellValueFactory(cellData -> {
-            ;
             try {
                 int maCauThu = cellData.getValue().getMaCT();
                 String playerName = service.getPlayerById(maCauThu).getTenCT();
@@ -260,7 +206,6 @@ public class TableController {
             }
         });
         scorerClubColumn.setCellValueFactory(cellData -> {
-            ;
             try {
                 int maCT = cellData.getValue().getMaCT();
                 String condition1 = "MaCT = " + maCT + " AND MaMG = " + maMG;
@@ -299,84 +244,33 @@ public class TableController {
         });
     }
 
-    // private void setupBracketTableColumns() {
-    // bracketRankColumn.setCellValueFactory(new PropertyValueFactory<>("rank"));
-    // bracketClubColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-    // bracketPlayedColumn.setCellValueFactory(new
-    // PropertyValueFactory<>("played"));
-    // bracketWonColumn.setCellValueFactory(new PropertyValueFactory<>("won"));
-    // bracketDrawnColumn.setCellValueFactory(new PropertyValueFactory<>("drawn"));
-    // bracketLostColumn.setCellValueFactory(new PropertyValueFactory<>("lost"));
-    // bracketGFColumn.setCellValueFactory(new PropertyValueFactory<>("goalsFor"));
-    // bracketGAColumn.setCellValueFactory(new
-    // PropertyValueFactory<>("goalsAgainst"));
-    // bracketGDColumn.setCellValueFactory(new
-    // PropertyValueFactory<>("goalDifference"));
-    // bracketPointsColumn.setCellValueFactory(new
-    // PropertyValueFactory<>("points"));
-    //
-    // // Thiết lập màu nền cho các hàng dựa trên thứ hạng
-    // bracketTableView.setRowFactory(tv -> new TableRow<MODEL_BXH_CLB>() {
-    // @Override
-    // protected void updateItem(MODEL_BXH_CLB item, boolean empty) {
-    // super.updateItem(item, empty);
-    // if (item == null || empty) {
-    // setStyle("");
-    // } else {
-    // if (item.getHang() <= 2) {
-    // setStyle("-fx-background-color: rgba(76, 175, 80, 0.2);"); // Đi tiếp
-    // } else {
-    // setStyle("");
-    // }
-    // }
-    // }
-    // });
-    // }
     private void handleFilterChange() {
         updateTableView();
+
     }
 
     private void updateTableView() {
         String competition = compeFilter.getValue();
         String rankingType = rankingTypeFilter.getValue();
-
-        if ("V-League 2025".equals(competition)) {
-            competitionInfoLabel.setText("V-League 2025");
-            scorerCompetitionInfoLabel.setText("V-League 2025 - Vua phá lưới");
-
-            if ("BXH CLB".equals(rankingType)) {
-                tabPane.getSelectionModel().select(clubTab);
-                clubTableView.setItems(vleagueClubRankings);
-                clubLegendBox.setVisible(true);
-            } else {
-                tabPane.getSelectionModel().select(scorerTab);
-                scorerTableView.setItems(vleagueScorerRankings);
-            }
-        } else if ("Cúp Quốc Gia".equals(competition)) {
-            competitionInfoLabel.setText("Cúp Quốc Gia 2023");
-            scorerCompetitionInfoLabel.setText("Cúp Quốc Gia 2023 - Vua phá lưới");
-            bracketCompetitionInfoLabel.setText("Cúp Quốc Gia 2023");
-
-            if ("BXH CLB".equals(rankingType)) {
-                tabPane.getSelectionModel().select(bracketTab);
-                // updateBracketTableView();
-                clubLegendBox.setVisible(false);
-            } else {
-                tabPane.getSelectionModel().select(scorerTab);
-                scorerTableView.setItems(nationalCupScorerRankings);
-            }
+        MODEL_MUAGIAI selectedTournament = service.getTournamentByName(competition);
+        competitionInfoLabel.setText(competition);
+        scorerCompetitionInfoLabel.setText(competition + " - Vua phá lưới");
+        List<MODEL_BXH_CLB> clubParticipation = service.getBxhCLBByTournamentId(selectedTournament.getMaMG());
+        vleagueClubRankings.clear();
+        vleagueClubRankings.addAll(clubParticipation);
+        List<MODEL_BXH_BANTHANG> scorerParticipation = service.getBxhBanThangByTournamentId(selectedTournament.getMaMG());
+        vleagueScorerRankings.clear();
+        vleagueScorerRankings.addAll(scorerParticipation);
+        if ("BXH CLB".equals(rankingType)) {
+            tabPane.getSelectionModel().select(clubTab);
+            clubTableView.setItems(vleagueClubRankings);
+            clubLegendBox.setVisible(true);
+        } else {
+            tabPane.getSelectionModel().select(scorerTab);
+            scorerTableView.setItems(vleagueScorerRankings);
         }
-    }
 
-    // private void updateBracketTableView() {
-    // String bracket = bracketComboBox.getValue();
-    //
-    // if ("Nhánh A".equals(bracket)) {
-    // bracketTableView.setItems(bracketARankings);
-    // } else if ("Nhánh B".equals(bracket)) {
-    // bracketTableView.setItems(bracketBRankings);
-    // }
-    // }
+    }
 
     @FXML
     private void handleRefresh() {
@@ -419,9 +313,6 @@ public class TableController {
             }
         }
     }
-
-    @FXML
-    private ImageView userIcon;
 
     @FXML
     private void showUserPopup() {

@@ -3,6 +3,7 @@ package Controller;
 import Model.*;
 import Service.Service;
 
+import Util.AlertUtils;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -39,9 +40,6 @@ public class FixtureController implements Initializable {
     private ScrollPane Calendar;
     @FXML
     private ComboBox<String> compeFilter, clubFilter;
-
-    @FXML
-    private ImageView userIcon;
     private Service service = new Service();
 
     @Override
@@ -65,7 +63,7 @@ public class FixtureController implements Initializable {
         Session session = Session.getInstance();
         int userRole = session.getRole();
 
-        // Nếu role là "A", ẩn Registry và Rules buttons
+
         if (userRole == 5 || userRole == 4 || userRole == 2 || userRole == 1) {
             if (addBtn != null) {
                 addBtn.setVisible(false);
@@ -646,14 +644,12 @@ public class FixtureController implements Initializable {
             stage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Unable to load club details");
-            alert.setContentText("An error occurred while trying to display the club details.");
-            alert.showAndWait();
+            AlertUtils.showError("Error", "Unable to load club details",
+                    "An error occurred while trying to display the club details.");
+
         }
     }
-
+    @FXML ImageView userIcon;
     @FXML
     private void showUserPopup() {
         try {

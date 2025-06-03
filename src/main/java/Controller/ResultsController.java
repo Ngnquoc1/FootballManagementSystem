@@ -46,9 +46,38 @@ public class ResultsController implements Initializable {
     private ScrollPane Calendar;
     @FXML
     private ComboBox<String> compeFilter, clubFilter;
-    @FXML
-    private ImageView userIcon;
+
     private Service service = new Service();
+    @FXML ImageView userIcon;
+    @FXML private void showUserPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/UserPopup.fxml"));
+            Parent root = loader.load();
+
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.NONE);
+            popupStage.initStyle(StageStyle.UNDECORATED);
+
+            Scene scene = new Scene(root);
+            popupStage.setScene(scene);
+
+            popupStage.setX(userIcon.localToScreen(0, 0).getX() - 100);
+            popupStage.setY(userIcon.localToScreen(0, 0).getY() + 40);
+
+            popupStage.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                if (!isNowFocused) {
+                    popupStage.close();
+                }
+            });
+
+            popupStage.initOwner(userIcon.getScene().getWindow());
+
+            popupStage.show();
+        } catch (Exception e) {
+            System.err.println("Lỗi hiển thị UserPopup: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -66,12 +95,13 @@ public class ResultsController implements Initializable {
             throw new RuntimeException(e);
         }
     }
+
     private void configureUIBasedOnRole() {
         Session session = Session.getInstance();
         int userRole = session.getRole();
 
-        // Nếu role là "A", ẩn Registry và Rules buttons
-        if (userRole == 5 || userRole == 3 || userRole == 2 || userRole == 1) {
+
+        if (userRole == 5 || userRole == 2 || userRole == 3 || userRole == 1) {
             if (addBtn != null) {
                 addBtn.setVisible(false);
                 addBtn.setManaged(false); // Không chiếm không gian trong layout
@@ -915,37 +945,6 @@ public class ResultsController implements Initializable {
                 }
         }
         return goalsList;
-    }
-
-    @FXML
-    private void showUserPopup() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/UserPopup.fxml"));
-            Parent root = loader.load();
-
-            Stage popupStage = new Stage();
-            popupStage.initModality(Modality.NONE);
-            popupStage.initStyle(StageStyle.UNDECORATED);
-
-            Scene scene = new Scene(root);
-            popupStage.setScene(scene);
-
-            popupStage.setX(userIcon.localToScreen(0, 0).getX() - 100);
-            popupStage.setY(userIcon.localToScreen(0, 0).getY() + 40);
-
-            popupStage.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-                if (!isNowFocused) {
-                    popupStage.close();
-                }
-            });
-
-            popupStage.initOwner(userIcon.getScene().getWindow());
-
-            popupStage.show();
-        } catch (Exception e) {
-            System.err.println("Lỗi hiển thị UserPopup: " + e.getMessage());
-            e.printStackTrace();
-        }
     }
 
 }

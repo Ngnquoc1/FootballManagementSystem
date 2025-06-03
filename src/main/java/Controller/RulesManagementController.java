@@ -3,7 +3,9 @@ package Controller;
 import Model.MODEL_MUAGIAI;
 import Model.MODEL_QUYDINH;
 
+import Model.MODEL_THUTU_UUTIEN;
 import Service.Service;
+import Util.AlertUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -27,7 +29,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
+
 import java.util.ResourceBundle;
 
 public class RulesManagementController implements Initializable {
@@ -58,6 +60,14 @@ public class RulesManagementController implements Initializable {
     @FXML
     private Spinner<Integer> spnPhutGhiBanToiDa;
 
+    @FXML
+    private TableView<MODEL_THUTU_UUTIEN> priorityOrderTable;
+    @FXML
+    private TableColumn<MODEL_THUTU_UUTIEN, String> colTenTTUT;
+    @FXML
+    private Button btnMoveUp, btnMoveDown;
+
+    private final ObservableList<MODEL_THUTU_UUTIEN> priorityList = FXCollections.observableArrayList();
     private Service service;
 
     private ObservableList<MODEL_MUAGIAI> danhSachMuaGiai;
@@ -80,7 +90,8 @@ public class RulesManagementController implements Initializable {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
+        colTenTTUT.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getTenTTUT()));
+        priorityOrderTable.setItems(priorityList);
         // Vô hiệu hóa form ban đầu
         vohieuhoaForm(true);
     }
@@ -186,6 +197,10 @@ public class RulesManagementController implements Initializable {
 
             lblTrangThaiQuyDinh.setText("Đã có quy định");
             lblTrangThaiQuyDinh.setTextFill(javafx.scene.paint.Color.GREEN);
+
+            List<MODEL_THUTU_UUTIEN> list = service.getPriorityOrderByTournament(maMG);
+            priorityList.setAll(list);
+            updatePriorityOrder();
         } else {
             // Áp dụng quy định mặc định
             apDungGiaTriMacDinh();
@@ -196,22 +211,49 @@ public class RulesManagementController implements Initializable {
     }
 
     @FXML
+    private void handleMoveUp() {
+        int selectedIndex = priorityOrderTable.getSelectionModel().getSelectedIndex();
+        if (selectedIndex > 0) {
+            MODEL_THUTU_UUTIEN selected = priorityList.remove(selectedIndex);
+            priorityList.add(selectedIndex - 1, selected);
+            priorityOrderTable.getSelectionModel().select(selectedIndex - 1);
+            updatePriorityOrder();
+        }
+    }
+
+    @FXML
+    private void handleMoveDown() {
+        int selectedIndex = priorityOrderTable.getSelectionModel().getSelectedIndex();
+        if (selectedIndex >= 0 && selectedIndex < priorityList.size() - 1) {
+            MODEL_THUTU_UUTIEN selected = priorityList.remove(selectedIndex);
+            priorityList.add(selectedIndex + 1, selected);
+            priorityOrderTable.getSelectionModel().select(selectedIndex + 1);
+            updatePriorityOrder();
+        }
+    }
+
+    private void updatePriorityOrder() {
+        for (int i = 0; i < priorityList.size(); i++) {
+            priorityList.get(i).setThuTu(i + 1);
+        }
+        priorityOrderTable.refresh();
+    }
+
+    @FXML
     private void apDungMacDinh(ActionEvent event) {
         MODEL_MUAGIAI selectedMuaGiai = cboMuaGiai.getValue();
         if (selectedMuaGiai == null) {
-            thongBaoLoi("Vui lòng chọn mùa giải!");
+            AlertUtils.showError("Lỗi", "Chưa chọn mùa giải", "Vui lòng chọn mùa giải trước khi áp dụng quy định mặc định.");
             return;
         }
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Xác nhận áp dụng mặc định");
-        alert.setHeaderText("Áp dụng quy định mặc định");
-        alert.setContentText("Bạn có chắc chắn muốn áp dụng quy định mặc định cho mùa giải này?");
+        boolean choosen= AlertUtils.showConfirmation("Xác nhận áp dụng mặc định","Ap dụng quy định mặc định",
+                "Bạn có chắc chắn muốn áp dụng quy định mặc định cho mùa giải này?");
 
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        if (choosen) {
             apDungGiaTriMacDinh();
-            thongBao("Đã áp dụng quy định mặc định!");
+            AlertUtils.showInformation("Thông báo", "Áp dụng quy định mặc định",
+                    "Đã áp dụng quy định mặc định cho mùa giải: " + selectedMuaGiai.getTenMG());
         }
     }
 
@@ -219,7 +261,7 @@ public class RulesManagementController implements Initializable {
     private void capNhatQuyDinh(ActionEvent event) {
         MODEL_MUAGIAI selectedMuaGiai = cboMuaGiai.getValue();
         if (selectedMuaGiai == null) {
-            thongBaoLoi("Vui lòng chọn mùa giải!");
+            AlertUtils.showError("Lỗi", "Chưa chọn mùa giải", "Vui lòng chọn mùa giải trước khi cập nhật quy định.");
             return;
         }
 
@@ -227,46 +269,29 @@ public class RulesManagementController implements Initializable {
             return;
         }
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Xác nhận cập nhật");
-        alert.setHeaderText("Cập nhật quy định mùa giải");
-        alert.setContentText("Bạn có chắc chắn muốn cập nhật quy định cho mùa giải này?");
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        boolean result = AlertUtils.showConfirmation("Xác nhận cập nhật quy định", "Cập nhật quy định",
+                "Bạn có chắc chắn muốn cập nhật quy định cho mùa giải này?");
+        if (result) {
             MODEL_QUYDINH quyDinh = layThongTinTuForm();
             quyDinh.setMaMG(selectedMuaGiai.getMaMG());
 
             boolean ketQua;
-            if (quyDinhHienTai != null) {
-                // Cập nhật quy định hiện có
-                ketQua = service.updateQD(quyDinh);
-            } else {
-                // Tạo quy định mới
-                ketQua = service.addQD(quyDinh);
-            }
+            ketQua = service.updateQD(quyDinh);
+            // Save to DB if a tournament is selected
+            service.savePriorityOrder(selectedMuaGiai.getMaMG(), priorityList);
 
             if (ketQua) {
-                thongBao("Cập nhật quy định thành công!");
+                AlertUtils.showInformation("Thông báo", "Cập nhật quy định thành công",
+                        "Quy định đã được cập nhật thành công cho mùa giải: " + selectedMuaGiai.getTenMG());
                 // Tải lại quy định
                 taiQuyDinhMuaGiai(selectedMuaGiai.getMaMG());
             } else {
-                thongBaoLoi("Cập nhật quy định thất bại!");
+                AlertUtils.showError("Lỗi", "Cập nhật quy định thất bại",
+                        "Không thể cập nhật quy định cho mùa giải: " + selectedMuaGiai.getTenMG());
             }
         }
     }
 
-    @FXML
-    private void lamMoi(ActionEvent event) {
-        MODEL_MUAGIAI selectedMuaGiai = cboMuaGiai.getValue();
-        if (selectedMuaGiai != null) {
-            // Tải lại quy định từ database
-            taiQuyDinhMuaGiai(selectedMuaGiai.getMaMG());
-        } else {
-            // Reset về mặc định
-            apDungGiaTriMacDinh();
-        }
-    }
 
     private void apDungGiaTriMacDinh() {
         MODEL_QUYDINH macDinh = new MODEL_QUYDINH(); // Constructor đã có giá trị mặc định
@@ -277,6 +302,10 @@ public class RulesManagementController implements Initializable {
         spnSoCTToiDa.getValueFactory().setValue(macDinh.getSoCTToiDa());
         spnSoCTNuocNgoaiToiDa.getValueFactory().setValue(macDinh.getSoCTNuocNgoaiToiDa());
         spnPhutGhiBanToiDa.getValueFactory().setValue(macDinh.getPhutGhiBanToiDa());
+
+        List<MODEL_THUTU_UUTIEN> defaultPriorityList = MODEL_THUTU_UUTIEN.getDefaultList(macDinh.getMaMG());
+        priorityList.setAll(defaultPriorityList);
+        updatePriorityOrder();
     }
 
     private void vohieuhoaForm(boolean disable) {
@@ -317,28 +346,13 @@ public class RulesManagementController implements Initializable {
         }
 
         if (sb.length() > 0) {
-            thongBaoLoi(sb.toString());
+            AlertUtils.showError("Lỗi", "Kiểm tra dữ liệu không hợp lệ", sb.toString());
             return false;
         }
 
         return true;
     }
 
-    private void thongBao(String noiDung) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Thông báo");
-        alert.setHeaderText(null);
-        alert.setContentText(noiDung);
-        alert.showAndWait();
-    }
-
-    private void thongBaoLoi(String noiDung) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Lỗi");
-        alert.setHeaderText(null);
-        alert.setContentText(noiDung);
-        alert.showAndWait();
-    }
 
     @FXML
     private ImageView userIcon;

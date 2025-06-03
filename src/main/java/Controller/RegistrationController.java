@@ -21,19 +21,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
-import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
 
-import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
-
-import javax.swing.text.IconView;
 
 public class RegistrationController implements Initializable {
 
@@ -97,7 +91,11 @@ public class RegistrationController implements Initializable {
 
         // Tải dữ liệu
         loadPlayerList();
-        loadTournamentList();
+        try {
+            loadTournamentList();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void setupComboBoxes() {
@@ -157,8 +155,8 @@ public class RegistrationController implements Initializable {
         cboCLB.setItems(danhSachCLB);
     }
 
-    private void loadTournamentList() {
-        List<MODEL_MUAGIAI> list = service.getAllActiveTournaments();
+    private void loadTournamentList() throws SQLException {
+        List<MODEL_MUAGIAI> list = service.getAllTournament();
         danhSachMuaGiai = FXCollections.observableArrayList(list);
         cboMuaGiai.setItems(danhSachMuaGiai);
     }
@@ -195,6 +193,7 @@ public class RegistrationController implements Initializable {
             loadTournamentRules(selectedMuaGiai.getMaMG());
             checkRegistrationStatus();
         }
+        else {System.out.println("aaaaa");}
     }
 
     private void loadPlayersList(int maCLB) {
@@ -244,7 +243,7 @@ public class RegistrationController implements Initializable {
     }
 
     private void loadRegistedPlayers(int maCLB, int maMG) {
-        List<MODEL_CAUTHUTHAMGIACLB> danhSachDaDangKy = service.getRegistedPlayers(maCLB, maMG);
+        List<MODEL_CAUTHUTHAMGIA_GIAIDAU> danhSachDaDangKy = service.getRegistedPlayers(maCLB, maMG);
 
         for (CauThuViewModel viewModel : danhSachCauThu) {
             boolean daDangKy = danhSachDaDangKy.stream()

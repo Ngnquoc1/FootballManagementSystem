@@ -1,8 +1,10 @@
 package Controller;
 
 import Model.MODEL_MUAGIAI;
+import Model.MODEL_THUTU_UUTIEN;
 import Model.MODEL_VONGDAU;
 import Service.Service;
+import Util.AlertUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -36,65 +38,40 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class TournamentManagementController {
-    @FXML
-    private Label totalTournamentsLabel;
-    @FXML
-    private Label activeTournamentsLabel;
-    @FXML
-    private Label upcomingTournamentsLabel;
+    @FXML private Label totalTournamentsLabel;
+    @FXML private Label activeTournamentsLabel;
+    @FXML private Label upcomingTournamentsLabel;
 
-    @FXML
-    private TextField searchField;
-    @FXML
-    private ComboBox<String> compeFilter;
+    @FXML private TextField searchField;
+    @FXML private ComboBox<String> compeFilter;
 
-    @FXML
-    private TableView<MODEL_MUAGIAI> tournamentsTableView;
-    @FXML
-    private TableColumn<MODEL_MUAGIAI, Integer> idColumn;
-    @FXML
-    private TableColumn<MODEL_MUAGIAI, String> nameColumn;
-    @FXML
-    private TableColumn<MODEL_MUAGIAI, LocalDate> startDateColumn;
-    @FXML
-    private TableColumn<MODEL_MUAGIAI, LocalDate> endDateColumn;
-    @FXML
-    private TableColumn<MODEL_MUAGIAI, String> statusColumn;
-    @FXML
-    private TableColumn<MODEL_MUAGIAI, Void> logoColumn;
+    @FXML private TableView<MODEL_MUAGIAI> tournamentsTableView;
+    @FXML private TableColumn<MODEL_MUAGIAI, Integer> idColumn;
+    @FXML private TableColumn<MODEL_MUAGIAI, String> nameColumn;
+    @FXML private TableColumn<MODEL_MUAGIAI, LocalDate> startDateColumn;
+    @FXML private TableColumn<MODEL_MUAGIAI, LocalDate> endDateColumn;
+    @FXML private TableColumn<MODEL_MUAGIAI, String> statusColumn;
+    @FXML private TableColumn<MODEL_MUAGIAI, Void> logoColumn;
 
-    @FXML
-    private TextField idField;
-    @FXML
-    private TextField nameField;
-    @FXML
-    private DatePicker startDatePicker;
-    @FXML
-    private DatePicker endDatePicker;
-    @FXML
-    private ImageView logoImageView;
-    @FXML
-    private Button chooseLogoButton;
+    @FXML private TextField idField;
+    @FXML private TextField nameField;
+    @FXML private DatePicker startDatePicker;
+    @FXML private DatePicker endDatePicker;
+    @FXML private ImageView logoImageView;
+    @FXML private Button chooseLogoButton;
 
-    @FXML
-    private Button addButton;
-    @FXML
-    private Button editButton;
-    @FXML
-    private Button deleteButton;
-    @FXML
-    private Button viewDetailsButton;
-    @FXML
-    private Button saveButton;
-    @FXML
-    private Button cancelButton;
-    @FXML
-    private Button searchButton;
-    @FXML
-    private Button clearButton;
+    @FXML private Button addButton;
+    @FXML private Button editButton;
+    @FXML private Button deleteButton;
+    @FXML private Button viewDetailsButton;
+    @FXML private Button saveButton;
+    @FXML private Button cancelButton;
+    @FXML private Button searchButton;
+    @FXML private Button clearButton;
 
     private ObservableList<MODEL_MUAGIAI> tournamentsList = FXCollections.observableArrayList();
     private FilteredList<MODEL_MUAGIAI> filteredTournaments;
+    private List<MODEL_THUTU_UUTIEN> defaultPriority;
     private MODEL_MUAGIAI currentModel;
     private boolean isEditing = false;
     private int nextId = 1;
@@ -181,21 +158,19 @@ public class TournamentManagementController {
         enableForm(false);
 
         // Xử lý sự kiện khi chọn một giải đấu trong bảng
-        tournamentsTableView.getSelectionModel().selectedItemProperty()
-                .addListener((obs, oldSelection, newSelection) -> {
-                    if (newSelection != null) {
-                        editButton.setDisable(false);
-                        deleteButton.setDisable(false);
-                        viewDetailsButton.setDisable(false);
-                    } else {
-                        editButton.setDisable(true);
-                        deleteButton.setDisable(true);
-                        viewDetailsButton.setDisable(false);
-                    }
-                });
+        tournamentsTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                editButton.setDisable(false);
+                deleteButton.setDisable(false);
+                viewDetailsButton.setDisable(false);
+            } else {
+                editButton.setDisable(true);
+                deleteButton.setDisable(true);
+                viewDetailsButton.setDisable(false);
+            }
+        });
         createLogoDirectory();
     }
-
     private void setFilter() throws SQLException {
 
         List<MODEL_MUAGIAI> ds1 = service.getAllTournament();
@@ -285,16 +260,11 @@ public class TournamentManagementController {
     }
 
     @FXML
-    private void handleDeleteTournament() throws SQLException {
+    private void handleDeleteTournament()  {
         MODEL_MUAGIAI selectedTournament = tournamentsTableView.getSelectionModel().getSelectedItem();
         if (selectedTournament != null) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Xác nhận xóa");
-            alert.setHeaderText(null);
-            alert.setContentText("Bạn có chắc chắn muốn xóa giải đấu này?");
-
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
+            boolean choose= AlertUtils.showConfirmation("Xác nhận xóa","", "Bạn có chắc chắn muốn xóa giải đấu này?");
+            if (choose) {
                 // Xóa file logo nếu có
                 String logoFileName = selectedTournament.getLogoFileName();
                 if (logoFileName != null && !logoFileName.isEmpty()) {
@@ -304,9 +274,14 @@ public class TournamentManagementController {
                         System.err.println("Không thể xóa file logo: " + e.getMessage());
                     }
                 }
-                int ok = service.deleteTournament(selectedTournament);
-                tournamentsList.remove(selectedTournament);
-                updateStatistics();
+                try {
+                    service.deleteTournament(selectedTournament);
+                    tournamentsList.remove(selectedTournament);
+                    updateStatistics();
+                } catch (SQLException e) {
+                    AlertUtils.showError("Lỗi", "Không thể xóa giải đấu","Giải đấu này đang được tổ chức. Vui lòng xóa các vòng đấu liên quan trước.");
+                }
+
             }
         }
     }
@@ -389,7 +364,7 @@ public class TournamentManagementController {
         MODEL_MUAGIAI savedTournament = null;
 
         if (isEditing && currentModel != null) {
-            // Cập nhật giải đấu hiện tại
+            // Cập nhật gig đấu hiện tại
             currentModel.setTenMG(name);
             currentModel.setNgayBD(startDate);
             currentModel.setNgayKT(endDate);
@@ -423,12 +398,11 @@ public class TournamentManagementController {
             if (selectedLogoFile != null) {
                 logoFileName = saveLogoFile(selectedLogoFile);
             }
-
             MODEL_MUAGIAI newTournament = new MODEL_MUAGIAI(id, name, startDate, endDate, logoFileName);
-            service.insertTournament(newTournament);
+            int newID=service.insertTournament(newTournament);
             service.insertDefaultQD(newTournament.getMaMG());
             tournamentsList.add(newTournament);
-
+            newTournament.setMaMG(newID);
             savedTournament = newTournament;
         }
 
@@ -463,7 +437,6 @@ public class TournamentManagementController {
             showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể mở màn hình quản lý vòng đấu", e.getMessage());
         }
     }
-
     private String saveLogoFile(File logoFile) {
         if (logoFile == null)
             return null;

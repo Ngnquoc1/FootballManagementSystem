@@ -1,9 +1,6 @@
 package Controller;
 
-import Model.MODEL_CLB;
-import Model.MODEL_MUAGIAI;
-import Model.MODEL_SAN;
-import Model.Session;
+import Model.*;
 import Service.Service;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,14 +18,13 @@ import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -116,17 +112,31 @@ public class ClubController implements Initializable {
 
     private void filterClubs() throws SQLException {
         String searchText = searchField.getText().toLowerCase();
-        System.out.println(searchText);
         String season = compeFilter.getValue();
+
+        Predicate<MODEL_CLB> seasonFilter= club -> true; // Mặc định không lọc theo mùa giải
+        if(!Objects.equals(season, "All CLubs")) {
+            MODEL_MUAGIAI selectedSeason = service.getTournamentByName(season);
+            List<Integer> selectedClubParticipation = service.getRegistedClubIdsByTournament(selectedSeason.getMaMG());
+            // Lọc câu lạc bộ theo mùa giải
+            seasonFilter = club -> selectedClubParticipation.contains(club.getMaCLB());
+        }
+
+
+
+        // Lấy danh sách câu lạc bộ đã lọc theo mùa giải
+        List<MODEL_CLB> filteredBySeason = allClubs.stream()
+                .filter(seasonFilter)
+                .toList();
 
         // Lọc câu lạc bộ theo tên
         Predicate<MODEL_CLB> searchFilter = club -> searchText.isEmpty()
                 || club.getTenCLB().toLowerCase().contains(searchText);
 
         filteredClubs.clear();
-        filteredClubs.addAll(allClubs.stream()
+        filteredClubs.addAll(filteredBySeason.stream()
                 .filter(searchFilter)
-                .collect(Collectors.toList()));
+                .toList());
         loadTeams(filteredClubs);
     }
 
@@ -299,18 +309,17 @@ public class ClubController implements Initializable {
 
             // Tạo một Stage mới
             Stage stage = new Stage();
-            stage.setTitle("Result Management");
+            stage.setTitle("Club Management");
             stage.setScene(new Scene(root));
             stage.initOwner(addBtn.getScene().getWindow()); // Đặt chủ sở hữu là cửa sổ hiện tại
             stage.setResizable(false);
             stage.show();
             stage.setOnCloseRequest(event -> {
                 // Khi cửa sổ đóng, gọi lại phương thức resetFilter() để làm mới dữ liệu
-                resetFilter();
+                this.resetFilter();
             });
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }

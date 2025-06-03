@@ -39,20 +39,5 @@ public class MODEL_USER {
         this.vaiTro = vaiTro;
     }
 
-    public String getVaiTroText() {
-        if (vaiTro == 0)
-            return "Không xác định";
-        switch (vaiTro) {
-            case 1:
-                return "Ban tổ chức giải đấu";
-            case 2:
-                return "Ban quản lý câu lạc bộ";
-            case 3:
-                return "Ban tổ chức thi đấu";
-            case 4:
-                return "Ban phân tích và tổng hợp kết quả";
-            default:
-                return "Khách hàng";
-        }
-    }
+
 }

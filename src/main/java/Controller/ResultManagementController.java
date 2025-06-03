@@ -253,17 +253,22 @@ public class ResultManagementController implements Initializable {
 
     public void save(int id,int score1,int score2) throws SQLException {
         MODEL_KETQUATD model = new MODEL_KETQUATD(id,score1,score2);
-
+        System.out.println(model.getMaTD());
         if (service.getResultByID(model.getMaTD()) == null) {
-            service.insertResult(model);
-            AlertUtils.showInformation("Success","", "Thêm kết quả thành công!");
-
+            try {
+                service.insertResult(model);
+                AlertUtils.showInformation("Success", "", "Thêm kết quả thành công!");
+            }
+            catch (SQLException e) {
+                AlertUtils.showError("Error","", "Lỗi khi thêm kết quả: " + e.getMessage());
+            }
         } else {
-            service.updateResult(model);
-            AlertUtils.showInformation("Success","", "Cập nhật kết quả thành công!");
+            try {
+                service.updateResult(model);
+            } catch (SQLException e) {
+                AlertUtils.showError("Error","", "Lỗi khi cập nhật kết quả: " + e.getMessage());
+            }
         }
-        // Cập nhật BXH
-        service.updateRanking(model.getMaTD());
         find();
     }
 

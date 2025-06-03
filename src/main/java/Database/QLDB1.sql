@@ -1,23 +1,21 @@
-DROP TABLE THUTU_UUTIEN CASCADE CONSTRAINTS;
-DROP TABLE BANGXEPHANG_BANTHANG CASCADE CONSTRAINTS;
-DROP TABLE BANGXEPHANG_CLB CASCADE CONSTRAINTS;
-DROP TABLE QuyDinh CASCADE CONSTRAINTS;
-DROP TABLE BanThang CASCADE CONSTRAINTS;
-DROP TABLE KetQuaTD CASCADE CONSTRAINTS;
-DROP TABLE TranDau CASCADE CONSTRAINTS;
-DROP TABLE CAUTHU_CLB CASCADE CONSTRAINTS;
-DROP TABLE CauThu CASCADE CONSTRAINTS;
-DROP TABLE LoaiCauThu CASCADE CONSTRAINTS;
-DROP TABLE ViTriTD CASCADE CONSTRAINTS;
-DROP TABLE CLB_THAMGIAMUAGIAI CASCADE CONSTRAINTS;
-DROP TABLE CLB CASCADE CONSTRAINTS;
-DROP TABLE SAN CASCADE CONSTRAINTS;
-DROP TABLE VongDau CASCADE CONSTRAINTS;
-DROP TABLE MuaGiai CASCADE CONSTRAINTS;
-DROP TABLE LoaiBanThang CASCADE CONSTRAINTS;
-DROP TABLE TaiKhoan CASCADE CONSTRAINTS;
-DROP TABLE VaiTro CASCADE CONSTRAINTS;
-
+-- DROP TABLE THUTU_UUTIEN CASCADE CONSTRAINTS;
+-- DROP TABLE BANGXEPHANG_BANTHANG CASCADE CONSTRAINTS;
+-- DROP TABLE BANGXEPHANG_CLB CASCADE CONSTRAINTS;
+-- DROP TABLE QuyDinh CASCADE CONSTRAINTS;
+-- DROP TABLE BanThang CASCADE CONSTRAINTS;
+-- DROP TABLE KetQuaTD CASCADE CONSTRAINTS;
+-- DROP TABLE TranDau CASCADE CONSTRAINTS;
+-- DROP TABLE CAUTHU_THAMGIAMUAGIAI CASCADE CONSTRAINTS;
+-- DROP TABLE CauThu CASCADE CONSTRAINTS;
+-- DROP TABLE LoaiCauThu CASCADE CONSTRAINTS;
+-- DROP TABLE ViTriTD CASCADE CONSTRAINTS;
+-- DROP TABLE CLB_THAMGIAMUAGIAI CASCADE CONSTRAINTS;
+-- DROP TABLE CLB CASCADE CONSTRAINTS;
+-- DROP TABLE SAN CASCADE CONSTRAINTS;
+-- DROP TABLE VongDau CASCADE CONSTRAINTS;
+-- DROP TABLE MuaGiai CASCADE CONSTRAINTS;
+-- DROP TABLE LoaiBanThang CASCADE CONSTRAINTS;
+-- DROP TABLE TaiKhoan CASCADE CONSTRAINTS;
 
 CREATE TABLE MuaGiai (
                          MaMG NUMBER PRIMARY KEY,
@@ -92,14 +90,14 @@ CREATE TABLE CauThu(
 );
 
 /
-CREATE TABLE CAUTHU_CLB (
+CREATE TABLE CAUTHU_THAMGIAMUAGIAI (
                             MaMG NUMBER NOT NULL,
                             MaCLB NUMBER NOT NULL,
                             MaCT NUMBER NOT NULL,
                             PRIMARY KEY (MaMG, MaCLB, MaCT),
                             FOREIGN KEY (MaMG) REFERENCES MuaGiai(MaMG),
                             FOREIGN KEY (MaCT) REFERENCES CauThu(MaCT),
-                            CONSTRAINT chk_unique_cauthu_clb UNIQUE (MaCT, MaMG)
+                            CONSTRAINT chk_unique_CAUTHU_THAMGIAMUAGIAI UNIQUE (MaCT, MaMG)
 );
 /
 CREATE TABLE TranDau (
@@ -175,10 +173,10 @@ CREATE TABLE BANGXEPHANG_BANTHANG (
 );
 /
 CREATE TABLE THUTU_UUTIEN (
-                              MaTTU NUMBER PRIMARY KEY,
                               MaMG NUMBER NOT NULL,
-                              TieuChi NVARCHAR2(50) NOT NULL,
-                              DoUuTien NUMBER NOT NULL,
+                              TieuChi NVARCHAR2(50) NOT NULL ,
+                              DoUuTien NUMBER NOT NULL ,
+                                PRIMARY KEY (MaMG, TieuChi),
                               FOREIGN KEY (MaMG) REFERENCES MuaGiai(MaMG),
                               CONSTRAINT chk_tieuchi CHECK (TieuChi IN ('Diem', 'HieuSo', 'SoTran', 'Thang', 'Hoa', 'Thua')),
                               CONSTRAINT chk_douutien CHECK (DoUuTien >= 1)
@@ -203,10 +201,10 @@ CREATE TABLE TaiKhoan (
 ---------- Ngày bắt đầu và kết thúc của vòng đấu phải nằm trong khoảng thời gian của mùa giải.
 
 CREATE OR REPLACE TRIGGER trg_check_ngay_vongdau
-    BEFORE INSERT OR UPDATE ON VongDau
-    FOR EACH ROW
+BEFORE INSERT OR UPDATE ON VongDau
+                            FOR EACH ROW
 DECLARE
-    v_ngay_khaimac DATE;
+v_ngay_khaimac DATE;
     v_ngay_bemac DATE;
 BEGIN
     -- Lấy ngày khai mạc và bế mạc của mùa giải tương ứng
@@ -247,7 +245,7 @@ BEGIN
     WHERE MaVD = :NEW.MaVD;
 
 -- Kiểm tra xem ThoiGian có nằm trong khoảng NgayBD và NgayKT hay không
-    IF :NEW.ThoiGian < v_ngay_bd OR :NEW.ThoiGian > v_ngay_kt THEN
+    IF TRUNC(:NEW.ThoiGian) < TRUNC(v_ngay_bd) OR TRUNC(:NEW.ThoiGian) > TRUNC(v_ngay_kt) THEN
         RAISE_APPLICATION_ERROR(-20004,
                                 'Thời gian trận đấu phải nằm trong khoảng thời gian diễn ra vòng đấu (' ||
                                 TO_CHAR(v_ngay_bd, 'DD-MON-YYYY') || ' đến ' ||
@@ -259,9 +257,10 @@ EXCEPTION
                                 'Không tìm thấy vòng đấu tương ứng với MaVD: ' || :NEW.MaVD);
 END;
 /
+commit;
 ------------QUY ĐỊNH VỀ ĐỘ TUỔI THAM GIA MÙA GIẢI CỦA CẦU THỦ
-CREATE OR REPLACE TRIGGER trg_check_tuoi_cauthu_clb
-    BEFORE INSERT OR UPDATE ON CauThu_CLB
+CREATE OR REPLACE TRIGGER trg_check_tuoi_CAUTHU_THAMGIAMUAGIAI
+    BEFORE INSERT OR UPDATE ON CAUTHU_THAMGIAMUAGIAI
     FOR EACH ROW
 DECLARE
     v_tuoi NUMBER;
@@ -300,7 +299,7 @@ BEGIN
         WHEN NO_DATA_FOUND THEN
             v_tuoi_toithieu := 16;
             v_tuoi_toida := 40;
-    END;
+END;
 
     -- Tính tuổi chính xác hơn (cân nhắc năm và tháng)
     v_tuoi := FLOOR(MONTHS_BETWEEN(v_ngay_khaimac, v_ngay_sinh) / 12);
@@ -325,129 +324,49 @@ EXCEPTION
 END;
 /
 
-
---------QUY ĐỊNH VỀ TỔNG SỐ LƯỢNG CẦU THỦ VÀ SỐ LƯỢNG CẦU THỦ NGOẠI CHO PHÉP THAM GIA MÙA GIẢI
-CREATE OR REPLACE TRIGGER trg_check_so_cauthu_clb
-    BEFORE INSERT OR UPDATE ON CauThu_CLB
-    FOR EACH ROW
-DECLARE
-    v_total_players NUMBER;
-    v_foreign_players NUMBER;
-    v_soct_toithieu NUMBER;
-    v_soct_toida NUMBER;
-    v_soct_nuocngoai_toida NUMBER;
-    v_loai_ct NUMBER;
-    v_old_total NUMBER;
-    v_old_foreign NUMBER;
-BEGIN
-    -- Lấy quy định từ bảng QuyDinh (nếu có)
-    BEGIN
-        SELECT NVL(SOCTTOITHIEU, 15), NVL(SOCTTOIDA, 22), NVL(SOCTNUOCNGOAITOIDA, 3)
-        INTO v_soct_toithieu, v_soct_toida, v_soct_nuocngoai_toida
-        FROM QuyDinh
-        WHERE MaMG = NVL(:NEW.MaMG, :OLD.MaMG);
-    EXCEPTION
-        WHEN NO_DATA_FOUND THEN
-            v_soct_toithieu := 15;
-            v_soct_toida := 22;
-            v_soct_nuocngoai_toida := 3;
-    END;
-
-    -- Đếm tổng số cầu thủ trước khi thay đổi
-    SELECT COUNT(*)
-    INTO v_old_total
-    FROM CauThu_CLB
-    WHERE MaMG = NVL(:NEW.MaMG, :OLD.MaMG)
-      AND MaCLB = NVL(:NEW.MaCLB, :OLD.MaCLB);
-
--- Đếm số cầu thủ nước ngoài trước khi thay đổi
-    SELECT COUNT(*)
-    INTO v_old_foreign
-    FROM CauThu_CLB ct_clb
-             JOIN CauThu ct ON ct_clb.MaCT = ct.MaCT
-    WHERE ct_clb.MaMG = NVL(:NEW.MaMG, :OLD.MaMG)
-      AND ct_clb.MaCLB = NVL(:NEW.MaCLB, :OLD.MaCLB)
-      AND ct.LoaiCT = 1;
-
--- Kiểm tra khi thêm hoặc cập nhật
-    IF INSERTING OR UPDATING THEN
-        -- Lấy loại cầu thủ của MaCT mới
-        SELECT LoaiCT
-        INTO v_loai_ct
-        FROM CauThu
-        WHERE MaCT = :NEW.MaCT;
-
-        -- Đếm tổng số cầu thủ sau khi thêm (dự kiến)
-        v_total_players := v_old_total + 1;
-        -- Đếm số cầu thủ nước ngoài sau khi thêm (dự kiến)
-        v_foreign_players := v_old_foreign + CASE WHEN v_loai_ct = 1 THEN 1 ELSE 0 END;
-        -- Kiểm tra tổng số cầu thủ
-        IF v_total_players > v_soct_toida THEN
-            RAISE_APPLICATION_ERROR(-20007,
-                                    'Số lượng cầu thủ của CLB trong mùa giải sẽ vượt quá tối đa (' || v_soct_toida || ').');
-        END IF;
-
-        -- Kiểm tra số cầu thủ nước ngoài
-        IF v_loai_ct = 1 AND v_foreign_players >= v_soct_nuocngoai_toida THEN
-            RAISE_APPLICATION_ERROR(-20008,
-                                    'Số cầu thủ nước ngoài của CLB sẽ vượt quá tối đa (' || v_soct_nuocngoai_toida || ').');
-        END IF;
-
-    END IF;
-
-EXCEPTION
-    WHEN NO_DATA_FOUND THEN
-        RAISE_APPLICATION_ERROR(-20010,
-                                'Không tìm thấy thông tin cầu thủ cho MaCT: ' || NVL(:NEW.MaCT, :OLD.MaCT) ||
-                                ' hoặc quy định cho MaMG: ' || NVL(:NEW.MaMG, :OLD.MaMG));
-    WHEN OTHERS THEN
-        RAISE_APPLICATION_ERROR(-20011, 'Lỗi không xác định khi kiểm tra số lượng cầu thủ: ' || SQLERRM);
-END;
-/
-
 --------------------CHECK PHUT GHI BAN TOI DA----------------
 CREATE OR REPLACE TRIGGER trg_check_phut_ghi_ban_toi_da
     BEFORE INSERT OR UPDATE OF PhutGhiBan ON BANTHANG
     FOR EACH ROW
 DECLARE
-    v_phut_toi_da NUMBER;
+v_phut_toi_da NUMBER;
     v_ma_mg NUMBER;
 BEGIN
     -- Lấy MaMG từ TranDau qua VongDau
-    SELECT v.MaMG
-    INTO v_ma_mg
-    FROM VongDau v
-             JOIN TranDau t ON v.MaVD = t.MaVD
-    WHERE t.MaTD = :NEW.MaTD;
+SELECT v.MaMG
+INTO v_ma_mg
+FROM VongDau v
+         JOIN TranDau t ON v.MaVD = t.MaVD
+WHERE t.MaTD = :NEW.MaTD;
 
 -- Lấy giá trị PhutGhiBanToiDa từ QUYDINH
-    BEGIN
-        SELECT NVL(PhutGhiBanToiDa, 90)
-        INTO v_phut_toi_da
-        FROM QUYDinh
-        WHERE MaMG = v_ma_mg;
-    EXCEPTION
+BEGIN
+SELECT NVL(PhutGhiBanToiDa, 90)
+INTO v_phut_toi_da
+FROM QUYDinh
+WHERE MaMG = v_ma_mg;
+EXCEPTION
         WHEN NO_DATA_FOUND THEN
             v_phut_toi_da := 90; -- Giá trị mặc định nếu không tìm thấy
-    END;
+END;
 
     -- Kiểm tra PhutGhiBan
     IF :NEW.PhutGhiBan IS NULL THEN
         RAISE_APPLICATION_ERROR(-20016, 'Thời điểm ghi bàn không được để trống.');
-    END IF;
+END IF;
     IF :NEW.PhutGhiBan < 0 THEN
         RAISE_APPLICATION_ERROR(-20017, 'Thời điểm ghi bàn không được âm.');
-    END IF;
+END IF;
     IF :NEW.PhutGhiBan > v_phut_toi_da THEN
         RAISE_APPLICATION_ERROR(-20018,
                                 'Thời điểm ghi bàn (' || :NEW.PhutGhiBan || ') vượt quá giới hạn tối đa (' || v_phut_toi_da || ') phút.');
-    END IF;
+END IF;
 
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
         RAISE_APPLICATION_ERROR(-20019,
                                 'Không tìm thấy thông tin mùa giải hoặc trận đấu cho MaTD: ' || :NEW.MaTD);
-    WHEN OTHERS THEN
+WHEN OTHERS THEN
         RAISE_APPLICATION_ERROR(-20020, 'Lỗi không xác định khi kiểm tra thời điểm ghi bàn: ' || SQLERRM);
 END trg_check_phut_ghi_ban_toi_da;
 /
@@ -456,20 +375,20 @@ CREATE OR REPLACE TRIGGER trg_check_soao_unique_clb
     BEFORE INSERT ON CauThu
     FOR EACH ROW
 DECLARE
-    v_count NUMBER;
+v_count NUMBER;
 BEGIN
     -- Kiểm tra xem số áo đã tồn tại cho cùng MaCLB chưa
-    SELECT COUNT(*)
-    INTO v_count
-    FROM CauThu
-    WHERE MaCLB = :NEW.MaCLB
-      AND SoAo = :NEW.SoAo
-      AND MaCT != :NEW.MaCT; -- Loại trừ chính bản ghi đang chèn (nếu là UPDATE)
+SELECT COUNT(*)
+INTO v_count
+FROM CauThu
+WHERE MaCLB = :NEW.MaCLB
+  AND SoAo = :NEW.SoAo
+  AND MaCT != :NEW.MaCT; -- Loại trừ chính bản ghi đang chèn (nếu là UPDATE)
 
 -- Nếu số áo đã tồn tại, ném lỗi
-    IF v_count > 0 THEN
+IF v_count > 0 THEN
         RAISE_APPLICATION_ERROR(-20033, 'Số áo ' || :NEW.SoAo || ' đã tồn tại cho CLB có MaCLB = ' || :NEW.MaCLB || '.');
-    END IF;
+END IF;
 
 EXCEPTION
     WHEN OTHERS THEN
@@ -488,21 +407,21 @@ AS
     v_count NUMBER;
 BEGIN
     -- Kiểm tra xem bản ghi đã tồn tại chưa (dựa trên MaMG và MaCLB)
-    SELECT COUNT(*)
-    INTO v_count
-    FROM BANGXEPHANG_CLB
-    WHERE MaMG = p_maMG AND MaCLB = p_maCLB;
+SELECT COUNT(*)
+INTO v_count
+FROM BANGXEPHANG_CLB
+WHERE MaMG = p_maMG AND MaCLB = p_maCLB;
 
-    IF v_count > 0 THEN
+IF v_count > 0 THEN
         RAISE_APPLICATION_ERROR(-20005, 'Bản ghi với MaMG: ' || p_maMG || ' và MaCLB: ' || p_maCLB || ' đã tồn tại.');
-    END IF;
+END IF;
 
     -- Chèn bản ghi mới với các giá trị khởi tạo
-    INSERT INTO BANGXEPHANG_CLB (MaMG, MaCLB, SoTran, Thang, Hoa, Thua, Diem, HieuSo, Hang)
-    VALUES (p_maMG, p_maCLB, 0, 0, 0, 0, 0, 0, 0);
+INSERT INTO BANGXEPHANG_CLB (MaMG, MaCLB, SoTran, Thang, Hoa, Thua, Diem, HieuSo, Hang)
+VALUES (p_maMG, p_maCLB, 0, 0, 0, 0, 0, 0, 0);
 
 -- Commit giao dịch
-    COMMIT;
+COMMIT;
 
 EXCEPTION
     WHEN OTHERS THEN
@@ -515,19 +434,10 @@ CREATE OR REPLACE PROCEDURE RecalculateRankingPositions(
     p_maMG IN NUMBER
 )
 AS
-    TYPE club_ranking_t IS TABLE OF BANGXEPHANG_CLB%ROWTYPE INDEX BY PLS_INTEGER;
-    v_clubs club_ranking_t;
-    v_temp_clubs club_ranking_t;
-    v_tieu_chi NVARCHAR2(50);
-    v_do_uu_tien NUMBER;
+    v_order_by_clause VARCHAR2(1000) := '';
     v_found BOOLEAN := FALSE;
 BEGIN
-    -- Lấy dữ liệu từ BANGXEPHANG_CLB vào mảng
-    SELECT * BULK COLLECT INTO v_clubs
-    FROM BANGXEPHANG_CLB
-    WHERE MaMG = p_maMG;
-
--- Kiểm tra xem có dữ liệu trong THUTU_UUTIEN không
+    -- Kiểm tra xem có dữ liệu trong THUTU_UUTIEN không và xây dựng chuỗi ORDER BY
     FOR priority_rec IN (
         SELECT TieuChi, DoUuTien
         FROM THUTU_UUTIEN
@@ -536,133 +446,75 @@ BEGIN
         )
         LOOP
             v_found := TRUE;
-            v_tieu_chi := priority_rec.TieuChi;
-            v_do_uu_tien := priority_rec.DoUuTien;
-
-            -- Sắp xếp mảng v_clubs theo tiêu chí hiện tại
-            FOR i IN 1 .. v_clubs.COUNT - 1 LOOP
-                    FOR j IN i + 1 .. v_clubs.COUNT LOOP
-                            DECLARE
-                                v_swap BOOLEAN := FALSE;
-                            BEGIN
-                                IF v_tieu_chi = 'Diem' THEN
-                                    IF v_clubs(i).Diem < v_clubs(j).Diem THEN
-                                        v_swap := TRUE;
-                                    ELSIF v_clubs(i).Diem = v_clubs(j).Diem THEN
-                                        -- Nếu bằng nhau, giữ nguyên để tiêu chí tiếp theo xử lý
-                                        CONTINUE;
-                                    END IF;
-                                ELSIF v_tieu_chi = 'HieuSo' THEN
-                                    IF v_clubs(i).Diem = v_clubs(j).Diem AND v_clubs(i).HieuSo < v_clubs(j).HieuSo THEN
-                                        v_swap := TRUE;
-                                    ELSIF v_clubs(i).HieuSo = v_clubs(j).HieuSo THEN
-                                        CONTINUE;
-                                    END IF;
-                                ELSIF v_tieu_chi = 'Thang' THEN
-                                    IF v_clubs(i).Diem = v_clubs(j).Diem AND v_clubs(i).HieuSo = v_clubs(j).HieuSo
-                                        AND v_clubs(i).Thang < v_clubs(j).Thang THEN
-                                        v_swap := TRUE;
-                                    ELSIF v_clubs(i).Thang = v_clubs(j).Thang THEN
-                                        CONTINUE;
-                                    END IF;
-                                ELSIF v_tieu_chi = 'SoTran' THEN
-                                    IF v_clubs(i).Diem = v_clubs(j).Diem AND v_clubs(i).HieuSo = v_clubs(j).HieuSo
-                                        AND v_clubs(i).Thang = v_clubs(j).Thang AND v_clubs(i).SoTran < v_clubs(j).SoTran THEN
-                                        v_swap := TRUE;
-                                    ELSIF v_clubs(i).SoTran = v_clubs(j).SoTran THEN
-                                        CONTINUE;
-                                    END IF;
-                                ELSIF v_tieu_chi = 'Hoa' THEN
-                                    IF v_clubs(i).Diem = v_clubs(j).Diem AND v_clubs(i).HieuSo = v_clubs(j).HieuSo
-                                        AND v_clubs(i).Thang = v_clubs(j).Thang AND v_clubs(i).SoTran = v_clubs(j).SoTran
-                                        AND v_clubs(i).Hoa < v_clubs(j).Hoa THEN
-                                        v_swap := TRUE;
-                                    ELSIF v_clubs(i).Hoa = v_clubs(j).Hoa THEN
-                                        CONTINUE;
-                                    END IF;
-                                ELSIF v_tieu_chi = 'Thua' THEN
-                                    IF v_clubs(i).Diem = v_clubs(j).Diem AND v_clubs(i).HieuSo = v_clubs(j).HieuSo
-                                        AND v_clubs(i).Thang = v_clubs(j).Thang AND v_clubs(i).SoTran = v_clubs(j).SoTran
-                                        AND v_clubs(i).Hoa = v_clubs(j).Hoa AND v_clubs(i).Thua < v_clubs(j).Thua THEN
-                                        v_swap := TRUE;
-                                    END IF;
-                                END IF;
-
-                                -- Hoán đổi nếu cần
-                                IF v_swap THEN
-                                    v_temp_clubs(i) := v_clubs(i);
-                                    v_clubs(i) := v_clubs(j);
-                                    v_clubs(j) := v_temp_clubs(i);
-                                END IF;
-                            END;
-                        END LOOP;
-                END LOOP;
+            IF v_order_by_clause IS NOT NULL THEN
+                v_order_by_clause := v_order_by_clause || ', ';
+            END IF;
+            v_order_by_clause := v_order_by_clause || priority_rec.TieuChi || ' DESC';
         END LOOP;
 
     -- Nếu không có dữ liệu trong THUTU_UUTIEN, sắp xếp mặc định theo Diem và HieuSo
     IF NOT v_found THEN
-        FOR i IN 1 .. v_clubs.COUNT - 1 LOOP
-                FOR j IN i + 1 .. v_clubs.COUNT LOOP
-                        IF v_clubs(i).Diem < v_clubs(j).Diem THEN
-                            v_temp_clubs(i) := v_clubs(i);
-                            v_clubs(i) := v_clubs(j);
-                            v_clubs(j) := v_temp_clubs(i);
-                        ELSIF v_clubs(i).Diem = v_clubs(j).Diem AND v_clubs(i).HieuSo < v_clubs(j).HieuSo THEN
-                            v_temp_clubs(i) := v_clubs(i);
-                            v_clubs(i) := v_clubs(j);
-                            v_clubs(j) := v_temp_clubs(i);
-                        END IF;
-                    END LOOP;
-            END LOOP;
+        v_order_by_clause := 'Diem DESC, HieuSo DESC, Thang DESC, Hoa DESC, Thua ASC, SoTran DESC';
     END IF;
 
-    -- Cập nhật thứ hạng vào BANGXEPHANG_CLB
-    FOR i IN 1 .. v_clubs.COUNT LOOP
-            UPDATE BANGXEPHANG_CLB
-            SET Hang = i
-            WHERE MaMG = p_maMG AND MaCLB = v_clubs(i).MaCLB;
-        END LOOP;
-
-    -- Commit giao dịch
-    COMMIT;
+    -- Sử dụng MERGE để cập nhật thứ hạng dựa trên thứ tự đã sắp xếp
+    EXECUTE IMMEDIATE '
+        MERGE INTO BANGXEPHANG_CLB bxh
+        USING (
+            SELECT MaCLB,
+                   ROW_NUMBER() OVER (ORDER BY ' || v_order_by_clause || ') AS new_hang
+            FROM BANGXEPHANG_CLB
+            WHERE MaMG = :1
+        ) ranked
+        ON (bxh.MaMG = :2 AND bxh.MaCLB = ranked.MaCLB)
+        WHEN MATCHED THEN
+            UPDATE SET bxh.Hang = ranked.new_hang
+    '
+        USING p_maMG, p_maMG;
 
 EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        -- Nếu không có dữ liệu trong THUTU_UUTIEN, đã xử lý ở trên, nên không cần ném lỗi
+        NULL;
     WHEN OTHERS THEN
-        ROLLBACK;
         RAISE_APPLICATION_ERROR(-20004, 'Lỗi khi tính lại thứ hạng: ' || SQLERRM);
 END RecalculateRankingPositions;
 /
 -----------------UpdateRanking--------------
 CREATE OR REPLACE PROCEDURE UpdateRanking(
-    p_maTD IN NUMBER
+    p_maTD IN NUMBER,
+    p_diemCLB1_old IN NUMBER DEFAULT 0,
+    p_diemCLB2_old IN NUMBER DEFAULT 0,
+    p_diemCLB1_new IN NUMBER DEFAULT 0,
+    p_diemCLB2_new IN NUMBER DEFAULT 0,
+    p_action IN VARCHAR2 DEFAULT 'INSERT'
 )
 AS
-    v_maCLB1 NUMBER;
-    v_maCLB2 NUMBER;
+    TYPE num_arr IS VARRAY(2) OF NUMBER;
+    v_maCLB num_arr;
+    v_diem_old num_arr;
+    v_diem_new num_arr;
     v_maMG NUMBER;
     v_diemThang NUMBER;
     v_diemHoa NUMBER;
     v_diemThua NUMBER;
-    v_thang1 NUMBER := 0;
-    v_hoa1 NUMBER := 0;
-    v_thua1 NUMBER := 0;
-    v_diem1 NUMBER := 0;
-    v_thang2 NUMBER := 0;
-    v_hoa2 NUMBER := 0;
-    v_thua2 NUMBER := 0;
-    v_diem2 NUMBER := 0;
-    v_hieuSo1 NUMBER := 0;
-    v_hieuSo2 NUMBER := 0;
-    v_banThang1 NUMBER:=0;
-    v_banThang2 NUMBER:=0;
+    v_diem_old_calc num_arr := num_arr(0, 0);
+    v_diem_new_calc num_arr := num_arr(0, 0);
 BEGIN
-    -- Lấy thông tin hai CLB và MaMG từ TranDau
-    SELECT MaCLB1, MaCLB2, (SELECT MaMG FROM VongDau WHERE MaVD = td.MaVD)
-    INTO v_maCLB1, v_maCLB2, v_maMG
-    FROM TranDau td
-    WHERE MaTD = p_maTD;
+    v_maCLB := num_arr(0, 0);
+    -- Get match and season info with exception handling
+    BEGIN
+        SELECT MaCLB1, MaCLB2, MaMG
+        INTO v_maCLB(1), v_maCLB(2), v_maMG
+        FROM TranDau td
+                 JOIN VongDau vd ON td.MaVD = vd.MaVD
+        WHERE td.MaTD = p_maTD;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Không tìm thấy trận đấu với MaTD = ' || p_maTD);
+    END;
 
--- Lấy điểm thắng, hòa, thua từ QuyDinh
+    -- Get scoring rules with default values
     BEGIN
         SELECT NVL(DiemThang, 3), NVL(DiemHoa, 1), NVL(DiemThua, 0)
         INTO v_diemThang, v_diemHoa, v_diemThua
@@ -675,91 +527,157 @@ BEGIN
             v_diemThua := 0;
     END;
 
-    -- Cập nhật BXH
-    -- Tính số bàn thắng và bàn thua
-    SELECT DiemCLB1
-    INTO v_banThang1
-    FROM KetQuaTD kq
-    WHERE kq.MaTD = p_maTD;
+    -- Initialize arrays
+    v_diem_old := num_arr(NVL(p_diemCLB1_old, 0), NVL(p_diemCLB2_old, 0));
+    v_diem_new := num_arr(NVL(p_diemCLB1_new, 0), NVL(p_diemCLB2_new, 0));
 
-    SELECT DiemCLB2
-    INTO v_banThang2
-    FROM KetQuaTD kq
-    WHERE kq.MaTD = p_maTD;
+    -- Calculate points for old and new scores
+    FOR i IN 1..2 LOOP
+            -- Calculate old points
+            IF p_action='INSERT' THEN
+                v_diem_old_calc(i) := 0;
+            ELSE
+                IF v_diem_old(i) IS NOT NULL AND v_diem_old(3-i) IS NOT NULL THEN
+                    IF v_diem_old(i) > v_diem_old(3-i) THEN
+                        v_diem_old_calc(i) := v_diemThang;
+                    ELSIF v_diem_old(i) = v_diem_old(3-i) THEN
+                        v_diem_old_calc(i) := v_diemHoa;
+                    ELSIF v_diem_old(i) < v_diem_old(3-i) THEN
+                        v_diem_old_calc(i) := v_diemThua;
+                    END IF;
+                END IF;
+            END IF;
 
-    v_hieuSo1 := v_banThang1 - v_banThang2;
-    v_hieuSo2 := v_banThang2 - v_banThang1;
+            -- Calculate new points
+            IF p_action='DELETE' THEN
+                v_diem_new_calc(i) := 0;
+            ELSE
+                IF v_diem_new(i) IS NOT NULL AND v_diem_new(3-i) IS NOT NULL THEN
+                    IF v_diem_new(i) > v_diem_new(3-i) THEN
+                        v_diem_new_calc(i) := v_diemThang;
+                    ELSIF v_diem_new(i) = v_diem_new(3-i) THEN
+                        v_diem_new_calc(i) := v_diemHoa;
+                    ELSIF v_diem_new(i) < v_diem_new(3-i) THEN
+                        v_diem_new_calc(i) := v_diemThua;
+                    END IF;
+                END IF;
+            END IF;
+    END LOOP;
 
-    -- Tính trạng thái trận đấu và điểm số
-    IF v_banThang1 > v_banThang2 THEN
-        v_thang1 := 1;
-        v_diem1 := v_diemThang;
-        v_thua2 :=1;
-        v_diem2 :=v_diemThua;
-    ELSIF v_banThang1 = v_banThang2 THEN
-        v_hoa1 := 1;
-        v_diem1 := v_diemHoa;
-        v_hoa2 := 1;
-        v_diem2 := v_diemHoa;
-    ELSE
-        v_thua1 := 1;
-        v_diem1 := v_diemThua;
-        v_thang2 := 1;
-        v_diem2 := v_diemThang;
-    END IF;
+    FOR i IN 1..2 LOOP
+        IF p_action = 'INSERT' THEN
+            UPDATE BANGXEPHANG_CLB
+            SET SoTran = SoTran + 1,
+                Thang = Thang + (CASE WHEN v_diem_new_calc(i)=v_diemThang THEN 1 ELSE 0 END),
+                Hoa = Hoa + (CASE WHEN v_diem_new_calc(i)=v_diemHoa THEN 1 ELSE 0 END),
+                Thua = Thua + (CASE WHEN v_diem_new_calc(i)=v_diemThua THEN 1 ELSE 0 END),
+                HieuSo = HieuSo + (NVL(v_diem_new(i), 0) - NVL(v_diem_new(3-i), 0)),
+                Diem = Diem + NVL(v_diem_new_calc(i), 0)
+            WHERE MaMG = v_maMG AND MaCLB = v_maCLB(i);
+        ELSIF p_action = 'DELETE' THEN
+            UPDATE BANGXEPHANG_CLB
+            SET SoTran = SoTran - 1,
+                Thang = Thang - (CASE WHEN v_diem_old_calc(i)=v_diemThang THEN 1 ELSE 0 END),
+                Hoa = Hoa - (CASE WHEN v_diem_old_calc(i)=v_diemHoa THEN 1 ELSE 0 END),
+                Thua = Thua - (CASE WHEN v_diem_old_calc(i)=v_diemThua THEN 1 ELSE 0 END),
+                HieuSo = HieuSo - (NVL(v_diem_old(i), 0) - NVL(v_diem_old(3-i), 0)),
+                Diem = Diem - NVL(v_diem_old_calc(i), 0)
+            WHERE MaMG = v_maMG AND MaCLB = v_maCLB(i);
+        ELSIF p_action = 'UPDATE' THEN
+            UPDATE BANGXEPHANG_CLB
+            SET SoTran = SoTran,
+                Thang = Thang + (CASE WHEN v_diem_new_calc(i) > v_diem_new_calc(3-i) THEN 1 WHEN v_diem_old_calc(i) > v_diem_old_calc(3-i) THEN -1 ELSE 0 END),
+                Hoa = Hoa + (CASE WHEN v_diem_new_calc(i) = v_diem_new_calc(3-i) AND v_diem_new_calc(i) IS NOT NULL AND p_action!='DELETE' THEN 1
+                                  WHEN v_diem_old_calc(i) = v_diem_old_calc(3-i) AND v_diem_old_calc(i)  IS NOT NULL AND p_action!='INSERT' THEN -1
+                                  ELSE 0 END),
+                Thua = Thua + (CASE WHEN v_diem_new_calc(i) < v_diem_new_calc(3-i) THEN 1 WHEN v_diem_old_calc(i) < v_diem_old_calc(3-i) THEN -1 ELSE 0 END),
+                HieuSo = HieuSo + (NVL(v_diem_new(i), 0) - NVL(v_diem_new(3-i), 0)) - (NVL(v_diem_old(i), 0) - NVL(v_diem_old(3-i), 0)),
+                Diem = Diem + NVL(v_diem_new_calc(i), 0) - NVL(v_diem_old_calc(i), 0)
+            WHERE MaMG = v_maMG AND MaCLB = v_maCLB(i);
+        END IF;
+    END LOOP;
 
-    -- Cập nhật BXH cho CLB1
-    UPDATE BANGXEPHANG_CLB
-    SET SoTran = SoTran+1,
-        Thang = Thang+ v_thang1,
-        Hoa = Hoa +v_hoa1,
-        Thua = Thua +v_thua1,
-        Diem = Diem+v_diem1,
-        HieuSo = HieuSo+v_hieuSo1
-    WHERE MaMG = v_maMG
-      AND MaCLB = v_maCLB1;
-
--- Cập nhật BXH cho CLB2
-    UPDATE BANGXEPHANG_CLB
-    SET SoTran = SoTran+1,
-        Thang = Thang+v_thang2,
-        Hoa = Hoa +v_hoa2,
-        Thua = Thua +v_thua2,
-        Diem = Diem+v_diem2,
-        HieuSo = HieuSo+v_hieuSo2
-    WHERE MaMG = v_maMG
-      AND MaCLB = v_maCLB2;
-
--- Commit giao dịch
-    COMMIT;
-    RecalculateRankingPositions(v_maMG);
-    COMMIT;
 EXCEPTION
-    WHEN NO_DATA_FOUND THEN
-        ROLLBACK;
-        RAISE_APPLICATION_ERROR(-20002, 'Không tìm thấy thông tin trận đấu hoặc quy định cho MaTD: ' || p_maTD);
     WHEN OTHERS THEN
-        ROLLBACK;
-        RAISE_APPLICATION_ERROR(-20003, 'Lỗi khi cập nhật kết quả và BXH: ' || SQLERRM);
+        RAISE_APPLICATION_ERROR(-20003, 'Error in UpdateRanking: ' || SQLERRM);
 END UpdateRanking;
 /
+-----------------Trigger UpdateBXH_OnKetQuaTD--------------
+CREATE OR REPLACE TRIGGER UpdateBXH_OnKetQuaTD
+    AFTER INSERT OR UPDATE OR DELETE ON KetQuaTD
+    FOR EACH ROW
+DECLARE
+    v_action VARCHAR2(10);
+    v_maTD NUMBER;
+    v_maMG NUMBER;
+BEGIN
+    -- Xác định hành động
+    IF INSERTING THEN
+        v_maTD := :NEW.MaTD;
+        v_action := 'INSERT';
+        UpdateRanking(:NEW.MaTD, 0, 0, :NEW.DiemCLB1, :NEW.DiemCLB2, v_action);
+    ELSIF UPDATING THEN
+        v_maTD := :NEW.MaTD;
+        v_action := 'UPDATE';
+        UpdateRanking(:NEW.MaTD, :OLD.DiemCLB1, :OLD.DiemCLB2, :NEW.DiemCLB1, :NEW.DiemCLB2, v_action);
+    ELSIF DELETING THEN
+        v_maTD := :OLD.MaTD;
+        v_action := 'DELETE';
+        UpdateRanking(:OLD.MaTD, :OLD.DiemCLB1, :OLD.DiemCLB2, 0, 0, v_action);
+    END IF;
+
+    -- Lấy MaMG và gọi RecalculateRankingPositions
+    BEGIN
+        SELECT MaMG
+        INTO v_maMG
+        FROM TranDau td JOIN VongDau VD on VD.MaVD = td.MaVD
+        WHERE td.MaTD = v_maTD;
+        RecalculateRankingPositions(v_maMG);
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RAISE_APPLICATION_ERROR(-20002, 'Không tìm thấy mùa giải cho trận đấu MaTD = ' || v_maTD);
+    END;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        -- Ghi log lỗi chi tiết
+        RAISE_APPLICATION_ERROR(-20001, 'Lỗi trong UpdateBXH_OnKetQuaTD trigger: ' || SQLERRM || ' tại MaTD = ' || NVL(v_maTD, 'NULL'));
+END UpdateBXH_OnKetQuaTD;
+/
+
 ----------------------------------------------------MUAGIAI------------------------------
 -----------InsertDefaultRules---------------------------------
 CREATE OR REPLACE PROCEDURE InsertQuyDinhForMuaGiai(
     p_maMG IN NUMBER
 )
 AS
+    TYPE arr_tieuchi IS VARRAY(6) OF NVARCHAR2(50);
+    arr arr_tieuchi := arr_tieuchi('Diem', 'HieuSo', 'Thang', 'Hoa', 'Thua', 'SoTran');
+    v_douutien NUMBER := 1;
+    v_count_quydinh NUMBER;
+    v_count_thutu NUMBER;
 BEGIN
-    -- Chèn dữ liệu vào bảng QuyDinh với các giá trị mặc định
-    INSERT INTO QuyDinh (MaMG) VALUES (p_maMG);
+    -- Check if QuyDinh exists
+    SELECT COUNT(*) INTO v_count_quydinh FROM QuyDinh WHERE MaMG = p_maMG;
+    IF v_count_quydinh = 0 THEN
+        INSERT INTO QuyDinh (MaMG) VALUES (p_maMG);
+    END IF;
+
+    -- Check if THUTU_UUTIEN exists
+    SELECT COUNT(*) INTO v_count_thutu FROM THUTU_UUTIEN WHERE MaMG = p_maMG;
+    IF v_count_thutu = 0 THEN
+        FOR i IN 1 .. arr.COUNT LOOP
+                INSERT INTO THUTU_UUTIEN(MaMG, TieuChi, DoUuTien)
+                VALUES (p_maMG, arr(i), v_douutien);
+                v_douutien := v_douutien + 1;
+            END LOOP;
+    END IF;
 
 EXCEPTION
     WHEN OTHERS THEN
         RAISE_APPLICATION_ERROR(-20035, 'Lỗi khi thêm quy định cho mùa giải: ' || SQLERRM);
 END InsertQuyDinhForMuaGiai;
 /
-
-
 
 ----------------------------------------------------MATCH------------------------------
 ------------------GetUpComingMatchesByCondition-------------------
@@ -795,13 +713,13 @@ BEGIN
     -- Thêm điều kiện nếu có
     IF p_condition IS NOT NULL THEN
         v_sql := v_sql || ' AND (' || p_condition || ')';
-    END IF;
+END IF;
 
     -- Thêm ORDER BY ở cuối
     v_sql := v_sql || ' ORDER BY td.ThoiGian';
 
     -- Mở cursor với truy vấn động
-    OPEN p_result FOR v_sql;
+OPEN p_result FOR v_sql;
 EXCEPTION
     WHEN OTHERS THEN
         RAISE_APPLICATION_ERROR(-20020, 'Lỗi khi thực thi procedure: ' || SQLERRM);
@@ -814,28 +732,28 @@ CREATE OR REPLACE PROCEDURE GetUpcomingMatches(
 AS
 BEGIN
     -- Mở cursor với truy vấn lấy các trận đấu có ngày thi đấu >= ngày hiện tại
-    OPEN p_result FOR
-        SELECT
-            td.MaTD AS ID,
-            v.TenVD AS TenVD,
-            c1.TenCLB AS TenCLB1,
-            c1.LogoCLB AS LogoCLB1,
-            c2.TenCLB AS TenCLB2,
-            c2.LogoCLB AS LogoCLB2,
-            td.ThoiGian AS ThoiGian,
-            s.TenSan AS SanThiDau,
-            m.TenMG AS TenMuaGiai,
-            kq.DiemCLB1 as Score1,
-            kq.DiemCLB2 as Score2
-        FROM TranDau td
-                 JOIN VongDau v ON td.MaVD = v.MaVD
-                 JOIN CLB c1 ON td.MaCLB1 = c1.MaCLB
-                 JOIN CLB c2 ON td.MaCLB2 = c2.MaCLB
-                 JOIN SAN s ON td.MaSan = s.MaSan
-                 JOIN MuaGiai m ON v.MaMG = m.MaMG
-                 LEFT JOIN KetQuaTD kq ON td.MaTD = kq.MaTD
-        WHERE td.ThoiGian >= TRUNC(SYSDATE)-- Lấy các trận từ ngày hiện tại trở đi
-        ORDER BY td.ThoiGian;
+OPEN p_result FOR
+SELECT
+    td.MaTD AS ID,
+    v.TenVD AS TenVD,
+    c1.TenCLB AS TenCLB1,
+    c1.LogoCLB AS LogoCLB1,
+    c2.TenCLB AS TenCLB2,
+    c2.LogoCLB AS LogoCLB2,
+    td.ThoiGian AS ThoiGian,
+    s.TenSan AS SanThiDau,
+    m.TenMG AS TenMuaGiai,
+    kq.DiemCLB1 as Score1,
+    kq.DiemCLB2 as Score2
+FROM TranDau td
+         JOIN VongDau v ON td.MaVD = v.MaVD
+         JOIN CLB c1 ON td.MaCLB1 = c1.MaCLB
+         JOIN CLB c2 ON td.MaCLB2 = c2.MaCLB
+         JOIN SAN s ON td.MaSan = s.MaSan
+         JOIN MuaGiai m ON v.MaMG = m.MaMG
+         LEFT JOIN KetQuaTD kq ON td.MaTD = kq.MaTD
+WHERE td.ThoiGian >= TRUNC(SYSDATE)-- Lấy các trận từ ngày hiện tại trở đi
+ORDER BY td.ThoiGian;
 END GetUpcomingMatches;
 /
 ----------------GetResultedMatches---------
@@ -845,27 +763,27 @@ CREATE OR REPLACE PROCEDURE GetResultedMatches(
 AS
 BEGIN
     -- Mở cursor với truy vấn lấy các trận đấu có ngày thi đấu >= ngày hiện tại
-    OPEN p_result FOR
-        SELECT
-            td.MaTD AS ID,
-            v.TenVD AS TenVD,
-            c1.TenCLB AS TenCLB1,
-            c1.LogoCLB AS LogoCLB1,
-            c2.TenCLB AS TenCLB2,
-            c2.LogoCLB AS LogoCLB2,
-            td.ThoiGian AS ThoiGian,
-            s.TenSan AS SanThiDau,
-            m.TenMG AS TenMuaGiai,
-            kq.DiemCLB1 as Score1,
-            kq.DiemCLB2 as Score2
-        FROM TranDau td
-                 JOIN VongDau v ON td.MaVD = v.MaVD
-                 JOIN CLB c1 ON td.MaCLB1 = c1.MaCLB
-                 JOIN CLB c2 ON td.MaCLB2 = c2.MaCLB
-                 JOIN SAN s ON td.MaSan = s.MaSan
-                 JOIN MuaGiai m ON v.MaMG = m.MaMG
-                 JOIN KetQuaTD kq ON td.MaTD = kq.MaTD
-        ORDER BY td.ThoiGian DESC;
+OPEN p_result FOR
+SELECT
+    td.MaTD AS ID,
+    v.TenVD AS TenVD,
+    c1.TenCLB AS TenCLB1,
+    c1.LogoCLB AS LogoCLB1,
+    c2.TenCLB AS TenCLB2,
+    c2.LogoCLB AS LogoCLB2,
+    td.ThoiGian AS ThoiGian,
+    s.TenSan AS SanThiDau,
+    m.TenMG AS TenMuaGiai,
+    kq.DiemCLB1 as Score1,
+    kq.DiemCLB2 as Score2
+FROM TranDau td
+         JOIN VongDau v ON td.MaVD = v.MaVD
+         JOIN CLB c1 ON td.MaCLB1 = c1.MaCLB
+         JOIN CLB c2 ON td.MaCLB2 = c2.MaCLB
+         JOIN SAN s ON td.MaSan = s.MaSan
+         JOIN MuaGiai m ON v.MaMG = m.MaMG
+         JOIN KetQuaTD kq ON td.MaTD = kq.MaTD
+ORDER BY td.ThoiGian DESC;
 
 END GetResultedMatches;
 /
@@ -876,29 +794,29 @@ CREATE OR REPLACE PROCEDURE GetPendingMatches(
 AS
 BEGIN
     -- Mở cursor với truy vấn lấy các trận đấu có ngày thi đấu <= ngày hiện tại
-    OPEN p_result FOR
-        SELECT
-            td.MaTD AS ID,
-            c1.TenCLB AS TenCLB1,
-            c1.LogoCLB AS LogoCLB1,
-            c2.TenCLB AS TenCLB2,
-            c2.LogoCLB AS LogoCLB2,
-            td.ThoiGian AS ThoiGian,
-            s.TenSan AS SanThiDau,
-            m.TenMG AS TenMuaGiai,
-            v.TenVD AS TenVD,
-            kq.DiemCLB1 as Score1,
-            kq.DiemCLB2 as Score2
-        FROM TranDau td
-                 JOIN VongDau v ON td.MaVD = v.MaVD
-                 JOIN CLB c1 ON td.MaCLB1 = c1.MaCLB
-                 JOIN CLB c2 ON td.MaCLB2 = c2.MaCLB
-                 JOIN SAN s ON td.MaSan = s.MaSan
-                 JOIN MuaGiai m ON v.MaMG = m.MaMG
-                 LEFT JOIN KetQuaTD kq ON td.MaTD = kq.MaTD
-        WHERE td.ThoiGian <= SYSDATE
-          AND kq.MaTD IS NULL                -- Chưa có kết quả
-        ORDER BY td.ThoiGian ;
+OPEN p_result FOR
+SELECT
+    td.MaTD AS ID,
+    c1.TenCLB AS TenCLB1,
+    c1.LogoCLB AS LogoCLB1,
+    c2.TenCLB AS TenCLB2,
+    c2.LogoCLB AS LogoCLB2,
+    td.ThoiGian AS ThoiGian,
+    s.TenSan AS SanThiDau,
+    m.TenMG AS TenMuaGiai,
+    v.TenVD AS TenVD,
+    kq.DiemCLB1 as Score1,
+    kq.DiemCLB2 as Score2
+FROM TranDau td
+         JOIN VongDau v ON td.MaVD = v.MaVD
+         JOIN CLB c1 ON td.MaCLB1 = c1.MaCLB
+         JOIN CLB c2 ON td.MaCLB2 = c2.MaCLB
+         JOIN SAN s ON td.MaSan = s.MaSan
+         JOIN MuaGiai m ON v.MaMG = m.MaMG
+         LEFT JOIN KetQuaTD kq ON td.MaTD = kq.MaTD
+WHERE td.ThoiGian <= SYSDATE
+  AND kq.MaTD IS NULL                -- Chưa có kết quả
+ORDER BY td.ThoiGian ;
 
 END GetPendingMatches;
 /
@@ -923,46 +841,46 @@ AS
 BEGIN
 
     -- 1. Ánh xạ TenMuaGiai thành MaMG
-    SELECT MaMG INTO v_maMG
-    FROM MuaGiai
-    WHERE LOWER(TenMG) = LOWER(p_tenMuaGiai);
+SELECT MaMG INTO v_maMG
+FROM MuaGiai
+WHERE LOWER(TenMG) = LOWER(p_tenMuaGiai);
 
 -- 2. Tìm MaVD từ MaMG
-    SELECT MaVD INTO v_maVD
-    FROM VongDau
-    WHERE MaMG = v_maMG and TENVD=p_tenVD;
+SELECT MaVD INTO v_maVD
+FROM VongDau
+WHERE MaMG = v_maMG and TENVD=p_tenVD;
 
 -- 3. Ánh xạ TenCLB1 thành MaCLB1
-    SELECT MaCLB INTO v_maCLB1
-    FROM CLB
-    WHERE TenCLB = p_tenCLB1;
+SELECT MaCLB INTO v_maCLB1
+FROM CLB
+WHERE TenCLB = p_tenCLB1;
 
 -- 4. Ánh xạ TenCLB2 thành MaCLB2
-    SELECT MaCLB INTO v_maCLB2
-    FROM CLB
-    WHERE TenCLB = p_tenCLB2;
+SELECT MaCLB INTO v_maCLB2
+FROM CLB
+WHERE TenCLB = p_tenCLB2;
 
 -- 5. Ánh xạ TenSan thành MaSan
-    SELECT MaSan INTO v_maSan
-    FROM SAN
-    WHERE TenSan = p_tenSan;
+SELECT MaSan INTO v_maSan
+FROM SAN
+WHERE TenSan = p_tenSan;
 
 --6. Lấy MaTD moi
-    Select NVL(MAX(MaTD), 0) + 1 INTO v_maTD FROM TranDau;
+Select NVL(MAX(MaTD), 0) + 1 INTO v_maTD FROM TranDau;
 
 -- 7. Chèn vào TranDau và lấy MaTD tự động tăng (giả sử MaTD là sequence)
-    INSERT INTO TranDau (MaTD, MaVD, MaCLB1, MaCLB2, ThoiGian, MaSan)
-    VALUES (v_maTD, v_maVD, v_maCLB1, v_maCLB2, p_thoiGian, v_maSan)
+INSERT INTO TranDau (MaTD, MaVD, MaCLB1, MaCLB2, ThoiGian, MaSan)
+VALUES (v_maTD, v_maVD, v_maCLB1, v_maCLB2, p_thoiGian, v_maSan)
     RETURNING MaTD INTO p_maTD;
 
 -- Commit giao dịch
-    COMMIT;
+COMMIT;
 
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
         ROLLBACK;
         RAISE_APPLICATION_ERROR(-20001, 'Không tìm thấy dữ liệu tương ứng (MuaGiai, CLB, SAN hoặc VongDau).');
-    WHEN OTHERS THEN
+WHEN OTHERS THEN
         ROLLBACK;
         RAISE_APPLICATION_ERROR(-20003, 'Lỗi khi chèn trận đấu: ' || SQLERRM);
 END InsertMatch;
@@ -985,52 +903,52 @@ AS
     v_maSan NUMBER;
 BEGIN
     -- 1. Ánh xạ TenMuaGiai thành MaMG
-    SELECT MaMG INTO v_maMG
-    FROM MuaGiai
-    WHERE TenMG = p_tenMuaGiai;
+SELECT MaMG INTO v_maMG
+FROM MuaGiai
+WHERE TenMG = p_tenMuaGiai;
 
 -- 2. Tìm MaVD từ MaMG (giả sử lấy MaVD đầu tiên nếu có nhiều vòng đấu)
-    SELECT MaVD INTO v_maVD
-    FROM VongDau
-    WHERE MaMG = v_maMG and TENVD=p_TenVD;
+SELECT MaVD INTO v_maVD
+FROM VongDau
+WHERE MaMG = v_maMG and TENVD=p_TenVD;
 
 -- 3. Ánh xạ TenCLB1 thành MaCLB1
-    SELECT MaCLB INTO v_maCLB1
-    FROM CLB
-    WHERE TenCLB = p_tenCLB1;
+SELECT MaCLB INTO v_maCLB1
+FROM CLB
+WHERE TenCLB = p_tenCLB1;
 
 -- 4. Ánh xạ TenCLB2 thành MaCLB2
-    SELECT MaCLB INTO v_maCLB2
-    FROM CLB
-    WHERE TenCLB = p_tenCLB2;
+SELECT MaCLB INTO v_maCLB2
+FROM CLB
+WHERE TenCLB = p_tenCLB2;
 
 -- 5. Ánh xạ TenSan thành MaSan
-    SELECT MaSan INTO v_maSan
-    FROM SAN
-    WHERE TenSan = p_tenSan;
+SELECT MaSan INTO v_maSan
+FROM SAN
+WHERE TenSan = p_tenSan;
 
 -- 6. Cập nhật bảng TranDau
-    UPDATE TranDau
-    SET MaVD = v_maVD,
-        MaCLB1 = v_maCLB1,
-        MaCLB2 = v_maCLB2,
-        ThoiGian = p_thoiGian,
-        MaSan = v_maSan
-    WHERE MaTD = p_maTD;
+UPDATE TranDau
+SET MaVD = v_maVD,
+    MaCLB1 = v_maCLB1,
+    MaCLB2 = v_maCLB2,
+    ThoiGian = p_thoiGian,
+    MaSan = v_maSan
+WHERE MaTD = p_maTD;
 
 -- Kiểm tra xem có cập nhật thành công không
-    IF SQL%ROWCOUNT = 0 THEN
+IF SQL%ROWCOUNT = 0 THEN
         RAISE_APPLICATION_ERROR(-20002, 'Không tìm thấy trận đấu với MaTD = ' || p_maTD);
-    END IF;
+END IF;
 
     -- Commit giao dịch
-    COMMIT;
+COMMIT;
 
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
         ROLLBACK;
         RAISE_APPLICATION_ERROR(-20001, 'Không tìm thấy dữ liệu tương ứng (MuaGiai, CLB, SAN hoặc VongDau).');
-    WHEN OTHERS THEN
+WHEN OTHERS THEN
         ROLLBACK;
         RAISE_APPLICATION_ERROR(-20003, 'Lỗi khi cập nhật trận đấu: ' || SQLERRM);
 END UpdateMatch;
@@ -1080,27 +998,23 @@ AS
     v_count NUMBER;
 BEGIN
     -- Kiểm tra xem MaTD có tồn tại trong KetQuaTD không
-    SELECT COUNT(*) INTO v_count
-    FROM KetQuaTD
-    WHERE MaTD = p_maTD;
+SELECT COUNT(*) INTO v_count
+FROM KetQuaTD
+WHERE MaTD = p_maTD;
 
-    IF v_count = 0 THEN
+IF v_count = 0 THEN
         RAISE_APPLICATION_ERROR(-20001, 'Kết quả trận đấu với MaTD = ' || p_maTD || ' không tồn tại.');
-    END IF;
+END IF;
 
     -- Xóa tất cả bàn thắng liên quan đến trận đấu trong BANTHANG
-    DELETE FROM BANTHANG
-    WHERE MaTD = p_maTD;
+DELETE FROM BANTHANG
+WHERE MaTD = p_maTD;
 
 -- Xóa kết quả trận đấu trong KetQuaTD
-    DELETE FROM KetQuaTD
-    WHERE MaTD = p_maTD;
+DELETE FROM KetQuaTD
+WHERE MaTD = p_maTD;
 
-    COMMIT;
-    UpdateRanking(p_maTD);
-    -- Commit giao dịch
-    COMMIT;
-
+COMMIT;
 EXCEPTION
     WHEN OTHERS THEN
         ROLLBACK;
@@ -1115,80 +1029,35 @@ AS
     v_count NUMBER;
 BEGIN
     -- Kiểm tra xem trận đấu có tồn tại không
-    SELECT COUNT(*) INTO v_count
-    FROM TranDau
-    WHERE MaTD = p_maTD;
+SELECT COUNT(*) INTO v_count
+FROM TranDau
+WHERE MaTD = p_maTD;
 
-    IF v_count = 0 THEN
+IF v_count = 0 THEN
         RAISE_APPLICATION_ERROR(-20004, 'Không tìm thấy trận đấu với MaTD = ' || p_maTD);
-    END IF;
+END IF;
 
     -- Kiểm tra và xóa kết quả trận đấu (KetQuaTD) nếu tồn tại
-    SELECT COUNT(*) INTO v_count
-    FROM KetQuaTD
-    WHERE MaTD = p_maTD;
+SELECT COUNT(*) INTO v_count
+FROM KetQuaTD
+WHERE MaTD = p_maTD;
 
-    IF v_count > 0 THEN
+IF v_count > 0 THEN
         DeleteMatchResultAndGoals(p_maTD);
-    END IF;
+END IF;
 
     -- Xóa bản ghi trong TranDau
-    DELETE FROM TranDau
-    WHERE MaTD = p_maTD;
+DELETE FROM TranDau
+WHERE MaTD = p_maTD;
 
 -- Commit giao dịch
-    COMMIT;
+COMMIT;
 
 EXCEPTION
     WHEN OTHERS THEN
         ROLLBACK;
         RAISE_APPLICATION_ERROR(-20006, 'Lỗi khi xóa trận đấu: ' || SQLERRM);
 END DeleteMatch;
-/
-------------------UpdateMatchResult---------------------
-CREATE OR REPLACE PROCEDURE UpdateMatchResult(
-    p_maTD IN NUMBER,
-    p_diemCLB1 IN NUMBER,
-    p_diemCLB2 IN NUMBER
-)
-AS
-    v_count NUMBER;
-BEGIN
-    -- Kiểm tra xem bản ghi có tồn tại không
-    SELECT COUNT(*) INTO v_count
-    FROM KetQuaTD
-    WHERE MaTD = p_maTD;
-
-    IF v_count = 0 THEN
-        RAISE_APPLICATION_ERROR(-20001, 'Không tìm thấy kết quả trận đấu với MaTD = ' || p_maTD);
-    END IF;
-
-    -- Kiểm tra giá trị điểm hợp lệ (không âm)
-    IF p_diemCLB1 < 0 OR p_diemCLB2 < 0 THEN
-        RAISE_APPLICATION_ERROR(-20002, 'Điểm số không được âm.');
-    END IF;
-
-    -- Cập nhật bản ghi
-    UPDATE KetQuaTD
-    SET DiemCLB1 = p_diemCLB1,
-        DiemCLB2 = p_diemCLB2
-    WHERE MaTD = p_maTD;
-
--- Kiểm tra xem cập nhật thành công không
-    IF SQL%ROWCOUNT = 0 THEN
-        RAISE_APPLICATION_ERROR(-20003, 'Không thể cập nhật kết quả trận đấu với MaTD = ' || p_maTD);
-    END IF;
-
-    COMMIT;
-    UpdateRanking(p_maTD);
-    -- Commit giao dịch
-    COMMIT;
-
-EXCEPTION
-    WHEN OTHERS THEN
-        ROLLBACK;
-        RAISE_APPLICATION_ERROR(-20004, 'Lỗi khi cập nhật kết quả trận đấu: ' || SQLERRM);
-END UpdateMatchResult;
 /
 ----------------------------------------------------BXH_BANTHANG------------------------------
 --------------UpdateBXH_BanThang------
@@ -1198,29 +1067,40 @@ CREATE OR REPLACE PROCEDURE UpdateBXH_BanThang(
 AS
 BEGIN
     -- Cập nhật hoặc chèn dữ liệu vào BANGXEPHANG_BANTHANG
-    MERGE INTO BANGXEPHANG_BANTHANG bxh
+MERGE INTO BANGXEPHANG_BANTHANG bxh
     USING (
         SELECT
-            cclb.MaMG,
-            bt.MaCT,
-            COUNT(*) AS SoBanThang,
+            cclb.MaMG,bt.MaCT,COUNT(*) AS SoBanThang,
             SUM(CASE WHEN lbt.TenLoaiBT LIKE '%Phạt đền%' THEN 1 ELSE 0 END) AS Penalty
         FROM BANTHANG bt
-                 JOIN CAUTHU_CLB cclb ON bt.MaCT = cclb.MaCT AND cclb.MaMG = p_maMG
+                 JOIN CAUTHU_THAMGIAMUAGIAI cclb ON bt.MaCT = cclb.MaCT AND cclb.MaMG = 1
                  JOIN LoaiBanThang lbt ON bt.MaLoaiBT = lbt.MaLoaiBT
         GROUP BY cclb.MaMG, bt.MaCT
     ) src
     ON (bxh.MaMG = src.MaMG AND bxh.MaCT = src.MaCT)
     WHEN MATCHED THEN
         UPDATE SET
-                   bxh.SoBanThang = src.SoBanThang,
-                   bxh.Penalty = src.Penalty
+            bxh.SoBanThang = src.SoBanThang,
+            bxh.Penalty = src.Penalty
     WHEN NOT MATCHED THEN
         INSERT (MaMG, MaCT, SoBanThang, Penalty, XepHang)
-        VALUES (src.MaMG, src.MaCT, src.SoBanThang, src.Penalty, NULL);
+            VALUES (src.MaMG, src.MaCT, src.SoBanThang, src.Penalty, NULL);
 
+    -- Delete records not present in src
+    DELETE FROM BANGXEPHANG_BANTHANG bxh
+    WHERE bxh.MaMG = p_maMG
+      AND NOT EXISTS (
+        SELECT 1
+        FROM (
+                 SELECT cclb.MaMG, bt.MaCT
+                 FROM BANTHANG bt
+                          JOIN CAUTHU_THAMGIAMUAGIAI cclb ON bt.MaCT = cclb.MaCT AND cclb.MaMG = p_maMG
+                 GROUP BY cclb.MaMG, bt.MaCT
+             ) src
+        WHERE bxh.MaMG = src.MaMG AND bxh.MaCT = src.MaCT
+    );
 -- Cập nhật thứ hạng (XepHang)
-    MERGE INTO BANGXEPHANG_BANTHANG bxh
+MERGE INTO BANGXEPHANG_BANTHANG bxh
     USING (
         SELECT MaMG, MaCT,
                ROW_NUMBER() OVER (ORDER BY SoBanThang DESC, MaCT) AS new_xephang
@@ -1232,7 +1112,7 @@ BEGIN
         UPDATE SET bxh.XepHang = src.new_xephang;
 
 -- Lưu thay đổi
-    COMMIT;
+COMMIT;
 
 EXCEPTION
     WHEN OTHERS THEN
@@ -1247,7 +1127,8 @@ CREATE OR REPLACE PROCEDURE InsertGoal(
     p_maCT IN NUMBER,
     p_maTD IN NUMBER,
     p_phutGhiBan IN NUMBER,
-    p_maLoaiBT IN NUMBER
+    p_maLoaiBT IN NUMBER,
+    p_maBT OUT NUMBER
 )
 AS
     v_maBT NUMBER;
@@ -1258,52 +1139,25 @@ BEGIN
     SELECT NVL(MAX(MaBT), 0) + 1 INTO v_maBT
     FROM BANTHANG;
 
--- Kiểm tra giá trị PhutGhiBan hợp lệ (không âm, trigger sẽ kiểm tra giới hạn tối đa)
-    IF p_phutGhiBan < 0 THEN
-        RAISE_APPLICATION_ERROR(-20002, 'Thời điểm ghi bàn không được âm.');
-    END IF;
-
-    -- Kiểm tra xem MaCT, MaTD, và MaLoaiBT có tồn tại không
-    SELECT COUNT(*) INTO v_count
-    FROM CAUTHU
-    WHERE MaCT = p_maCT;
-
-    IF v_count = 0 THEN
-        RAISE_APPLICATION_ERROR(-20003, 'Mã cầu thủ (MaCT = ' || p_maCT || ') không tồn tại.');
-    END IF;
-
-    SELECT COUNT(*) INTO v_count
-    FROM TranDau
-    WHERE MaTD = p_maTD;
-
-    IF v_count = 0 THEN
-        RAISE_APPLICATION_ERROR(-20004, 'Mã trận đấu (MaTD = ' || p_maTD || ') không tồn tại.');
-    END IF;
-
-    SELECT COUNT(*) INTO v_count
-    FROM LOAIBANTHANG
-    WHERE MaLoaiBT = p_maLoaiBT;
-
-    IF v_count = 0 THEN
-        RAISE_APPLICATION_ERROR(-20005, 'Mã loại bàn thắng (MaLoaiBT = ' || p_maLoaiBT || ') không tồn tại.');
-    END IF;
-
     -- Thêm bản ghi mới với MaBT vừa sinh
     INSERT INTO BANTHANG (MaBT, MaCT, MaTD, PhutGhiBan, MaLoaiBT)
     VALUES (v_maBT, p_maCT, p_maTD, p_phutGhiBan, p_maLoaiBT);
-
---Cập nhật BXH_BANTHANG
+    COMMIT;
+    --Cập nhật BXH_BANTHANG
     Select vd.MaMG INTO v_MaMG
     FROM TRANDAU td JOIN VONGDAU vd ON td.MaVD=vd.MaVD
     WHERE td.MaTD=p_maTD;
+
     UpdateBXH_BanThang(v_MaMG);
     -- Commit giao dịch
     COMMIT;
+    -- Trả về MaBT vừa tạo
+    p_maBT := v_maBT;
 
-EXCEPTION
-    WHEN OTHERS THEN
-        ROLLBACK;
-        RAISE_APPLICATION_ERROR(-20006, 'Lỗi khi thêm bàn thắng: ' || SQLERRM);
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;
+            RAISE_APPLICATION_ERROR(-20006, 'Lỗi khi thêm bàn thắng: ' || SQLERRM);
 END InsertGoal;
 /
 -----------------UpdateGoal--------------
@@ -1317,23 +1171,23 @@ CREATE OR REPLACE PROCEDURE UpdateGoal(
 AS
     v_maMG NUMBER;
 BEGIN
-    UPDATE BANTHANG
-    SET MaCT = p_maCT,
-        MaTD = p_maTD,
-        PhutGhiBan = p_phutGhiBan,
-        MaLoaiBT = p_maLoaiBT
-    WHERE MaBT = p_maBT;
+UPDATE BANTHANG
+SET MaCT = p_maCT,
+    MaTD = p_maTD,
+    PhutGhiBan = p_phutGhiBan,
+    MaLoaiBT = p_maLoaiBT
+WHERE MaBT = p_maBT;
+COMMIT;
 
 -- Gọi procedure để cập nhật bảng xếp hạng
-    SELECT vd.MaMG INTO v_maMG
-    FROM TranDau td
-             JOIN VongDau vd ON td.MaVD = vd.MaVD
-    WHERE td.MaTD = p_maTD;
+SELECT vd.MaMG INTO v_maMG
+FROM TranDau td
+         JOIN VongDau vd ON td.MaVD = vd.MaVD
+WHERE td.MaTD = p_maTD;
+-- Lưu thay đổi
+UpdateBXH_BanThang(v_maMG);
+COMMIT;
 
-    UpdateBXH_BanThang(v_maMG);
-
-    -- Lưu thay đổi
-    COMMIT;
 
 EXCEPTION
     WHEN OTHERS THEN
@@ -1350,26 +1204,27 @@ AS
     v_maTD NUMBER;
 BEGIN
     -- Lấy MaTD từ BANTHANG để xác định MaMG
-    SELECT MaTD INTO v_maTD
-    FROM BANTHANG
-    WHERE MaBT = p_maBT;
+SELECT MaTD INTO v_maTD
+FROM BANTHANG
+WHERE MaBT = p_maBT;
 
 -- Lấy MaMG từ TranDau và VongDau
-    SELECT vd.MaMG INTO v_maMG
-    FROM TranDau td
-             JOIN BanThang bt ON td.MaTD=bt.MaTD
-             JOIN VongDau vd ON td.MaVD = vd.MaVD
-    WHERE bt.MaBT=p_maBT;
+SELECT vd.MaMG INTO v_maMG
+FROM TranDau td
+         JOIN BanThang bt ON td.MaTD=bt.MaTD
+         JOIN VongDau vd ON td.MaVD = vd.MaVD
+WHERE bt.MaBT=p_maBT;
 
 -- Xóa bản ghi trong BANTHANG
-    DELETE FROM BANTHANG
-    WHERE MaBT = p_maBT;
+DELETE FROM BANTHANG
+WHERE MaBT = p_maBT;
+    COMMIT;
 
 -- Gọi procedure để cập nhật bảng xếp hạng
-    UpdateBXH_BanThang(v_maMG);
+UpdateBXH_BanThang(v_maMG);
 
     -- Lưu thay đổi
-    COMMIT;
+COMMIT;
 
 EXCEPTION
     WHEN OTHERS THEN
@@ -1388,15 +1243,15 @@ AS
     v_maxMaSan NUMBER;
 BEGIN
     -- Lấy giá trị lớn nhất của MaSan hiện tại và tăng 1
-    SELECT NVL(MAX(MaSan), 0) + 1 INTO v_maxMaSan
-    FROM SAN;
+SELECT NVL(MAX(MaSan), 0) + 1 INTO v_maxMaSan
+FROM SAN;
 
 -- Chèn dữ liệu vào bảng SAN
-    INSERT INTO SAN (MaSan, TenSan, DiaChi, SucChua)
-    VALUES (v_maxMaSan, p_tenSan, p_diaChi, p_sucChua);
+INSERT INTO SAN (MaSan, TenSan, DiaChi, SucChua)
+VALUES (v_maxMaSan, p_tenSan, p_diaChi, p_sucChua);
 
 -- Trả về giá trị MaSan vừa tạo
-    p_maSan := v_maxMaSan;
+p_maSan := v_maxMaSan;
 
 EXCEPTION
     WHEN OTHERS THEN
@@ -1416,15 +1271,15 @@ AS
     v_maxMaCLB NUMBER;
 BEGIN
     -- Lấy giá trị lớn nhất của MaCLB hiện tại và tăng 1
-    SELECT NVL(MAX(MaCLB), 0) + 1 INTO v_maxMaCLB
-    FROM CLB;
+SELECT NVL(MAX(MaCLB), 0) + 1 INTO v_maxMaCLB
+FROM CLB;
 
 -- Chèn dữ liệu vào bảng CLB
-    INSERT INTO CLB (MaCLB, TenCLB, LogoCLB, SanNha, TenHLV, Email)
-    VALUES (v_maxMaCLB, p_tenCLB, p_logoCLB, p_sanNha, p_tenHLV, p_email);
+INSERT INTO CLB (MaCLB, TenCLB, LogoCLB, SanNha, TenHLV, Email)
+VALUES (v_maxMaCLB, p_tenCLB, p_logoCLB, p_sanNha, p_tenHLV, p_email);
 
 -- Trả về giá trị MaCLB vừa tạo
-    p_maCLB := v_maxMaCLB;
+p_maCLB := v_maxMaCLB;
 
 EXCEPTION
     WHEN OTHERS THEN
@@ -1447,15 +1302,15 @@ AS
     v_maxMaCT NUMBER;
 BEGIN
     -- Lấy giá trị lớn nhất của MaCT hiện tại và tăng 1
-    SELECT NVL(MAX(MaCT), 0) + 1 INTO v_maxMaCT
-    FROM CauThu;
+SELECT NVL(MAX(MaCT), 0) + 1 INTO v_maxMaCT
+FROM CauThu;
 
 -- Chèn dữ liệu vào bảng CauThu
-    INSERT INTO CauThu (MaCT, TenCT, NgaySinh, QuocTich, Avatar, SoAo, LoaiCT, MaCLB, MaVT)
-    VALUES (v_maxMaCT, p_tenCT, p_ngaySinh, p_quocTich,p_avatar, p_soAo, p_loaiCT, p_maCLB, p_maVT);
+INSERT INTO CauThu (MaCT, TenCT, NgaySinh, QuocTich, Avatar, SoAo, LoaiCT, MaCLB, MaVT)
+VALUES (v_maxMaCT, p_tenCT, p_ngaySinh, p_quocTich,p_avatar, p_soAo, p_loaiCT, p_maCLB, p_maVT);
 
 -- Trả về giá trị MaCT vừa tạo
-    p_maCT := v_maxMaCT;
+p_maCT := v_maxMaCT;
 
 EXCEPTION
     WHEN OTHERS THEN
@@ -1491,11 +1346,11 @@ BEGIN
     -- Insert new players if not exists
     FOR i IN 1 .. p_player_ids.COUNT LOOP
             BEGIN
-                INSERT INTO CAUTHU_CLB (MaCT, MaCLB, MaMG)
+                INSERT INTO CAUTHU_THAMGIAMUAGIAI (MaCT, MaCLB, MaMG)
                 SELECT p_player_ids(i), p_maCLB, p_maMG
                 FROM DUAL
                 WHERE NOT EXISTS (
-                    SELECT 1 FROM CAUTHU_CLB
+                    SELECT 1 FROM CAUTHU_THAMGIAMUAGIAI
                     WHERE MaCT = p_player_ids(i) AND MaCLB = p_maCLB AND MaMG = p_maMG
                 );
             EXCEPTION
@@ -1504,7 +1359,7 @@ BEGIN
         END LOOP;
 
     -- Delete players not in the input list
-    DELETE FROM CAUTHU_CLB
+    DELETE FROM CAUTHU_THAMGIAMUAGIAI
     WHERE MaCLB = p_maCLB
       AND MaMG = p_maMG
       AND (p_player_ids IS NULL OR MaCT NOT IN (SELECT COLUMN_VALUE FROM TABLE(p_player_ids)));
@@ -1516,12 +1371,12 @@ BEGIN
     WHERE MaMG = p_maMG;
 
     SELECT COUNT(*) INTO v_count
-    FROM CAUTHU_CLB
+    FROM CAUTHU_THAMGIAMUAGIAI
     WHERE MaCLB = p_maCLB AND MaMG = p_maMG;
 
     SELECT COUNT(*)
     INTO v_foreign_count
-    FROM CAUTHU_CLB ct_clb
+    FROM CAUTHU_THAMGIAMUAGIAI ct_clb
              JOIN CauThu ct ON ct_clb.MaCT = ct.MaCT
     WHERE ct_clb.MaCLB = p_maCLB AND ct_clb.MaMG = p_maMG AND ct.LoaiCT = 1;
 
@@ -1560,8 +1415,8 @@ BEGIN
     DELETE FROM BANGXEPHANG_CLB
     WHERE MaCLB = p_maCLB AND MaMG = p_maMG;
 
-    -- Delete from CAUTHU_CLB
-    DELETE FROM CAUTHU_CLB
+    -- Delete from CAUTHU_THAMGIAMUAGIAI
+    DELETE FROM CAUTHU_THAMGIAMUAGIAI
     WHERE MaCLB = p_maCLB AND MaMG = p_maMG;
 
     -- Delete from CLB_THAMGIAMUAGIAI
@@ -1583,16 +1438,16 @@ CREATE OR REPLACE PROCEDURE GetGoalsOfMatch(
 AS
 BEGIN
     -- Mở cursor với truy vấn lấy các trận đấu có ngày thi đấu >= ngày hiện tại
-    OPEN p_result FOR
-        SELECT
-            bt.PhutGhiBan AS PhutGhiBan,
-            ct.TenCT AS TenCauThu
-        FROM BanThang bt
-                 JOIN CAUTHU ct on ct.MaCT = bt.MaCT
-                 JOIN CLB c on c.MaCLB = ct.MaCLB
-        WHERE bt.MaTD = v_id
-          AND c.TenCLB = v_clubname
-        ORDER BY PhutGHIBan;
+OPEN p_result FOR
+SELECT
+    bt.PhutGhiBan AS PhutGhiBan,
+    ct.TenCT AS TenCauThu
+FROM BanThang bt
+         JOIN CAUTHU ct on ct.MaCT = bt.MaCT
+         JOIN CLB c on c.MaCLB = ct.MaCLB
+WHERE bt.MaTD = v_id
+  AND c.TenCLB = v_clubname
+ORDER BY PhutGHIBan;
 
 END GetGoalsOfMatch;
 
@@ -1606,19 +1461,18 @@ INSERT INTO VaiTro (MaVT, TenVaiTro) VALUES (2, 'Ban quản lý câu lạc bộ'
 INSERT INTO VaiTro (MaVT, TenVaiTro) VALUES (3, 'Ban tổ chức thi đấu');
 INSERT INTO VaiTro (MaVT, TenVaiTro) VALUES (4, 'Ban phân tích và tổng hợp kết quả');
 INSERT INTO VaiTro (MaVT, TenVaiTro) VALUES (5, 'Khách hàng');
+INSERT INTO VaiTro (MaVT, TenVaiTro) VALUES (6, 'admin');
 
+INSERT INTO TaiKhoan VALUES ('0', '0', 6);
 INSERT INTO TaiKhoan VALUES ('admin', '123', 1);
 INSERT INTO TaiKhoan VALUES ('admin4', '1234', 2);
 INSERT INTO TaiKhoan VALUES ('admin45', '12345', 3);
 INSERT INTO TaiKhoan VALUES ('admin456', '123456', 4);
 
-
-
 INSERT INTO LOAIBANTHANG (MaLoaiBT, TenLoaiBT) VALUES (1, 'Bàn thắng thường');
 INSERT INTO LOAIBANTHANG (MaLoaiBT, TenLoaiBT) VALUES (2, 'Phạt đền');
 INSERT INTO LOAIBANTHANG (MaLoaiBT, TenLoaiBT) VALUES (3, 'Đá phạt');
 INSERT INTO LOAIBANTHANG (MaLoaiBT, TenLoaiBT) VALUES (4, 'Phản lưới nhà');
-
 
 INSERT INTO ViTriTD (MaVT, TenVT) VALUES (1, 'Forward');
 INSERT INTO ViTriTD (MaVT, TenVT) VALUES (2, 'Midfielder');
@@ -1684,17 +1538,31 @@ INSERT INTO CauThu (MaCT, TenCT, NgaySinh, QuocTich, Avatar, SoAo, LoaiCT, MaCLB
 INSERT INTO CauThu (MaCT, TenCT, NgaySinh, QuocTich, Avatar, SoAo, LoaiCT, MaCLB, MaVT) VALUES (30, 'Tran Van 15', TO_DATE('1998-03-15','YYYY-MM-DD'), 'Vietnam', 'hn15.png', 15, 0, 2, 3);
 
 
-
-
 commit;
--- select * from MuaGiai;
--- select * from SAN;
--- select * from CLB;
--- select * from CauThu;
--- select * from LoaiCauThu;
--- select * from CLB_THAMGIAMUAGIAI;
--- select * from BANGXEPHANG_CLB;
--- select * from CAUTHU_CLB where MaCLB=2;
-
-DROP TRIGGER trg_check_so_cauthu_clb;
--- SELECT * FROM CLB WHERE TenCLB='Hải Phòng FC';
+select * from MuaGiai;
+select * from QuyDinh;
+select * from THUTU_UUTIEN;
+select * from SAN;
+select * from CLB;
+select * from CauThu;
+select * from LoaiCauThu;
+select * from CLB_THAMGIAMUAGIAI;
+select * from BANGXEPHANG_CLB;
+select * from TranDau;
+select * from KETQUATD;
+select * from CAUTHU_THAMGIAMUAGIAI ;
+select * from BANTHANG;
+select * from BANGXEPHANG_BANTHANG;
+commit;
+delete from MuaGiai;
+delete from QuyDinh;
+delete from TranDau;
+delete from KetQuaTD;
+delete from CLB_THAMGIAMUAGIAI;
+delete from BANGXEPHANG_CLB;
+delete from BANGXEPHANG_BANTHANG;
+select * from THUTU_UUTIEN where MaMG=1;
+UPDATE BANGXEPHANG_CLB
+SET SOTRAN=0,THANG=0, Hoa=0, THUA=0, HIEUSO=0, DIEM=0,HANG=0
+WHERE MaMG = 1 AND MaCLB IN (1, 2);
+Insert into KetQuaTD(MaTD, DiemCLB1, DiemCLB2) Values (2,1,0);

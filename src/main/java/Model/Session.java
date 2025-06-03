@@ -32,6 +32,5 @@ public class Session {
 
     public void clear() {
         username = null;
-        role = 0;
     }
 }
