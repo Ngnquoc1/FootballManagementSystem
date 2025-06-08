@@ -73,15 +73,12 @@ public class PlayerManagementController implements Initializable {
     private Service service;
     private MODEL_CAUTHU selectedPlayer;
 
-    private ObservableList<MODEL_CAUTHU> playersList = FXCollections.observableArrayList();
+    private final ObservableList<MODEL_CAUTHU> playersList = FXCollections.observableArrayList();
     private FilteredList<MODEL_CAUTHU> filteredPlayersList;
     private final String AVA_DIRECTORY = "C:\\\\STUDY\\\\JAVA\\\\DEMO1\\\\src\\\\main\\\\resources\\\\Image\\\\PlayerAva";
     private File selectedAvaFile;
-    private Runnable refreshCallback;
+    private PlayerController preController;
 
-    public void setRefreshCallback(Runnable refreshCallback) {
-        this.refreshCallback = refreshCallback;
-    }
     public void setPlayersClub(MODEL_CLB club) {
         this.currentClub = club;
         initializeData();
@@ -105,10 +102,7 @@ public class PlayerManagementController implements Initializable {
             String selectedNumber = playerNoFilter.getValue();
             if (selectedNumber != null) {
                 filteredPlayersList.setPredicate(player -> {
-                    if (player.getSoAo() == Integer.parseInt(selectedNumber)) {
-                        return true;
-                    }
-                    return false;
+                    return player.getSoAo() == Integer.parseInt(selectedNumber);
                 });
             } else {
                 filteredPlayersList.setPredicate(null);
@@ -133,11 +127,11 @@ public class PlayerManagementController implements Initializable {
         createAvaDirectory();
         clubNameLabel.setText(currentClub.getTenCLB());
         try {
-            Image clubLogo = new Image(getClass().getResourceAsStream("/Image/ClubLogo/" + currentClub.getLogoCLB()));
+            Image clubLogo = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Image/ClubLogo/" + currentClub.getLogoCLB())));
             clubImgaeView.setImage(clubLogo);
         }
         catch (Exception e) {
-            Image defaultLogo = new Image(getClass().getResourceAsStream("/Image/ClubLogo/default_logo.png"));
+            Image defaultLogo = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Image/ClubLogo/default_logo.png")));
             clubImgaeView.setImage(defaultLogo);
         }
 
@@ -308,11 +302,16 @@ public class PlayerManagementController implements Initializable {
             playerNumberField.setText(String.valueOf(selectedPlayer.getSoAo()));
             playerPositionCombo.setValue(service.getPositionById(selectedPlayer.getMaVT()));
             Image avaImg;
-            try{
-                avaImg = new Image(getClass().getResourceAsStream("/Image/PlayerAva/" + selectedPlayer.getAvatar()));
+            try {
+                String path="src/main/resources/Image/PlayerAva/" + selectedPlayer.getAvatar();
+                File avaFile = new File(path);
+                if (avaFile.exists()) {
+                    avaImg = new Image(avaFile.toURI().toString());
+                } else {
+                    avaImg = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Image/PlayerAva/default_ava.png")));
+                }
             } catch (Exception e) {
-                avaImg = new Image(getClass().getResourceAsStream("/Image/PlayerAva/default_ava.png"));
-                AlertUtils.showError("Error", "Image Error", "An error occurred while loading the image.");
+                avaImg = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Image/PlayerAva/default_ava.png")));
             }
             avaImageView.setImage(avaImg);
         } else {
@@ -332,10 +331,11 @@ public class PlayerManagementController implements Initializable {
                 selectedPlayer.setLoaiCT(player.getLoaiCT());
                 selectedPlayer.setMaCLB(player.getMaCLB());
                 if(selectedAvaFile != null) {
-                    String oldLogoFileName = player.getAvatar();
+                    String oldLogoFileName = selectedPlayer.getAvatar();
                     if (oldLogoFileName!= null && !oldLogoFileName.isEmpty()) {
                         try {
                             Files.deleteIfExists(Paths.get(AVA_DIRECTORY, oldLogoFileName));
+                            System.out.println("Đã xóa file logo cũ: " + oldLogoFileName);
                         } catch (IOException e) {
                             System.err.println("Không thể xóa file logo cũ: " + e.getMessage());
                             return;
@@ -345,6 +345,7 @@ public class PlayerManagementController implements Initializable {
                     if (newLogoFileName != null) {
                         selectedPlayer.setAvatar(newLogoFileName);
                     }
+                    selectedAvaFile = null;
                 }
                 service.updatePlayer(selectedPlayer);
                 loadPlayersData();
@@ -395,11 +396,15 @@ public class PlayerManagementController implements Initializable {
                         System.err.println("Không thể xóa file logo: " + e.getMessage());
                     }
                 }
-                service.removePlayer(selectedPlayer.getMaCT());
-                playersList.remove(selectedPlayer);
-                loadPlayersData();
-                resetForm();
-                AlertUtils.showInformation("Success", "Player Deleted", "Player has been deleted successfully.");
+                try {
+                    service.removePlayer(selectedPlayer.getMaCT());
+                    AlertUtils.showInformation("Success", "Player Deleted", "Player has been deleted successfully.");
+                    playersList.remove(selectedPlayer);
+                    loadPlayersData();
+                    resetForm();
+                } catch (Exception e) {
+                    AlertUtils.showError("Lỗi", "Không thể xóa Cầu thủ này", "Cầu thủ này đang được đăng ký. Nếu muốn xóa, hãy hủy đăng ký trước.");
+                }
             }
         } else {
             AlertUtils.showWarning("Warning", "No Player Selected", "Please select a player to delete.");
@@ -452,12 +457,16 @@ public class PlayerManagementController implements Initializable {
         // Append a unique identifier (timestamp) to the sanitized name
         return sanitizedPlayerName + "_" + System.currentTimeMillis();
     }
+    public void setPreController(PlayerController preController) {
+        this.preController=preController;
+    }
+
     @FXML
     public void closeBtn(){
         Stage stage = (Stage) closeBtn.getScene().getWindow();
         try {
-            if (refreshCallback != null) {
-                refreshCallback.run(); // Call the refresh callback
+            if (preController != null) {
+                preController.filterPlayers();
             }
             stage.close();
         } catch (Exception e) {

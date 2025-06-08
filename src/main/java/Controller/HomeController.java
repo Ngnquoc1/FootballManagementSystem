@@ -1,5 +1,6 @@
 package Controller;
 
+import java.io.File;
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -312,17 +313,12 @@ public class HomeController implements Initializable {
 
     private void loadTeamLogo(ImageView imageView, String logoPath) {
         try {
-            String imagePath = "/Image/ClubLogo/" + logoPath;
-            Image image = new Image(getClass().getResourceAsStream(imagePath));
+            String imagePath = "src/main/resources/image/ClubLogo/" + logoPath;
+            File logoFile = new File(imagePath);
+            Image image = new Image(logoFile.toURI().toString());
             imageView.setImage(image);
         } catch (Exception e) {
-            try {
-                String teamName = logoPath.replace(".png", "").toLowerCase();
-                Image image = new Image(getClass().getResourceAsStream("/icons/teams/" + teamName + ".png"));
-                imageView.setImage(image);
-            } catch (Exception ex) {
-                imageView.setImage(new Image(getClass().getResourceAsStream("/icons/club.png")));
-            }
+            imageView.setImage(new Image(new File("src/main/resources/icons/club.png").toURI().toString()));
         }
     }
 

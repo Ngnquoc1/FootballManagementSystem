@@ -30,6 +30,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
+import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -51,7 +52,8 @@ public class PlayerController implements Initializable {
     private String selectedCompetition = null;
     private Service service;
 
-
+    private String avatarPath = "src/main/resources/Image/PlayerAva/";
+    private String flagPath = "src/main/resources/Image/NationLogo/";
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -153,7 +155,7 @@ public class PlayerController implements Initializable {
         ClubFilter.getItems().addAll(dsCLB);
     }
 
-    private void filterPlayers() throws SQLException {
+    public void filterPlayers() throws SQLException {
         String searchText = searchField.getText().toLowerCase().trim();
 
         // Xóa tất cả các hàng hiện tại, chỉ giữ lại header
@@ -333,11 +335,12 @@ public class PlayerController implements Initializable {
         // Player image
         ImageView playerImage = new ImageView();
         try {
-            Image image = new Image(getClass().getResourceAsStream("/Image/PlayerAva/" + player.getAvatar()));
+            File imageFile = new File(avatarPath + player.getAvatar());
+            Image image = new Image(imageFile.toURI().toString());
             playerImage.setImage(image);
         } catch (Exception e) {
             // Use a placeholder if image not found
-            Image image = new Image(getClass().getResourceAsStream("/Image/PlayerAva/default_ava.png"));
+            Image image = new Image(new File("/Image/PlayerAva/default_ava.png").toURI().toString());
             playerImage.setImage(image);
         }
         playerImage.getStyleClass().add("player_image");
@@ -369,7 +372,8 @@ public class PlayerController implements Initializable {
         // NationalityLogo từ trang https://www.countryflags.com/image-overview/
         ImageView flagImage = new ImageView();
         try {
-            Image flag = new Image(getClass().getResourceAsStream("/Image/NationLogo/" + player.getQuocTich() + ".png"));
+            File flagFile = new File(flagPath + player.getQuocTich() + ".png");
+            Image flag = new Image(flagFile.toURI().toString());
             flagImage.setImage(flag);
         } catch (Exception e) {
             // Create a placeholder for missing flag
@@ -585,11 +589,16 @@ public class PlayerController implements Initializable {
     }
 
     private ImageView createPlayerImage(MODEL_CAUTHU player) {
-        ImageView playerImage = new ImageView();
-        Image image = loadImageWithFallback(
-                "/Image/PlayerAva/" + player.getAvatar(),
-                "/Image/PlayerAva/default_ava.png"
-        );
+       ImageView playerImage = new ImageView();
+        Image image;
+        try{
+            File imageFile = new File(avatarPath + player.getAvatar());
+            image = new Image(imageFile.toURI().toString());
+        }
+        catch (Exception e){
+            // Use a placeholder if image not found
+            image = new Image(getClass().getResourceAsStream("/Image/PlayerAva/default_ava.png"));
+        }
 
         playerImage.setImage(image);
         playerImage.setFitWidth(160);
@@ -718,11 +727,13 @@ public class PlayerController implements Initializable {
 
     private ImageView createClubImage(MODEL_CLB clb) {
         ImageView clubImage = new ImageView();
-        Image image = loadImageWithFallback(
-                "/Image/ClubLogo/" + clb.getLogoCLB(),
-                "/Image/ClubLogo/default_logo.png"
-        );
-
+        Image image;
+        try{
+            File clubLogoFile = new File("src/main/resources/Image/ClubLogo/" + clb.getLogoCLB());
+            image= new Image(clubLogoFile.toURI().toString());
+        } catch (Exception e) {
+            image= new Image(getClass().getResourceAsStream("/Image/ClubLogo/default_logo.png"));
+        }
         clubImage.setImage(image);
         clubImage.getStyleClass().add("detail_image");
         return clubImage;
@@ -742,9 +753,10 @@ public class PlayerController implements Initializable {
 
     private ImageView createFlagImage(MODEL_CAUTHU player) {
         ImageView flagImage = new ImageView();
+        String absolutePath="src/main/resources/Image/NationLogo/";
         Image image = loadImageWithFallback(
-                "/Image/NationLogo/" + player.getQuocTich() + ".png",
-                "/Image/NationLogo/England.png"
+                absolutePath + player.getQuocTich() + ".png",
+                "src/main/resources/Image/NationLogo/England.png"
         );
 
         flagImage.setImage(image);
@@ -766,9 +778,11 @@ public class PlayerController implements Initializable {
 
     private Image loadImageWithFallback(String primaryPath, String fallbackPath) {
         try {
-            return new Image(getClass().getResourceAsStream(primaryPath));
+            File playerImg= new File(primaryPath);
+            return new Image(playerImg.toURI().toString());
         } catch (Exception e) {
-            return new Image(getClass().getResourceAsStream(fallbackPath));
+            File fallbackImg = new File(fallbackPath);
+            return new Image(fallbackImg.toURI().toString());
         }
     }
 
@@ -815,6 +829,7 @@ public class PlayerController implements Initializable {
 
             // Thiết lập thông tin CLB và giải đấu
             controller.setPlayersClub(club);
+            controller.setPreController(this);
             // Tạo scene mới
             Scene scene = new Scene(root);
 

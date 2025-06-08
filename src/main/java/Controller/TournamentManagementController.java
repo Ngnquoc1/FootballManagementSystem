@@ -275,12 +275,14 @@ public class TournamentManagementController {
                     }
                 }
                 try {
-                    service.deleteTournament(selectedTournament);
+                    service.deleteTournament(selectedTournament);}
+                catch (Exception e) {
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể xóa giải đấu", e.getMessage());
+                    return;
+                }
+                    // Xóa giải đấu khỏi danh sách
                     tournamentsList.remove(selectedTournament);
                     updateStatistics();
-                } catch (SQLException e) {
-                    AlertUtils.showError("Lỗi", "Không thể xóa giải đấu","Giải đấu này đang được tổ chức. Vui lòng xóa các vòng đấu liên quan trước.");
-                }
 
             }
         }
@@ -391,18 +393,16 @@ public class TournamentManagementController {
             tournamentsTableView.refresh();
             savedTournament = currentModel;
         } else {
-            int id = nextId++;
-
             String logoFileName = null;
 
             if (selectedLogoFile != null) {
                 logoFileName = saveLogoFile(selectedLogoFile);
             }
-            MODEL_MUAGIAI newTournament = new MODEL_MUAGIAI(id, name, startDate, endDate, logoFileName);
+            MODEL_MUAGIAI newTournament = new MODEL_MUAGIAI(0, name, startDate, endDate, logoFileName);
             int newID=service.insertTournament(newTournament);
-            service.insertDefaultQD(newTournament.getMaMG());
-            tournamentsList.add(newTournament);
             newTournament.setMaMG(newID);
+            service.insertDefaultQD(newID);
+            tournamentsList.add(newTournament);
             savedTournament = newTournament;
         }
 

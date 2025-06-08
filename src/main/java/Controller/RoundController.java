@@ -3,6 +3,7 @@ package Controller;
 import Model.MODEL_MUAGIAI;
 import Model.MODEL_VONGDAU;
 import Service.Service;
+import Util.AlertUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -192,7 +193,7 @@ public class RoundController {
             // Cập nhật tổng số vòng đấu
             updateTotalRounds();
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tải danh sách vòng đấu", e.getMessage());
+            AlertUtils.showError("Lỗi", "Không thể tải danh sách vòng đấu", "Đã xảy ra lỗi khi tải danh sách vòng đấu từ cơ sở dữ liệu.");
         }
         enableForm(false);
     }
@@ -240,17 +241,16 @@ public class RoundController {
                     // Xóa vòng đấu khỏi cơ sở dữ liệu
                     boolean success = service.deleteVD(selectedRound.getMaVD());
                     if (!success) {
-                        showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể xóa vòng đấu", "Đã xảy ra lỗi khi xóa vòng đấu khỏi cơ sở dữ liệu.");
+                        AlertUtils.showError("Lỗi", "Không thể xóa vòng đấu", "Vòng đấu này đang có trận đấu diễn ra nên không thể xóa!");
                         return;
                     }
-
                     // Xóa khỏi danh sách hiển thị
                     roundsList.remove(selectedRound);
                     updateTotalRounds();
 
-                    showAlert(Alert.AlertType.INFORMATION, "Thành công", null, "Đã xóa vòng đấu thành công!");
+                    AlertUtils.showInformation("Thông báo", "Xóa vòng đấu thành công", "Vòng đấu đã được xóa khỏi danh sách.");
                 } catch (Exception e) {
-                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể xóa vòng đấu", e.getMessage());
+                    AlertUtils.showError("Lỗi", "Không thể xóa vòng đấu", "Vòng đấu này đang có trận đấu diễn ra nên không thể xóa!");
                 }
             }
         }
@@ -259,13 +259,15 @@ public class RoundController {
     @FXML
     private void handleSave() {
         if (!validateForm()) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Thông tin không hợp lệ",
+            AlertUtils.showError( "Lỗi", "Thông tin không hợp lệ",
                     "Vui lòng điền đầy đủ thông tin vòng đấu và đảm bảo ngày kết thúc sau ngày bắt đầu!");
             return;
         }
 
         try {
-            String name = nameField.getText();
+            String name = nameField.getText() ;
+            if(!name.contains(tournament.getTenMG()))
+                name+=" (" + tournament.getTenMG() + ")";
             LocalDate startDate = startDatePicker.getValue();
             LocalDate endDate = endDatePicker.getValue();
 
@@ -278,7 +280,7 @@ public class RoundController {
                 // Cập nhật trong cơ sở dữ liệu
                 boolean success = service.updateVD(currentRound);
                 if (!success) {
-                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể cập nhật vòng đấu", "Đã xảy ra lỗi khi cập nhật vòng đấu trong cơ sở dữ liệu.");
+                    AlertUtils.showError( "Lỗi", "Không thể cập nhật vòng đấu", "Đã xảy ra lỗi khi cập nhật vòng đấu trong cơ sở dữ liệu.");
                     return;
                 }
 
@@ -286,15 +288,16 @@ public class RoundController {
             } else {
                 // Tạo vòng đấu mới
                 MODEL_VONGDAU newRound = new MODEL_VONGDAU();
-                newRound.setTenVD(name);  // Không cần ép kiểu nữa
+                newRound.setTenVD(name);
                 newRound.setMaMG(tournament.getMaMG());
                 newRound.setNgayBD(Date.valueOf(startDate));
                 newRound.setNgayKT(Date.valueOf(endDate));
 
                 // Lưu vào cơ sở dữ liệu
-                boolean success = service.insertVD(newRound);
-                if (!success) {
-                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể thêm vòng đấu", "Đã xảy ra lỗi khi thêm vòng đấu vào cơ sở dữ liệu.");
+                int success = service.insertVD(newRound);
+                newRound.setMaVD(success);
+                if (success==0) {
+                    AlertUtils.showError("Lỗi", "Không thể thêm vòng đấu", "Đã xảy ra lỗi khi thêm vòng đấu vào cơ sở dữ liệu.");
                     return;
                 }
                 roundsList.add(newRound);
@@ -304,9 +307,9 @@ public class RoundController {
             resetForm();
             enableForm(false);
 
-            showAlert(Alert.AlertType.INFORMATION, "Thành công", null, "Đã lưu thông tin vòng đấu thành công!");
+            AlertUtils.showInformation("Thành công", "Thêm vòng đấu thành công", "Đã lưu thông tin vòng đấu thành công!");
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể lưu vòng đấu", e.getMessage());
+            AlertUtils.showError("Lỗi", "Không thể lưu vòng đấu", e.getMessage());
         }
     }
 
@@ -346,13 +349,5 @@ public class RoundController {
         endDatePicker.setDisable(!enable);
         saveButton.setDisable(!enable);
         cancelButton.setDisable(!enable);
-    }
-
-    private void showAlert(Alert.AlertType alertType, String title, String header, String content) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 }

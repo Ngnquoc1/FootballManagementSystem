@@ -45,6 +45,7 @@ public class ClubsDetailController {
     // Models
     private MODEL_CLB club;
     private MODEL_SAN stadium;
+    private String logoDirectory = "src/main/resources/image/ClubLogo/";
 
     @FXML
     private void initialize() {
@@ -97,20 +98,16 @@ public class ClubsDetailController {
     private void loadClubLogo() {
         try {
             // Try to load from resources
-            String logoPath = "/Image/ClubLogo/" + club.getLogoCLB();
+            String logoPath = logoDirectory + club.getLogoCLB();
             Image logoImage;
 
             try {
-                logoImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(logoPath)));
+                File logoFile = new File(logoPath);
+                logoImage = new Image(logoFile.toURI().toString());
             } catch (Exception e) {
                 // If not found in resources, try to load from file system
-                File logoFile = new File("Image/ClubLogo/" + club.getLogoCLB());
-                if (logoFile.exists()) {
-                    logoImage = new Image(logoFile.toURI().toString());
-                } else {
-                    // If still not found, use a placeholder
-                    logoImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Image/placeholder_logo.png")));
-                }
+                File logoFile = new File(logoDirectory + "default_logo.png");
+                logoImage = new Image(logoFile.toURI().toString());
             }
 
             if (!logoImage.isError()) {

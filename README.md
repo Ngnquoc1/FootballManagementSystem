@@ -1,23 +1,123 @@
-# FootballManagementSystem
+# ⚽ Football Management System
 
-## Mô tả
-Mô tả ngắn về chức năng của dự án.
+Hệ thống phần mềm hỗ trợ **quản lý giải vô địch bóng đá quốc gia**, bao gồm nhiều chức năng cho từng vai trò người dùng như Ban tổ chức, Ban quản lý CLB, Ban phân tích kết quả, v.v.
 
-## Yêu cầu hệ thống
-- JDK 23
-- JavaFX
-- ojdbc11
-- Oracle Database
+---
 
-## Hướng dẫn thêm các thư viện
-Thêm tất cả các thư viện cần thiết vào mục External Library:
-- JDK 23
-- ojdbc11: Vào File -> Project Structure -> Modules -> Add -> Jars or Directories -> Chọn file ojdbc11.jar hoặc thư mục chứa file .jar.
-- JavaFX : Vào File -> Project Structure -> Libraries -> Add -> Chọn thư mục lib trong JavaFx SDK đã tải (https://gluonhq.com/products/javafx/)
+## 🧰 Yêu cầu hệ thống
 
-## Hướng dẫn cài đặt chương trình
-1. Bước 1: Clone project FootballManagementSystem.
-2. Bước 2: Vào IntelliJ chọn Open project và mở project vừa clone về.
-3. Bước 3: Làm theo mục "Hướng dẫn thêm các thư viện".
-4. Bước 4: Trong `src/main/java/Database` có file `QLDB1.sql`. Vào Oracle tạo user mới với Username là `c##QLDB1` và Password là `1`, sau đó chạy toàn bộ file `Database.sql`.
-5. Bước 5: Chạy file `src/main/java/Test/test.java` để khởi động chương trình, đăng nhập với vai trò quản lý bằng Username là `admin` và Password là `123`.
+* ✅ Java Development Kit (**JDK 23**)
+* ✅ **JavaFX SDK**
+* ✅ **Oracle JDBC Driver (ojdbc11)**
+* ✅ **Oracle Database**
+
+---
+
+## 🚀 Hướng dẫn cài đặt
+
+### 1️⃣ Clone & mở project
+
+```bash
+git clone [URL_REPO]
+```
+
+* Mở IntelliJ IDEA → **Open Project** → chọn thư mục vừa clone.
+
+### 2️⃣ Thêm thư viện cần thiết
+
+#### 📦 Thêm `ojdbc11`
+
+* Vào `File` → `Project Structure` → `Modules` → `Dependencies` → `+` → **JARs or directories** → Chọn file `ojdbc11.jar`.
+
+🔗 Tải `ojdbc11`:
+👉 [Download ojdbc11](https://www.oracle.com/database/technologies/appdev/jdbc-downloads.html)
+
+#### 🎨 Thêm JavaFX
+
+* Vào `File` → `Project Structure` → `Libraries` → `+` → Chọn thư mục `lib` trong JavaFX SDK đã giải nén.
+
+🔗 Tải JavaFX SDK:
+👉 [Download JavaFX](https://gluonhq.com/products/javafx/)
+
+* Cấu hình VM options khi chạy:
+
+```sh
+--module-path "path/to/javafx-sdk/lib" --add-modules javafx.controls,javafx.fxml,javafx.web
+```
+
+---
+
+### 3️⃣ Cài đặt CSDL
+
+* Mở Oracle SQL Developer hoặc môi trường tương đương.
+* Tạo user mới:
+
+```sql
+CREATE USER c##QLDB1 IDENTIFIED BY 1;
+GRANT ALL PRIVILEGES TO c##QLDB1;
+```
+
+* Mở file:
+  `src/main/java/Database/QLDB1.sql`
+  → Chạy toàn bộ nội dung SQL để tạo bảng và dữ liệu mẫu.
+
+---
+
+### 4️⃣ Chạy chương trình
+
+* Chạy file:
+  `src/main/java/Test/test.java`
+
+---
+
+### 5️⃣ Đăng nhập hệ thống
+
+| Vai trò                     | Tên đăng nhập        | Mật khẩu |
+|-----------------------------|----------------------|----------|
+| 👑 Admin (Full quyền)       | `0`                  | `0`      |
+| 🏆 Ban tổ chức giải đấu     | `admin`              | `123`    |
+| ⚔ Ban quản lý thi đấu       | `admin4`             | `1234`   |
+| 🏟 Ban quản lý CLB          | `admin45`            | `12345`  |
+| 📊 Ban phân tích & tổng hợp | `admin456`           | `123456` |
+| 👤 Khách (Guest)            | Bấm `Login as Guest` |          |
+
+---
+
+## 📂 Cấu trúc thư mục
+
+```
+FootballManagementSystem/
+├— src/
+│   ├— main/
+│   │   └— java/
+│   │       ├— Model
+│   │       ├— Controller
+│   │       ├— Database/
+│   │       │   └— QLDB1.sql
+│   │       ├— Service
+│   │       ├— Util
+│   │       └— Test/
+│   │           └— test.java
+│   │   └— Resources/
+│   │       ├— CSS
+│   │       ├— Icon
+│   │       ├— Image
+│   │       └— View
+├— pom.xml 
+└— README.md
+```
+
+---
+
+## 📌 Ghi chú
+
+* Đảm bảo `Oracle` đang hoạt động trước khi chạy chương trình.
+* Nếu gặp lỗi kết nối, kiểm tra `username/password` và URL kết nối trong code.
+
+---
+
+## 💬 Liên hệ
+
+Mọi góp ý hoặc thắc mắc, vui lòng liên hệ **nhóm phát triển** qua email: nhuquoc1104@gmail.com hoặc GitHub Issues.
+
+---

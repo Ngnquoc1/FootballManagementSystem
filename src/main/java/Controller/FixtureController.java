@@ -26,6 +26,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -98,26 +99,32 @@ public class FixtureController implements Initializable {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("EEEE dd MMMM yyyy");
 
         // Sort dates to ensure chronological order
-        Map<LocalDate, List<Match>> finalMatchesByDate = matchesByDate;
         matchesByDate.keySet().stream().sorted().forEach(date -> {
-            List<Match> matches = finalMatchesByDate.get(date);
-
-            // Date header with Premier League logo
-
-            HBox dateHeader = createDateHeader(date, dateFormatter);
-            mainContent.getChildren().add(dateHeader);
-
-            // Add match rows for this date
-            for (Match match : matches) {
-                HBox matchRow = createMatchRow(match);
-                mainContent.getChildren().add(matchRow);
+            List<Match> matches = matchesByDate.get(date);
+            List<String> tournamentNames = matches.stream()
+                    .map(Match::getTenMuaGiai)
+                    .distinct()
+                    .toList();
+            for(String tournamentName : tournamentNames) {
+                // Date header with Premier League logo
+                HBox dateHeader = createDateHeader(date, dateFormatter,
+                        tournamentName.isEmpty() ? "Unknown League" : tournamentName);;
+                mainContent.getChildren().add(dateHeader);
+                // Add match rows for this date and tournament
+                for (Match match : matches) {
+                    if( !match.getTenMuaGiai().equals(tournamentName)) {
+                        continue; // Skip matches not in the current tournament
+                    }
+                    HBox matchRow = createMatchRow(match);
+                    mainContent.getChildren().add(matchRow);
+                }
             }
         });
         Calendar.setContent(mainContent);
         Calendar.setFitToWidth(true);
     }
 
-    private HBox createDateHeader(LocalDate date, DateTimeFormatter formatter) {
+    private HBox createDateHeader(LocalDate date, DateTimeFormatter formatter, String leagueName) {
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
 
@@ -127,10 +134,11 @@ public class FixtureController implements Initializable {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        Label leagueLabel = new Label("V-League 2025 ");
+        Label leagueLabel = new Label(leagueName);
         leagueLabel.getStyleClass().add("league-label");
 
-        ImageView leagueLogo = new ImageView(new Image(getClass().getResourceAsStream("/icons/logo.png")));
+        File leagueLogoFile = new File("src/main/resources/icons/logo.png");
+        ImageView leagueLogo = new ImageView(leagueLogoFile.toURI().toString());
         leagueLogo.setFitHeight(30);
         leagueLogo.setFitWidth(30);
 
@@ -143,7 +151,8 @@ public class FixtureController implements Initializable {
         row.getStyleClass().add("match-row");
 
         // Home team with logo
-        Image logo1 = new Image(String.valueOf(getClass().getResource("/Image/ClubLogo/" + match.getLogoCLB1())));
+        File logoFile1 = new File("src/main/resources/Image/ClubLogo/" + match.getLogoCLB1());
+        Image logo1 = new Image(logoFile1.toURI().toString());
         ImageView homeTeamLogo = new ImageView(logo1);
         homeTeamLogo.getStyleClass().add("team-logo");
 
@@ -163,7 +172,8 @@ public class FixtureController implements Initializable {
         roundLabel.getStyleClass().add("round-label");
 
         // Away team with logo
-        Image logo2 = new Image(String.valueOf(getClass().getResource("/Image/ClubLogo/" + match.getLogoCLB2())));
+        File logoFile2 = new File("src/main/resources/Image/ClubLogo/" + match.getLogoCLB2());
+        Image logo2 = new Image(logoFile2.toURI().toString());
         ImageView awayTeamLogo = new ImageView(logo2);
         awayTeamLogo.getStyleClass().add("team-logo");
 

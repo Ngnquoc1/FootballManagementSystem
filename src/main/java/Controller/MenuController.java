@@ -8,7 +8,7 @@ import javafx.scene.layout.VBox;
 
 public class MenuController {
     @FXML
-    private Button resultMenuBtn,fixtureMenuBtn,tableMenuBtn,clubMenuBtn,playerMenuBtn,leagueMenuBtn, rulesMenuBtn, registryMenuBtn,homeMenuBtn;
+    private Button statisticsMenuBtn,resultMenuBtn,fixtureMenuBtn,tableMenuBtn,clubMenuBtn,playerMenuBtn,leagueMenuBtn, rulesMenuBtn, registryMenuBtn,homeMenuBtn;
     @FXML
     private BorderPane mainContent;
 
@@ -122,5 +122,4 @@ public class MenuController {
         VBox view = fxmlLoader.getPane("RegistrationFrame");
         mainContent.setCenter(view);
     }
-
 }
