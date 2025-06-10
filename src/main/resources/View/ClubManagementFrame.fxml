@@ -156,7 +156,7 @@
                               <HBox alignment="CENTER_LEFT" spacing="10">
                                  <children>
                                     <Button fx:id="viewStadiumButton" onAction="#viewStadiumDetails" styleClass="secondary-button" text="Xem thông tin sân" />
-                                    <Button fx:id="addStadiumButton" onAction="#addNewStadium" styleClass="secondary-button" text="Thêm sân mới" />
+                                    <Button fx:id="addStadiumButton" onAction="#openStadiumManagement" styleClass="secondary-button" text="Quản lý sân" />
                                  </children>
                               </HBox>
                            </children>

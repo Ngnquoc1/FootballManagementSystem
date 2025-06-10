@@ -13,9 +13,6 @@ public class MODEL_MUAGIAI {
     private final ObjectProperty<LocalDate> ngayKT;
     private final StringProperty logoFileName; // Chỉ lưu tên file, không lưu đường dẫn đầy đủ
 
-    // Đường dẫn đến thư mục logo - có thể đặt là hằng số tĩnh
-    private static final String LOGO_DIRECTORY = "C:\\STUDY\\JAVA\\DEMO1\\src\\main\\resources\\Image\\LeagueLogo";
-
     public MODEL_MUAGIAI(int maMG, String tenMG, LocalDate ngayBD, LocalDate ngayKT) {
         this(maMG, tenMG, ngayBD, ngayKT, null);
     }
@@ -50,7 +47,7 @@ public class MODEL_MUAGIAI {
         }
 
         try {
-            File file = new File(LOGO_DIRECTORY, getLogoFileName());
+            File file = new File("src/main/resources/Image/LeagueLogo/" + getLogoFileName());
             if (file.exists()) {
                 return new Image(file.toURI().toString());
             }

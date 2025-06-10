@@ -1,7 +1,7 @@
 package Controller;
 
 import Model.*;
-import Service.Service;
+import Service.*;
 import Util.AlertUtils;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -10,6 +10,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
@@ -27,7 +31,6 @@ import java.util.List;
 public class TableController {
     @FXML
     private VBox mainContainer;
-
     // Bộ lọc
     @FXML
     private ComboBox<String> compeFilter;
@@ -43,6 +46,9 @@ public class TableController {
     private Tab clubTab;
     @FXML
     private Tab scorerTab;
+    @FXML
+    private Tab statisticsTab;
+
 
     // Thông tin giải đấu
     @FXML
@@ -50,6 +56,11 @@ public class TableController {
     @FXML
     private Label scorerCompetitionInfoLabel;
 
+    @FXML private BarChart<String, Number> teamBarChart;
+    @FXML private CategoryAxis teamAxis;
+    @FXML private NumberAxis teamValueAxis;
+    @FXML private RadioButton pointsRadio, goalsRadio, concededRadio, goalDiffRadio;
+    @FXML private ToggleGroup teamStatsToggleGroup;
     // Bảng xếp hạng CLB
     @FXML
     private TableView<MODEL_BXH_CLB> clubTableView;
@@ -99,17 +110,19 @@ public class TableController {
 
 
     private Service service;
+    private ExportService exportService;
     @FXML
     private ImageView userIcon;
 
     @FXML
     private void initialize() throws SQLException {
         service = new Service();
+        exportService = new ExportService();
         configureUIBasedOnRole();
         // Thiết lập các ComboBox
         compeFilter.setItems(FXCollections.observableArrayList(
                 service.getAllTournament().stream().map(MODEL_MUAGIAI::getTenMG).toList()));
-        rankingTypeFilter.setItems(FXCollections.observableArrayList("BXH CLB", "Vua phá lưới"));
+        rankingTypeFilter.setItems(FXCollections.observableArrayList("BXH CLB", "Vua phá lưới","Thống kê"));
 
         // Thiết lập giá trị mặc định
         compeFilter.getSelectionModel().selectFirst();
@@ -121,7 +134,7 @@ public class TableController {
         // Thiết lập các cột cho bảng xếp hạng Vua phá lưới
         setupScorerTableColumns();
 
-        // Tạo dữ liệu mẫu
+        initializeStatisticsTab();
         // Hiển thị dữ liệu ban đầu
         updateTableView();
 
@@ -135,9 +148,82 @@ public class TableController {
                 rankingTypeFilter.setValue("BXH CLB");
             } else if (newTab == scorerTab) {
                 rankingTypeFilter.setValue("Vua phá lưới");
+            } else if (newTab == statisticsTab) {
+                rankingTypeFilter.setValue("Thống kê");
             }
             updateTableView();
         });
+
+    }
+    private void initializeStatisticsTab() {
+        pointsRadio.setOnAction(event -> updateTeamBarChart("points"));
+        goalsRadio.setOnAction(event -> updateTeamBarChart("goals"));
+        concededRadio.setOnAction(event -> updateTeamBarChart("conceded"));
+        goalDiffRadio.setOnAction(event -> updateTeamBarChart("goalDiff"));
+        // Thiết lập RadioButton mặc định
+        pointsRadio.setSelected(true);
+        //
+        teamAxis.setLabel("Đội bóng");
+        teamValueAxis.setLabel("Điểm số");
+
+    }
+    private void updateTeamBarChart(String dataType) {
+        try {
+            // Xóa dữ liệu cũ
+            teamBarChart.getData().clear();
+            // Lấy dữ liệu từ bảng
+            ObservableList<MODEL_BXH_CLB> teamStats = clubTableView.getItems();
+
+            if (teamStats == null || teamStats.isEmpty()) {
+                return;
+            }
+
+            // Tạo series mới
+            XYChart.Series<String, Number> series = new XYChart.Series<>();
+            int tournamentId = service.getTournamentByName(compeFilter.getValue()).getMaMG();
+            // Thiết lập tên series và nhãn trục y dựa trên loại dữ liệu
+            switch (dataType) {
+                case "points":
+                    series.setName("Điểm số");
+                    teamValueAxis.setLabel("Điểm số");
+                    for (MODEL_BXH_CLB stat : teamStats) {
+                        String teamName = service.getCLBByID(stat.getMaCLB()).getTenCLB();
+                        series.getData().add(new XYChart.Data<>(teamName, stat.getDiem()));
+                    }
+                    break;
+                case "goals":
+                    series.setName("Bàn thắng");
+                    teamValueAxis.setLabel("Số bàn thắng");
+                    for (MODEL_BXH_CLB stat : teamStats) {
+                        String teamName = service.getCLBByID(stat.getMaCLB()).getTenCLB();
+                        int totalGoals=service.getTotalGoalsByCLB(stat.getMaCLB(), tournamentId);
+                        series.getData().add(new XYChart.Data<>(teamName, totalGoals));
+                    }
+                    break;
+                case "conceded":
+                    series.setName("Bàn thua");
+                    teamValueAxis.setLabel("Số bàn thua");
+                    for (MODEL_BXH_CLB stat : teamStats) {
+                        String teamName = service.getCLBByID(stat.getMaCLB()).getTenCLB();
+                        int totalConceded=service.getTotalConcededByCLB(stat.getMaCLB(), tournamentId);
+                        series.getData().add(new XYChart.Data<>(teamName, totalConceded));                    }
+                    break;
+                case "goalDiff":
+                    series.setName("Hiệu số");
+                    teamValueAxis.setLabel("Hiệu số bàn thắng/thua");
+                    for (MODEL_BXH_CLB stat : teamStats) {
+                        String teamName = service.getCLBByID(stat.getMaCLB()).getTenCLB();
+                        series.getData().add(new XYChart.Data<>(teamName, stat.getHieuSo()));
+                    }
+                    break;
+            }
+
+            // Thêm series vào biểu đồ
+            teamBarChart.getData().add(series);
+
+        } catch (Exception e) {
+            AlertUtils.showError("Lỗi", "Không thể cập nhật biểu đồ đội bóng", e.getMessage());
+        }
     }
 
     private void setupClubTableColumns() throws SQLException {
@@ -265,11 +351,20 @@ public class TableController {
             tabPane.getSelectionModel().select(clubTab);
             clubTableView.setItems(vleagueClubRankings);
             clubLegendBox.setVisible(true);
-        } else {
+            exportButton.setVisible(true);
+        } else if("Vua phá lưới".equals(rankingType)) {
             tabPane.getSelectionModel().select(scorerTab);
             scorerTableView.setItems(vleagueScorerRankings);
+            exportButton.setVisible(true);
+        } else if ("Thống kê".equals(rankingType)) {
+            tabPane.getSelectionModel().select(statisticsTab);
+            clubTableView.setItems(vleagueClubRankings);
+            pointsRadio.setSelected(true);
+            updateTeamBarChart("points");
+            exportButton.setVisible(false);
+        } else {
+            AlertUtils.showError("Lỗi", "Chưa chọn loại bảng xếp hạng", "Vui lòng chọn loại bảng xếp hạng để hiển thị.");
         }
-
     }
 
     @FXML
@@ -280,21 +375,71 @@ public class TableController {
 
     @FXML
     private void handleExport() {
+        String rankingType = rankingTypeFilter.getValue();
+        if ("BXH CLB".equals(rankingType)) {
+            exportClubRankingsToExcel();
+        } else if ("Vua phá lưới".equals(rankingType)) {
+            exportScorerRankingsToExcel();
+        } else {
+            AlertUtils.showError("Lỗi xuất báo cáo", "", "Chưa chọn loại bảng xếp hạng để xuất!");
+        }
+    }
+
+    private void exportScorerRankingsToExcel() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Lưu báo cáo");
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Excel Files", "*.xlsx"),
-                new FileChooser.ExtensionFilter("PDF Files", "*.pdf"),
-                new FileChooser.ExtensionFilter("All Files", "*.*"));
+                new FileChooser.ExtensionFilter("Excel Files", "*.xlsx"));
 
         File file = fileChooser.showSaveDialog(mainContainer.getScene().getWindow());
 
         if (file != null) {
+            try {
+                if (file.getName().endsWith(".xlsx")) {
+                    exportService.exportScorerRankingsToExcel(vleagueScorerRankings, file,
+                            compeFilter.getValue(), rankingTypeFilter.getValue());
+                } else {
+                    AlertUtils.showError("Lỗi xuất báo cáo", "", "Định dạng file không hợp lệ!");
+                    return;
+                }
+            } catch (Exception e) {
+                AlertUtils.showError("Lỗi xuất báo cáo", "", "Không thể xuất báo cáo: " + e.getMessage());
+                return;
+            }
             AlertUtils.showInformation("Xuất báo cáo", "",
                     "Đã xuất báo cáo thành công!\nFile: " + file.getAbsolutePath());
         }
     }
 
+    private void exportClubRankingsToExcel() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Lưu báo cáo");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Excel Files", "*.xlsx"));
+
+        File file = fileChooser.showSaveDialog(mainContainer.getScene().getWindow());
+
+        if (file != null) {
+            try {
+                if (file.getName().endsWith(".xlsx")) {
+                    exportService.exportClubRankingsToExcel(vleagueClubRankings, file,
+                            compeFilter.getValue(), rankingTypeFilter.getValue());
+                }else {
+                    AlertUtils.showError("Lỗi xuất báo cáo", "", "Định dạng file không hợp lệ!");
+                    return;
+                }
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+                AlertUtils.showError("Lỗi xuất báo cáo", "", "Không thể xuất báo cáo: " + e.getMessage());
+                return;
+            }
+            AlertUtils.showInformation("Xuất báo cáo", "",
+                    "Đã xuất báo cáo thành công!\nFile: " + file.getAbsolutePath());
+        }
+    }
+
+
+    
     @FXML
     private void handleClose() {
         Stage stage = (Stage) closeButton.getScene().getWindow();
@@ -344,4 +489,5 @@ public class TableController {
             e.printStackTrace();
         }
     }
+    
 }

@@ -2,9 +2,19 @@ package Service;
 
 import Controller.Connection.DatabaseConnection;
 import Model.*;
+import javafx.collections.ObservableList;
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OracleTypes;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -296,7 +306,7 @@ public class Service {
         if (model == null || model.getId() <= 0) {
             throw new SQLException("Dữ liệu không hợp lệ: Match hoặc ID không hợp lệ.");
         }
-        String sql = "{call DeleteMatchAndGoals(?)}";
+        String sql = "{call DeleteMatch(?)}";
         try (CallableStatement cstmt = conn.prepareCall(sql)) {
             cstmt.setInt(1, model.getId());
 
@@ -732,18 +742,13 @@ public class Service {
         return null;
     }
 
-    public int deleteTournament(MODEL_MUAGIAI modelMuagiai) throws SQLException {
-        String sql = "DELETE FROM MuaGiai WHERE MaMG = ?";
-        String sql1 = "DELETE FROM QuyDinh WHERE MaMG = ?";
-        String sql2 = "DELETE FROM THUTU_UUTIEN WHERE MaMG = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)
-             ; PreparedStatement ps1 = conn.prepareStatement(sql1);
-             PreparedStatement ps2 = conn.prepareStatement(sql2)) {
-            ps.setInt(1, modelMuagiai.getMaMG());
-            ps1.setInt(1, modelMuagiai.getMaMG());
-            ps2.setInt(1, modelMuagiai.getMaMG());
-            return ps.executeUpdate() + ps1.executeUpdate() > 2 ? 1 : 0;
-
+    public void deleteTournament(MODEL_MUAGIAI modelMuagiai) throws SQLException {
+        String sql="{call DeleteTournament(?)}";
+        try (CallableStatement cstmt = conn.prepareCall(sql)) {
+            cstmt.setInt(1, modelMuagiai.getMaMG());
+            cstmt.execute();
+        } catch (SQLException e) {
+            throw new SQLException("Lỗi khi xóa giải đấu: Có trận đấu đã và đang diễn ra ở giải đấu" );
         }
     }
 
@@ -827,8 +832,8 @@ public class Service {
         return 0;
     }
 
-    public boolean insertVD(MODEL_VONGDAU vd) {
-        int newId=this.getNextIdVD();
+    public int insertVD(MODEL_VONGDAU vd) {
+        int newId = this.getNextIdVD();
         String sql = "INSERT INTO VONGDAU (MAVD, TENVD, MAMG, NGAYBD, NGAYKT) VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -839,10 +844,10 @@ public class Service {
             stmt.setDate(5, vd.getNgayKT());
 
             int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
+            return newId;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return newId;
         }
     }
 
@@ -1112,13 +1117,12 @@ public class Service {
         }
     }
 
-    public void removePlayer(int maCT) {
+    public void removePlayer(int maCT) throws Exception {
         String sql = "DELETE FROM CAUTHU WHERE MaCT = ?";
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql))
+        {
             pstmt.setInt(1, maCT);
             pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
@@ -1362,11 +1366,11 @@ public class Service {
     public void updateGoal(MODEL_BANTHANG modelBanthang) throws SQLException {
         String sql = "{call UpdateGoal(?,?,?,?,?)}";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, modelBanthang.getMaCT());
-            ps.setInt(2, modelBanthang.getMaTD());
-            ps.setInt(3, modelBanthang.getPhutGhiBan());
-            ps.setInt(4, modelBanthang.getmaLoaiBT());
-            ps.setInt(5, modelBanthang.getMaBT());
+            ps.setInt(2, modelBanthang.getMaCT());
+            ps.setInt(3, modelBanthang.getMaTD());
+            ps.setInt(4, modelBanthang.getPhutGhiBan());
+            ps.setInt(5, modelBanthang.getmaLoaiBT());
+            ps.setInt(1, modelBanthang.getMaBT());
             ps.executeUpdate();
         }
     }
@@ -1420,6 +1424,38 @@ public class Service {
             e.printStackTrace();
         }
         return goalTypes;
+    }
+
+    public int getTotalGoalsByCLB(int maCLB, int maMG) {
+        int totalGoals = 0;
+        String sql = "{call GetTotalGoalsOfClubInTournament(?, ?, ?)}";
+        try (CallableStatement cstmt = conn.prepareCall(sql)) {
+            cstmt.setInt(1, maCLB); // IN: Club ID
+            cstmt.setInt(2, maMG);  // IN: Tournament ID
+            cstmt.registerOutParameter(3, Types.INTEGER); // OUT: Total goals
+
+            cstmt.execute();
+            totalGoals = cstmt.getInt(3);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return totalGoals;
+    }
+
+    public int getTotalConcededByCLB(int maCLB, int tournamentId) {
+        String sql = "{call GetTotalConcededOfClubInTournament(?, ?, ?)}";
+        int totalConceded = 0;
+        try (CallableStatement cstmt = conn.prepareCall(sql)) {
+            cstmt.setInt(1, maCLB); // IN: Club ID
+            cstmt.setInt(2, tournamentId);  // IN: Tournament ID
+            cstmt.registerOutParameter(3, Types.INTEGER); // OUT: Total conceded
+
+            cstmt.execute();
+            totalConceded = cstmt.getInt(3);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return totalConceded;
     }
 
     //    RANKING
@@ -1621,4 +1657,23 @@ public class Service {
         }
     }
 
+
+    public void updateStadium(MODEL_SAN selected) throws SQLException {
+        String sql = "UPDATE SAN SET TenSAN = ?, DiaChi = ?, SucChua = ? WHERE MaSan = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, selected.getTenSan());
+            pstmt.setString(2, selected.getDiaChi());
+            pstmt.setLong(3, selected.getSucChua());
+            pstmt.setInt(4, selected.getMaSan());
+            pstmt.executeUpdate();
+        }
+    }
+
+    public void deleteStadium(int maSan) throws Exception {
+        String sql = "DELETE FROM SAN WHERE MaSan = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, maSan);
+            pstmt.executeUpdate();
+        }
+    }
 }

@@ -19,6 +19,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -46,7 +47,7 @@ public class ClubController implements Initializable {
 
     private Service service = new Service();
 
-
+    private String logoDirectory = "src/main/resources/image/ClubLogo/";
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -141,10 +142,12 @@ public class ClubController implements Initializable {
     }
 
     @FXML
-    private void resetFilter() {
+    public void resetFilter() {
         searchField.clear();
         compeFilter.getSelectionModel().selectFirst();
         filteredClubs.clear();
+        allClubs.clear();
+        allClubs.addAll( service.getAllClubs());
         filteredClubs.addAll(allClubs);
         try {
             loadTeams(filteredClubs);
@@ -226,9 +229,11 @@ public class ClubController implements Initializable {
 
         Image logo = null;
         try {
-            logo = new Image(getClass().getResourceAsStream("/Image/ClubLogo/" + team.getLogoCLB()));
+            File logoFile = new File(logoDirectory + team.getLogoCLB());
+            logo = new Image(logoFile.toURI().toString());
         } catch (Exception e) {
-            logo = new Image(getClass().getResourceAsStream("/Image/ClubLogo/default_logo.png"));
+            File logoFile = new File(logoDirectory + "default_logo.png");
+            logo = new Image(logoFile.toURI().toString());
         }
         ImageView logoView = new ImageView(logo);
         logoView.setPreserveRatio(true);
@@ -306,7 +311,9 @@ public class ClubController implements Initializable {
             // Tải file FXML của cửa sổ mới
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/ClubManagementFrame.fxml"));
             Parent root = loader.load();
-
+            // Lấy controller của cửa sổ mới
+            ClubManagementController controller = loader.getController();
+            controller.setPreController(this);
             // Tạo một Stage mới
             Stage stage = new Stage();
             stage.setTitle("Club Management");

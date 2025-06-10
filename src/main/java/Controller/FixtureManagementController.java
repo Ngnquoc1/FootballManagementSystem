@@ -244,16 +244,9 @@ public class FixtureManagementController implements Initializable {
         Match selectedMatch = fixtureTable.getSelectionModel().getSelectedItem();
         if (selectedMatch != null) {
             //Xác nhận xóa
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Xác nhận xóa");
-            alert.setHeaderText("Bạn có chắc chắn muốn xóa trận đấu này không?");
-            alert.setContentText("Trận đấu sẽ bị xóa vĩnh viễn.");
-            ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-            ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-            alert.getButtonTypes().setAll(okButton, cancelButton);
-
-            alert.showAndWait().ifPresent(response -> {
-                if (response == okButton) {
+            boolean response=AlertUtils.showConfirmation("Xác nhận xóa", "Bạn có chắc chắn muốn xóa trận đấu này không?",
+                    "Trận đấu, Kết quả trận đấu và bàn thắng liên quan(nếu có) sẽ bị xóa vĩnh viễn.");
+                if (response) {
                     try {
                         // Xóa trận đấu
                         int result = service.deleteMatch(selectedMatch);
@@ -266,10 +259,9 @@ public class FixtureManagementController implements Initializable {
                             AlertUtils.showInformation("Success", "Xóa trận đấu thành công", "Trận đấu đã được xóa thành công.");
                         }
                     } catch (SQLException e) {
-                        AlertUtils.showError("Error", "Lỗi khi xóa trận đấu", "Không thể xóa trận đấu: " );
+                        AlertUtils.showError("Error", "Lỗi khi xóa trận đấu", "Không thể xóa trận đấu: "+e.getMessage() );
                     }
                 }
-            });
         } else {
             AlertUtils.showError("Error", "Chưa chọn trận đấu", "Vui lòng chọn một trận đấu để xóa.");
         }

@@ -21,6 +21,5 @@ public class test extends Application {
         primaryStage.setTitle("My Test Application");
         primaryStage.setScene(scene);
         primaryStage.show();
-
     }
 }

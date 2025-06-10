@@ -396,7 +396,47 @@ EXCEPTION
 END trg_check_soao_unique_clb;
 /
 ----------------------------------------------------------**********PROCEDURE**********---------------------
+----------------------------------------------------Tournament------------------------------------------
+-----------------DeleteTournament-------------------
+CREATE OR REPLACE PROCEDURE DeleteTournament(
+    p_maMG IN NUMBER
+)
+AS
+    v_count NUMBER;
+BEGIN
+    -- Check if the tournament exists
+    SELECT COUNT(*) INTO v_count FROM QuyDinh WHERE MaMG = p_maMG;
+    IF v_count != 0 THEN
+        DELETE FROM QuyDinh WHERE MaMG = p_maMG;
+    END IF;
 
+    SELECT COUNT(*) INTO v_count FROM THUTU_UUTIEN WHERE MaMG = p_maMG;
+    IF v_count != 0 THEN
+        DELETE FROM THUTU_UUTIEN WHERE MaMG = p_maMG;
+    END IF;
+
+    -- Check if the tournament has any matches
+    SELECT COUNT(*) INTO v_count FROM TranDau WHERE MaVD IN (SELECT MaVD FROM VongDau WHERE MaMG = p_maMG);
+    IF v_count = 0 THEN
+        -- If no matches, delete all related data
+        DELETE FROM BANGXEPHANG_CLB WHERE MaMG = p_maMG;
+        DELETE FROM BANGXEPHANG_BANTHANG WHERE MaMG = p_maMG;
+        DELETE FROM CAUTHU_THAMGIAMUAGIAI WHERE MaMG = p_maMG;
+        DELETE FROM CLB_THAMGIAMUAGIAI WHERE MaMG = p_maMG;
+        DELETE FROM VongDau WHERE MaMG = p_maMG;
+        DELETE FROM KetQuaTD WHERE MaTD IN (SELECT MaTD FROM TranDau WHERE MaVD IN (SELECT MaVD FROM VongDau WHERE MaMG = p_maMG));
+        DELETE FROM BanThang WHERE MaTD IN (SELECT MaTD FROM TranDau WHERE MaVD IN (SELECT MaVD FROM VongDau WHERE MaMG = p_maMG));
+    END IF;
+    -- Delete the tournament itself
+    DELETE FROM MuaGiai WHERE MaMG = p_maMG;
+
+    COMMIT;
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE_APPLICATION_ERROR(-20011, 'Error deleting tournament: ' || SQLERRM);
+END DeleteTournament;
+/
 ----------------------------------------------------BXH_CLB------------------------------
 -----------------InsertInitialRanking--------------
 CREATE OR REPLACE PROCEDURE InsertInitialRanking(
@@ -1132,7 +1172,6 @@ CREATE OR REPLACE PROCEDURE InsertGoal(
 )
 AS
     v_maBT NUMBER;
-    v_count NUMBER;
     v_MaMG NUMBER;
 BEGIN
     -- Sinh mã MaBT mới = MAX(MaBT) + 1
@@ -1430,6 +1469,50 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20031, 'Error when canceling club registration: ' || SQLERRM);
 END CancelClubRegistration;
 /
+CREATE OR REPLACE PROCEDURE GetTotalGoalsOfClubInTournament(
+    p_maCLB IN NUMBER,
+    p_maMG IN NUMBER,
+    p_totalGoals OUT NUMBER
+)
+AS
+BEGIN
+    SELECT NVL(SUM(
+                       CASE
+                           WHEN td.MaCLB1 = p_maCLB THEN kq.DiemCLB1
+                           WHEN td.MaCLB2 = p_maCLB THEN kq.DiemCLB2
+                           ELSE 0
+                           END
+               ), 0)
+    INTO p_totalGoals
+    FROM TranDau td
+             JOIN KetQuaTD kq ON td.MaTD = kq.MaTD
+             JOIN VongDau vd ON td.MaVD = vd.MaVD
+    WHERE vd.MaMG = p_maMG
+      AND (td.MaCLB1 = p_maCLB OR td.MaCLB2 = p_maCLB);
+END GetTotalGoalsOfClubInTournament;
+/
+CREATE OR REPLACE PROCEDURE GetTotalConcededOfClubInTournament(
+    p_maCLB IN NUMBER,
+    p_maMG IN NUMBER,
+    p_totalConceded OUT NUMBER
+)
+AS
+BEGIN
+    SELECT NVL(SUM(
+                       CASE
+                           WHEN td.MaCLB1 = p_maCLB THEN kq.DiemCLB2
+                           WHEN td.MaCLB2 = p_maCLB THEN kq.DiemCLB1
+                           ELSE 0
+                           END
+               ), 0)
+    INTO p_totalConceded
+    FROM TranDau td
+             JOIN KetQuaTD kq ON td.MaTD = kq.MaTD
+             JOIN VongDau vd ON td.MaVD = vd.MaVD
+    WHERE vd.MaMG = p_maMG
+      AND (td.MaCLB1 = p_maCLB OR td.MaCLB2 = p_maCLB);
+END GetTotalConcededOfClubInTournament;
+/
 ----------------------------------------------------GoalsPopUpScene------------------------------
 ----------------------GoalsPopUpScene--------------------
 CREATE OR REPLACE PROCEDURE GetGoalsOfMatch(
@@ -1539,30 +1622,28 @@ INSERT INTO CauThu (MaCT, TenCT, NgaySinh, QuocTich, Avatar, SoAo, LoaiCT, MaCLB
 
 
 commit;
-select * from MuaGiai;
-select * from QuyDinh;
-select * from THUTU_UUTIEN;
-select * from SAN;
-select * from CLB;
-select * from CauThu;
-select * from LoaiCauThu;
-select * from CLB_THAMGIAMUAGIAI;
-select * from BANGXEPHANG_CLB;
-select * from TranDau;
-select * from KETQUATD;
-select * from CAUTHU_THAMGIAMUAGIAI ;
-select * from BANTHANG;
-select * from BANGXEPHANG_BANTHANG;
-commit;
-delete from MuaGiai;
-delete from QuyDinh;
-delete from TranDau;
-delete from KetQuaTD;
-delete from CLB_THAMGIAMUAGIAI;
-delete from BANGXEPHANG_CLB;
-delete from BANGXEPHANG_BANTHANG;
-select * from THUTU_UUTIEN where MaMG=1;
-UPDATE BANGXEPHANG_CLB
-SET SOTRAN=0,THANG=0, Hoa=0, THUA=0, HIEUSO=0, DIEM=0,HANG=0
-WHERE MaMG = 1 AND MaCLB IN (1, 2);
-Insert into KetQuaTD(MaTD, DiemCLB1, DiemCLB2) Values (2,1,0);
+-- select * from MuaGiai;
+-- select * from QuyDinh;
+-- select * from VongDau;
+-- select * from THUTU_UUTIEN;
+-- select * from SAN;
+-- select * from CLB;
+-- select * from CauThu;
+-- select * from LoaiCauThu;
+-- select * from CLB_THAMGIAMUAGIAI;
+-- select * from BANGXEPHANG_CLB ;
+-- select * from TranDau;
+-- select * from KETQUATD;
+-- select * from CAUTHU_THAMGIAMUAGIAI ;
+-- select * from BANTHANG;
+-- select * from BANGXEPHANG_BANTHANG;
+-- delete from MuaGiai;
+-- delete from QuyDinh ;
+-- delete from VongDau ;
+-- delete from THUTU_UUTIEN;
+-- delete from TranDau;
+-- delete from KetQuaTD;
+-- delete from CLB_THAMGIAMUAGIAI ;
+-- delete from CAUTHU_THAMGIAMUAGIAI;
+-- delete from BANGXEPHANG_CLB ;
+-- delete from BANGXEPHANG_BANTHANG;

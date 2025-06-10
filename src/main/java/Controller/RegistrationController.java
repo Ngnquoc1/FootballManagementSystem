@@ -364,6 +364,11 @@ public class RegistrationController implements Initializable {
             List<Integer> maCTList = danhSachDaChon.stream()
                     .map(CauThuViewModel::getMaCT)
                     .toList();
+            if(!service.checkRegistration(maClb, maMG) && "Đang diễn ra".equals(selectedMuaGiai.getStatus())) {
+                AlertUtils.showError("Lỗi", "Quá thời gian đăng ký!",
+                        "Bạn không thể đăng ký tham gia giải đấu này vì giải đấu đã diễn ra!");
+                return;
+            }
             ketQua = service.addRegistration(maClb, maMG, maCTList);
 
             if (ketQua) {
@@ -490,7 +495,6 @@ public class RegistrationController implements Initializable {
 
             // Thiết lập thông tin CLB và giải đấu
             controller.setPlayersClub(club);
-            controller.setRefreshCallback(() -> loadPlayersList(club.getMaCLB()));
             // Tạo scene mới
             Scene scene = new Scene(root);
 

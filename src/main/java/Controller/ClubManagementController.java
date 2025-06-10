@@ -32,7 +32,6 @@ public class ClubManagementController implements Initializable {
 
     // Các trường thông tin cơ bản CLB
     @FXML private TextField searchClubField;
-    @FXML private Button searchButton;
     @FXML private HBox searchResultBox;
     @FXML private ImageView resultClubLogo;
     @FXML private Label resultClubName;
@@ -83,6 +82,11 @@ public class ClubManagementController implements Initializable {
     private MODEL_CLB currentClub = null;
     private boolean isExistingClub = false;
     private Service service;
+    private ClubController preController;
+
+    public void setPreController(ClubController preController) {
+        this.preController = preController;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -159,7 +163,8 @@ public class ClubManagementController implements Initializable {
 
             // Tải logo CLB
             try {
-                Image logo = new Image(getClass().getResourceAsStream("/Image/ClubLogo/"+ currentClub.getLogoCLB()));
+                File logoFile=new File("src/main/resources/image/ClubLogo/"+ currentClub.getLogoCLB());
+                Image logo = new Image(logoFile.toURI().toString());
                 clubLogoPreview.setImage(logo);
                 logoPath = currentClub.getLogoCLB();
                 logoPathLabel.setText(logoPath);
@@ -206,7 +211,8 @@ public class ClubManagementController implements Initializable {
 
                 // Tải logo CLB
                 try {
-                    Image logo = new Image(getClass().getResourceAsStream("/Image/ClubLogo/"+ club.getLogoCLB()));
+                    File  logoFile = new File("src/main/resources/image/ClubLogo/" + club.getLogoCLB());
+                    Image logo = new Image(logoFile.toURI().toString());
                     resultClubLogo.setImage(logo);
                 } catch (Exception e) {
                     resultClubLogo.setImage(null);
@@ -259,82 +265,31 @@ public class ClubManagementController implements Initializable {
     }
 
     @FXML
-    private void addNewStadium() {
-        // Create a dialog for adding a new stadium
-        Dialog<MODEL_SAN> dialog = new Dialog<>();
-        dialog.setTitle("Thêm sân vận động mới");
-        dialog.setHeaderText("Nhập thông tin sân vận động");
+    private void openStadiumManagement() {
+        try {
+            // Tải FXML cho cửa sổ quản lý sân vận động
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/StadiumManagementFrame.fxml"));
+            Parent root = loader.load();
+            // Tạo scene mới
+            Scene scene = new Scene(root);
 
-        // Set the button types
-        ButtonType addButtonType = new ButtonType("Thêm", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
+            // Tạo stage mới
+            Stage stage = new Stage();
+            stage.setTitle("Quản lý sân vận động");
+            stage.setScene(scene);
+            stage.setResizable(false);
 
-        // Create input fields
-        TextField nameField = new TextField();
-        nameField.setPromptText("Tên sân vận động");
-
-        TextField addressField = new TextField();
-        addressField.setPromptText("Địa chỉ");
-
-        TextField capacityField = new TextField();
-        capacityField.setPromptText("Sức chứa");
-
-        // Layout for the dialog
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.add(new Label("Tên sân:"), 0, 0);
-        grid.add(nameField, 1, 0);
-        grid.add(new Label("Địa chỉ:"), 0, 1);
-        grid.add(addressField, 1, 1);
-        grid.add(new Label("Sức chứa:"), 0, 2);
-        grid.add(capacityField, 1, 2);
-
-        dialog.getDialogPane().setContent(grid);
-
-        // Convert the result to a MODEL_SAN when the Add button is clicked
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == addButtonType) {
-                try {
-                    // Validate inputs
-                    if (ValidationUtils.isNullOrEmpty(nameField.getText()) ||
-                            ValidationUtils.isNullOrEmpty(addressField.getText()) ||
-                            !ValidationUtils.isNumeric(capacityField.getText())) {
-                        AlertUtils.showWarning("Cảnh báo", "Thông tin không hợp lệ", "Vui lòng nhập đầy đủ và chính xác thông tin.");
-                        return null;
-                    }
-
-                    // Create a new stadium model
-                    MODEL_SAN newStadium = new MODEL_SAN();
-                    newStadium.setTenSan(nameField.getText().trim());
-                    newStadium.setDiaChi(addressField.getText().trim());
-                    newStadium.setSucChua(Integer.parseInt(capacityField.getText().trim()));
-
-                    return newStadium;
-                } catch (Exception e) {
-                    AlertUtils.showError("Lỗi", "Không thể thêm sân vận động", e.getMessage());
-                }
-            }
-            return null;
-        });
-
-        // Show the dialog and handle the result
-        Optional<MODEL_SAN> result = dialog.showAndWait();
-        result.ifPresent(newStadium -> {
-            try {
-                // Save the new stadium to the database
-                int newStadiumId = service.addStadium(newStadium);
-                newStadium.setMaSan(newStadiumId);
-
-                // Refresh the stadium combo box
+            stage.setOnCloseRequest(e->{
+                // Khi cửa sổ quản lý sân vận động đóng, tải lại danh sách sân vận động
                 loadStadiums();
+            });
 
-                AlertUtils.showInformation("Thành công", "Thêm sân vận động thành công",
-                        "Sân vận động \"" + newStadium.getTenSan() + "\" đã được thêm.");
-            } catch (Exception e) {
-                AlertUtils.showError("Lỗi", "Không thể lưu sân vận động", e.getMessage());
-            }
-        });
+            // Hiển thị cửa sổ quản lý sân vận động
+            stage.show();
+        } catch (Exception e) {
+            AlertUtils.showError("Lỗi", "Không thể mở cửa sổ quản lý sân vận động", e.getMessage());
+        }
+
     }
 
     private boolean validateForm() {
@@ -454,15 +409,9 @@ public class ClubManagementController implements Initializable {
             }
             // Mở cửa sổ đăng ký cầu thủ
             //Option Pane
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Thông báo");
-            alert.setHeaderText("Đăng ký cầu thủ");
-            alert.setContentText("Bạn có muốn đăng ký cầu thủ cho CLB này không?");
-            ButtonType yesButton = new ButtonType("Có");
-            ButtonType noButton = new ButtonType("Không");
-            alert.getButtonTypes().setAll(yesButton, noButton);
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == yesButton) {
+            boolean result=AlertUtils.showConfirmation("Thông báo", "Đăng ký cầu thủ",
+                    "Bạn có muốn đăng ký cầu thủ cho CLB này không?");
+            if (result) {
                 // Mở cửa sổ đăng ký cầu thủ
                 openPlayerRegistrationWindow(club);
             } else {
@@ -471,6 +420,10 @@ public class ClubManagementController implements Initializable {
             }
         } catch (Exception e) {
             AlertUtils.showError("Lỗi", "Không thể Thêm / Cập nhật CLB", e.getMessage());
+        }
+        finally {
+            // Đóng form đăng ký CLB
+            closeForm();
         }
     }
 
@@ -490,7 +443,7 @@ public class ClubManagementController implements Initializable {
                     AlertUtils.showInformation("Thông báo", "Đã xóa CLB",
                             "CLB " + currentClub.getTenCLB() + " đã được xóa thành công.");
                 } catch (Exception e) {
-                    AlertUtils.showError("Lỗi", "Không thể xóa đăng ký CLB", e.getMessage());
+                    AlertUtils.showError("Lỗi", "Không thể xóa CLB", "CLB đã và đang tham gia thi đấu. Vui lòng xóa các cầu thủ và thành tích liên quan trước khi xóa CLB.");
                 }
             }
         } else {
@@ -500,7 +453,10 @@ public class ClubManagementController implements Initializable {
 
     private void closeForm() {
         // Đóng form đăng ký
+        this.preController.resetFilter();
         cancelButton.getScene().getWindow().hide();
+
+
     }
     private void openPlayerRegistrationWindow(MODEL_CLB club) {
         try {
