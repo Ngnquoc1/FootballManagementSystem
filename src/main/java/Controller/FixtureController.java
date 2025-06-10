@@ -141,7 +141,7 @@ public class FixtureController implements Initializable {
     private HBox createMatchRow(Match match) {
         HBox row = new HBox(0);
         row.getStyleClass().add("match-row");
-
+ 
         // Home team with logo
         Image logo1 = new Image(String.valueOf(getClass().getResource("/Image/ClubLogo/" + match.getLogoCLB1())));
         ImageView homeTeamLogo = new ImageView(logo1);
