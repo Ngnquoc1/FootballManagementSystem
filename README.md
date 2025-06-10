@@ -121,3 +121,5 @@ FootballManagementSystem/
 Mọi góp ý hoặc thắc mắc, vui lòng liên hệ **nhóm phát triển** qua email: nhuquoc1104@gmail.com hoặc GitHub Issues.
 
 ---
+## Tài liệu kèm theo
+* Repository của dự án: [FootballManagerSystem](https://github.com/Ngnquoc1/FootballManagementSystem)
