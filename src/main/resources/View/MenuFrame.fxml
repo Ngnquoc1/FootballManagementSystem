@@ -14,9 +14,9 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane fx:id="mainContent" minWidth="-Infinity" prefHeight="625.0" prefWidth="986.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.MenuController">
+<BorderPane fx:id="mainContent" minWidth="-Infinity" prefHeight="625.0" prefWidth="980.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.MenuController">
    <left>
-      <VBox prefHeight="606.0" prefWidth="141.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="626.0" prefWidth="166.0" BorderPane.alignment="CENTER">
          <children>
             <AnchorPane maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="625.0" prefWidth="181.0" styleClass="menuBar" stylesheets="@../CSS/Fixtures.css">
                <children>
@@ -44,9 +44,9 @@
                         </DropShadow>
                      </effect>
                   </Pane>
-                  <VBox alignment="CENTER_LEFT" layoutX="-5.0" layoutY="99.0" prefHeight="411.0" prefWidth="189.0" spacing="10.0">
+                  <VBox alignment="CENTER_LEFT" layoutY="99.0" prefHeight="411.0" prefWidth="179.0" spacing="10.0">
                      <children>
-                        <Button id="homeMenuBtn" fx:id="homeMenuBtn" minWidth="144.0" mnemonicParsing="false" onAction="#clickOnHomeBtn" prefHeight="28.0" prefWidth="183.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Màn hình chính">
+                        <Button id="homeMenuBtn" fx:id="homeMenuBtn" minWidth="144.0" mnemonicParsing="false" onAction="#clickOnHomeBtn" prefHeight="33.0" prefWidth="185.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Màn hình chính">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                  <image>
@@ -73,7 +73,7 @@
                               <Font name="Arial" size="12.0" />
                            </font>
                         </Button>
-                        <Button fx:id="resultMenuBtn" mnemonicParsing="false" onAction="#clickOnResultBtn" prefHeight="37.0" prefWidth="182.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Kết quả trận đấu">
+                        <Button fx:id="resultMenuBtn" mnemonicParsing="false" onAction="#clickOnResultBtn" prefHeight="35.0" prefWidth="182.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Kết quả trận đấu">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                  <image>
@@ -170,7 +170,7 @@
       </VBox>
    </left>
    <center>
-      <Pane maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="625.0" prefWidth="800.0" BorderPane.alignment="CENTER" />
+      <Pane maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="626.0" prefWidth="800.0" BorderPane.alignment="CENTER" />
    </center>
    <stylesheets>
       <URL value="@../CSS/Fixtures.css" />

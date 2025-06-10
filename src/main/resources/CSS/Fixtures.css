@@ -27,7 +27,7 @@
 .menuBtn{
     -fx-background-color: transparent;
     -fx-border-color: transparent;
-    -fx-graphic-text-gap: 20px;
+    -fx-graphic-text-gap: 15px;
     -fx-alignment: center-left; /* Căn trái để các phần tử thẳng hàng */
     -fx-padding: 0 25px 0 25px; /* Thêm padding trái để tạo khoảng cách từ cạnh */
     -fx-text-fill:  #991f18;
@@ -40,7 +40,7 @@
 
 .menuBtn:hover {
     -fx-border-width: 0 0 0 5px;
-    -fx-border-color: #000000;
+    -fx-border-color: #991f18;
     -fx-background-color: #f1eae4;
     -fx-cursor: hand;
 }

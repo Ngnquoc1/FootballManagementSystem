@@ -73,13 +73,13 @@
             <TableView fx:id="fixtureTable" prefHeight="290.0" prefWidth="746.0" VBox.vgrow="ALWAYS">
                <columns>
                   <TableColumn fx:id="idCol" prefWidth="27.200011432170868" text="ID" />
-                  <TableColumn fx:id="leagueCol" prefWidth="79.19995498657227" text="League" />
-                  <TableColumn fx:id="roundCol" prefWidth="61.5999755859375" text="Round" />
-                  <TableColumn fx:id="homeTeamCol" prefWidth="119.20005798339844" text="Home Team" />
-                  <TableColumn fx:id="awayTeamCol" prefWidth="118.60002136230469" text="Away Team" />
-                  <TableColumn fx:id="dateCol" prefWidth="89.60003662109375" text="Date" />
-                  <TableColumn fx:id="timeCol" prefWidth="55.20001220703125" text="Time" />
-                  <TableColumn fx:id="stadiumCol" prefWidth="91.2000732421875" text="Stadium" />
+                  <TableColumn fx:id="leagueCol" prefWidth="79.19995498657227" text="Giải đấu" />
+                  <TableColumn fx:id="roundCol" prefWidth="61.5999755859375" text="Vòng đấu" />
+                  <TableColumn fx:id="homeTeamCol" prefWidth="119.20005798339844" text="Đội nhà" />
+                  <TableColumn fx:id="awayTeamCol" prefWidth="118.60002136230469" text="Đội khách" />
+                  <TableColumn fx:id="dateCol" prefWidth="89.60003662109375" text="Ngày" />
+                  <TableColumn fx:id="timeCol" prefWidth="55.20001220703125" text="Giờ" />
+                  <TableColumn fx:id="stadiumCol" prefWidth="91.2000732421875" text="Sân" />
                </columns>
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

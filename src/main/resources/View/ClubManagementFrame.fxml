@@ -106,7 +106,7 @@
                                     <VBox spacing="5" HBox.hgrow="ALWAYS">
                                        <children>
                                           <Label styleClass="field-label" text="Logo CLB" />
-                                          <HBox alignment="CENTER_LEFT" spacing="10">
+                                          <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="207.0" spacing="10">
                                              <children>
                                                 <StackPane styleClass="logo-container">
                                                    <children>

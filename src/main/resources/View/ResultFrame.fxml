@@ -10,13 +10,12 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <VBox prefHeight="625.0" prefWidth="800.0" style="-fx-border-width: 2;" stylesheets="@../CSS/Fixtures.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.ResultsController">
    <children>
-      <HBox alignment="CENTER_LEFT" prefHeight="85.0" prefWidth="800.0" style="-fx-background-color: #991f18;">
+      <HBox alignment="CENTER_LEFT" prefHeight="78.0" prefWidth="800.0" style="-fx-background-color: #991f18;">
          <children>
             <Label text="Kết quả trận đấu" textFill="WHITE">
                <font>
@@ -40,54 +39,46 @@
             </ImageView>
          </children>
       </HBox>
-      <HBox prefHeight="82.0" prefWidth="800.0" spacing="5" styleClass="filter_box">
+      <HBox prefHeight="98.0" prefWidth="800.0" spacing="5" styleClass="filter_box">
          <children>
-            <VBox prefHeight="57.0" prefWidth="205.0" styleClass="filter_element" HBox.hgrow="NEVER">
+            <VBox layoutX="-10.0" prefHeight="58.0" prefWidth="220.0" styleClass="filter_element" HBox.hgrow="NEVER">
                <children>
-                  <Label prefHeight="18.0" prefWidth="149.0" styleClass="filter_text" text="Lọc theo giải đấu"
-                         textAlignment="CENTER"/>
-                  <ComboBox fx:id="compeFilter" prefHeight="18.0" prefWidth="180.0" promptText="Tất cả giải đấu"
-                            style="-fx-border-color: #991f18;" styleClass="menu-button"/>
+                  <Label prefHeight="18.0" prefWidth="149.0" styleClass="filter_text" text="Lọc theo giải đấu" textAlignment="CENTER" />
+                  <ComboBox fx:id="compeFilter" prefHeight="18.0" prefWidth="180.0" promptText="Tất cả giải đấu" style="-fx-border-color: #991f18;" styleClass="menu-button" />
                </children>
             </VBox>
-            <VBox layoutX="10.0" layoutY="10.0" prefHeight="57.0" prefWidth="181.0" styleClass="filter_element">
+            <VBox layoutX="10.0" layoutY="10.0" prefHeight="58.0" prefWidth="227.0" styleClass="filter_element">
                <children>
-                  <Label prefHeight="18.0" prefWidth="130.0" styleClass="filter_text" text="Lọc theo câu lạc bộ"/>
-                  <ComboBox fx:id="clubFilter" onAction="#filterByCLB" prefHeight="14.0" prefWidth="180.0"
-                            promptText="Tất cả câu lạc bộ" style="-fx-border-color: #991f18;" styleClass="menu-button"/>
+                  <Label prefHeight="18.0" prefWidth="130.0" styleClass="filter_text" text="Lọc theo câu lạc bộ" />
+                  <ComboBox fx:id="clubFilter" onAction="#filterByCLB" prefHeight="14.0" prefWidth="180.0" promptText="Tất cả câu lạc bộ" style="-fx-border-color: #991f18;" styleClass="menu-button" />
                </children>
             </VBox>
-            <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#resetFilter" prefHeight="64.0" prefWidth="102.0"
-                    styleClass="reset_button" text="Đặt lại lọc">
+            <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#resetFilter" prefHeight="58.0" prefWidth="114.0" styleClass="reset_button" text="Đặt lại lọc">
                <graphic>
-                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true"
-                             styleClass="iconBtn">
+                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                      <image>
-                        <Image url="@../icons/undo.png"/>
+                        <Image url="@../icons/undo.png" />
                      </image>
                   </ImageView>
                </graphic>
             </Button>
-            <Region prefHeight="57.0" prefWidth="67.0"/>
-            <Button fx:id="addBtn" mnemonicParsing="false" onAction="#controlResult" prefHeight="57.0" prefWidth="174.0"
-                    styleClass="reset_button" text="Quản lý kết quả trận đấu">
+            <Button fx:id="addBtn" mnemonicParsing="false" onAction="#controlResult" prefHeight="57.0" prefWidth="174.0" styleClass="reset_button" text="Quản lý kết quả trận đấu">
                <graphic>
-                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true"
-                             styleClass="iconBtn">
+                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                      <image>
-                        <Image url="@../icons/appointment.png"/>
+                        <Image url="@../icons/appointment.png" />
                      </image>
                   </ImageView>
                </graphic>
             </Button>
          </children>
          <padding>
-            <Insets left="44.0" top="10.0"/>
+            <Insets bottom="10.0" left="15.0" top="10.0" />
          </padding>
       </HBox>
       <VBox prefHeight="458.0" prefWidth="800.0">
          <children>
-            <ScrollPane fx:id="Calendar" prefHeight="441.0" prefWidth="800.0"/>
+            <ScrollPane fx:id="Calendar" prefHeight="441.0" prefWidth="800.0" />
          </children>
       </VBox>
       <HBox alignment="CENTER" prefHeight="67.0" prefWidth="800.0" style="-fx-background-color: #991f18;">

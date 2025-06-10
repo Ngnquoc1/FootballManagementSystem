@@ -196,7 +196,7 @@ public class FixtureController implements Initializable {
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         // Quick view button
-        Label quickViewLabel = new Label("Quick View");
+        Label quickViewLabel = new Label("Xem nhanh");
         quickViewLabel.getStyleClass().add("quick-view-label");
 
         ImageView arrowIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/right-arrow-line.png")));
