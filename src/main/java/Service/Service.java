@@ -1280,8 +1280,6 @@ public class Service {
     }
 
     public boolean removeRegistration(int maCLB, int maMG) {
-
-
         // Xóa cầu thủ tham gia
         String sqlCauThu = "{Call CancelClubRegistration(?,?)}";
         try (CallableStatement pstmtCauThu = conn.prepareCall(sqlCauThu)) {
