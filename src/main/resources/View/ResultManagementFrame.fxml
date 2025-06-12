@@ -83,13 +83,13 @@
             <TableView fx:id="resultTable" prefHeight="158.0" prefWidth="678.0" stylesheets="@../CSS/Fixtures.css">
                <columns>
                   <TableColumn fx:id="idCol" prefWidth="38.4000244140625" text="ID" />
-                  <TableColumn fx:id="leagueCol" prefWidth="73.59994125366211" text="League" />
-                  <TableColumn fx:id="roundCol" prefWidth="78.4000244140625" text="Round" />
-                  <TableColumn fx:id="homeTeamCol" prefWidth="110.39997863769531" text="Home Team" />
-                  <TableColumn fx:id="awayTeamCol" prefWidth="120.0" text="Away Team" />
-                  <TableColumn fx:id="dateCol" prefWidth="113.5999755859375" text="Date" />
-                  <TableColumn fx:id="scoreCol1" prefWidth="73.5999755859375" text="Score1" />
-                  <TableColumn fx:id="scoreCol2" prefWidth="74.40008544921875" text="Score2" />
+                  <TableColumn fx:id="leagueCol" prefWidth="73.59994125366211" text="Giải đấu" />
+                  <TableColumn fx:id="roundCol" prefWidth="78.4000244140625" text="Vòng đấu" />
+                  <TableColumn fx:id="homeTeamCol" prefWidth="100.00007629394531" text="Đội nhà" />
+                  <TableColumn fx:id="awayTeamCol" prefWidth="92.79998779296875" text="Đội khách" />
+                  <TableColumn fx:id="dateCol" prefWidth="87.20001220703125" text="Ngày" />
+                  <TableColumn fx:id="scoreCol1" prefWidth="88.0" text="Điểm đội nhà" />
+                  <TableColumn fx:id="scoreCol2" prefWidth="127.99993896484375" text="Điểm đội khách" />
                </columns>
             </TableView>
             <Label prefHeight="22.0" prefWidth="230.0" styleClass="title" text="Trận đấu đang chờ">
@@ -100,13 +100,13 @@
             <TableView fx:id="fixtureTable" prefHeight="158.0" prefWidth="678.0" stylesheets="@../CSS/Fixtures.css">
                <columns>
                   <TableColumn fx:id="idCol1" prefWidth="37.600006103515625" text="ID" />
-                  <TableColumn fx:id="leagueCol1" prefWidth="88.79998397827148" text="League" />
-                  <TableColumn fx:id="roundCol1" prefWidth="63.20001220703125" text="Round" />
-                  <TableColumn fx:id="homeTeamCol1" prefWidth="109.59999084472656" text="Home Team" />
-                  <TableColumn fx:id="awayTeamCol1" prefWidth="119.199951171875" text="Away Team" />
-                  <TableColumn fx:id="dateCol1" prefWidth="84.800048828125" text="Date" />
-                  <TableColumn fx:id="timeCol" prefWidth="84.0" text="Time" />
-                  <TableColumn fx:id="stadiumCol" prefWidth="86.39996337890625" text="Stadium" />
+                  <TableColumn fx:id="leagueCol1" prefWidth="88.79998397827148" text="Giải đấu" />
+                  <TableColumn fx:id="roundCol1" prefWidth="63.20001220703125" text="Vòng đấu" />
+                  <TableColumn fx:id="homeTeamCol1" prefWidth="104.00001525878906" text="Đội nhà" />
+                  <TableColumn fx:id="awayTeamCol1" prefWidth="95.20001220703125" text="Đội khách" />
+                  <TableColumn fx:id="dateCol1" prefWidth="91.20001220703125" text="Ngày" />
+                  <TableColumn fx:id="timeCol" prefWidth="97.60003662109375" text="Giờ" />
+                  <TableColumn fx:id="stadiumCol" prefWidth="100.79998779296875" text="Sân" />
                </columns>
             </TableView>
             <Separator prefWidth="200.0" />

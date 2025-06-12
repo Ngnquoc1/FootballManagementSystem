@@ -53,7 +53,7 @@
                     </padding>
                     <children>
                         <!-- Form title -->
-                        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Sign In to Your Account">
+                        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Đăng nhập vào tài khoản">
                             <font>
                                 <Font name="System Bold" size="16.0" />
                             </font>
@@ -63,28 +63,28 @@
                         </Label>
 
                         <!-- Username field -->
-                        <Label text="Username:" />
+                        <Label text="Tên đăng nhập:" />
                         <HBox fx:id="userNameBox" alignment="CENTER_LEFT" spacing="10.0">
                             <children>
-                                <TextField fx:id="userNameField" prefHeight="35.0" promptText="Enter your username" HBox.hgrow="ALWAYS" />
+                                <TextField fx:id="userNameField" prefHeight="35.0" promptText="Nhập tên đăng nhập" HBox.hgrow="ALWAYS" />
                             </children>
                         </HBox>
 
                         <!-- Password field -->
-                        <Label text="Password:" />
+                        <Label text="Mật khẩu:" />
                         <HBox fx:id="passwordBox" alignment="CENTER_LEFT" spacing="10.0">
                             <children>
-                                <PasswordField fx:id="passwordField" prefHeight="35.0" promptText="Enter your password" HBox.hgrow="ALWAYS" />
+                                <PasswordField fx:id="passwordField" prefHeight="35.0" promptText="Nhập mật khẩu" HBox.hgrow="ALWAYS" />
                             </children>
                         </HBox>
 
                         <!-- Sign in button -->
-                        <Button fx:id="signInButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleSignIn" prefHeight="40.0" style="-fx-background-color: linear-gradient(to bottom, #991f18, #2989d8); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;" text="SIGN IN" />
+                        <Button fx:id="signInButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleSignIn" prefHeight="40.0" style="-fx-background-color: linear-gradient(to bottom, #991f18, #2989d8); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;" text="Đăng nhập" />
 
                         <!-- Guest login -->
                         <HBox alignment="CENTER">
                             <children>
-                                <Hyperlink fx:id="guestLink" onAction="#handleGuestLogin" style="-fx-text-fill: #991f18;" text="Login as Guest" />
+                                <Hyperlink fx:id="guestLink" onAction="#handleGuestLogin" style="-fx-text-fill: #991f18;" text="Đăng nhập với tư cách khách" />
                             </children>
                         </HBox>
                     </children>

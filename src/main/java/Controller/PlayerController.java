@@ -82,7 +82,7 @@ public class PlayerController implements Initializable {
         ClubFilter.setOnAction(event -> {
             selectedClub = ClubFilter.getValue();
             // Chỉ lọc theo CLB nếu không phải là giá trị mặc định "AllClub"
-            if (!"AllClubs".equals(selectedClub)) {
+            if (!"Tất cả câu lạc bộ".equals(selectedClub)) {
                 try {
                     filterPlayers();
                 } catch (SQLException e) {
@@ -102,7 +102,7 @@ public class PlayerController implements Initializable {
         compeFilter.setOnAction(event -> {
             selectedCompetition = compeFilter.getValue();
             // Chỉ lọc theo mùa giải nếu không phải là giá trị mặc định "Choose your League"
-            if (!"Choose your League".equals(selectedCompetition)) {
+            if (!"Chọn giải đấu".equals(selectedCompetition)) {
                 try {
                     filterPlayers();
                 } catch (SQLException e) {
@@ -139,7 +139,7 @@ public class PlayerController implements Initializable {
     public void setFilter() throws SQLException {
         List<MODEL_MUAGIAI> ds1 = service.getAllTournament();
         ArrayList<String> dsMG = new ArrayList<>();
-        dsMG.add("Choose your League");
+        dsMG.add("Chọn giải đấu");
         for (MODEL_MUAGIAI mg : ds1) {
             dsMG.add(mg.getTenMG());
         }
@@ -147,7 +147,7 @@ public class PlayerController implements Initializable {
 
         List<MODEL_CLB> ds2 = new ArrayList<>();
         ArrayList<String> dsCLB = new ArrayList<>();
-        dsCLB.add("AllClubs");
+        dsCLB.add("Tất cả câu lạc bộ");
         ds2 = service.getAllClubs();
         for (MODEL_CLB clb : ds2) {
             dsCLB.add(clb.getTenCLB());
@@ -292,9 +292,9 @@ public class PlayerController implements Initializable {
                         "-fx-border-style: solid;"
         );
 
-        Label playerLabel = new Label("Player");
-        Label positionLabel = new Label("Position");
-        Label nationalityLabel = new Label("Nationality");
+        Label playerLabel = new Label("Cầu thủ");
+        Label positionLabel = new Label("Vị trí");
+        Label nationalityLabel = new Label("Quốc tịch");
 
         // Set style for header labels
         String headerStyle = "-fx-text-fill: #8E1616;";
@@ -357,13 +357,13 @@ public class PlayerController implements Initializable {
         // Position label
         String position ="";
         if(player.getMaVT() == 4){
-            position = "GoalKeeper";
+            position = "Thủ môn";
         }else if(player.getMaVT() == 2){
-            position = "Midfielder";
+            position = "Tiền vệ";
         }else if(player.getMaVT() == 1){
-            position = "Forward";
+            position = "Tiền đạo";
         }else{
-            position ="Defender";
+            position ="Thủ môn";
         }
         Label positionLabel = new Label(position);
         positionLabel.getStyleClass().add("player_info");
@@ -631,7 +631,7 @@ public class PlayerController implements Initializable {
         VBox section = new VBox();
         section.setSpacing(10);
 
-        Label title = new Label("Club Details");
+        Label title = new Label("Chi tiết câu lạc bộ");
         title.getStyleClass().add("section_title");
 
         GridPane grid = createDetailsGrid();
@@ -645,7 +645,7 @@ public class PlayerController implements Initializable {
         VBox section = new VBox();
         section.setSpacing(10);
 
-        Label title = new Label("Personal Details");
+        Label title = new Label("Thông tin cá nhân");
         title.getStyleClass().add("section_title");
 
         GridPane grid = createDetailsGrid();
@@ -683,11 +683,11 @@ public class PlayerController implements Initializable {
 
     private void populateClubDetailsGrid(GridPane grid, MODEL_CLB clb, MODEL_CAUTHU player) {
         // Club information
-        Label clubLabel = createDetailLabel("Club");
+        Label clubLabel = createDetailLabel("Câu lạc bộ");
         HBox clubBox = createClubInfoBox(clb);
 
         // Position information
-        Label posLabel = createDetailLabel("Position");
+        Label posLabel = createDetailLabel("Vị trí");
         Label posValue = createDetailValue(getPositionDisplayName(player.getMaVT()));
 
         // Add to grid
@@ -699,11 +699,11 @@ public class PlayerController implements Initializable {
 
     private void populatePersonalDetailsGrid(GridPane grid, MODEL_CAUTHU player) {
         // Nationality information
-        Label nationalityLabel = createDetailLabel("Nationality");
+        Label nationalityLabel = createDetailLabel("Quốc tịch");
         HBox nationalityBox = createNationalityBox(player);
 
         // Date of birth information
-        Label dobLabel = createDetailLabel("Date of Birth");
+        Label dobLabel = createDetailLabel("Ngày sinh");
         Label dobValue = createDetailValue(formatDate(player.getNgaysinh()));
 
         // Add to grid
@@ -788,10 +788,10 @@ public class PlayerController implements Initializable {
 
     private String getPositionDisplayName(int positionCode) {
         switch (positionCode) {
-            case 4: return "GoalKeeper";
-            case 2: return "Midfielder";
-            case 1: return "Forward";
-            default: return "Defender";
+            case 4: return "Thủ môn";
+            case 2: return "Tiền vệ";
+            case 1: return "Tiền đạo";
+            default: return "Hậu vệ";
         }
     }
 

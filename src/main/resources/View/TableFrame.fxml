@@ -24,7 +24,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="mainContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="630.0" prefWidth="800.0" spacing="15.0" style="-fx-background-color: white; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.TableController">
+<VBox fx:id="mainContainer" prefHeight="625.0" prefWidth="800.0" spacing="15.0" style="-fx-background-color: white; -fx-border-width: 2;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.TableController">
     <children>
         <HBox alignment="CENTER_LEFT" prefHeight="152.0" prefWidth="800.0" style="-fx-background-color: #991f18;">
             <children>

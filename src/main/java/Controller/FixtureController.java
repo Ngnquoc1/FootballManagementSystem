@@ -149,7 +149,7 @@ public class FixtureController implements Initializable {
     private HBox createMatchRow(Match match) {
         HBox row = new HBox(0);
         row.getStyleClass().add("match-row");
-
+ 
         // Home team with logo
         File logoFile1 = new File("src/main/resources/Image/ClubLogo/" + match.getLogoCLB1());
         Image logo1 = new Image(logoFile1.toURI().toString());
@@ -196,7 +196,7 @@ public class FixtureController implements Initializable {
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         // Quick view button
-        Label quickViewLabel = new Label("Quick View");
+        Label quickViewLabel = new Label("Xem nhanh");
         quickViewLabel.getStyleClass().add("quick-view-label");
 
         ImageView arrowIcon = new ImageView(new Image(getClass().getResourceAsStream("/icons/right-arrow-line.png")));

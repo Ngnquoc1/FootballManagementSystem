@@ -103,7 +103,7 @@ public class ClubController implements Initializable {
     public void setFilter() throws SQLException {
         List<MODEL_MUAGIAI> ds1 = service.getAllTournament();
         ArrayList<String> dsMG = new ArrayList<>();
-        dsMG.add("All CLubs");
+        dsMG.add("Tất cả câu lạc bộ");
         for (MODEL_MUAGIAI mg : ds1) {
             dsMG.add(mg.getTenMG());
         }
@@ -116,7 +116,7 @@ public class ClubController implements Initializable {
         String season = compeFilter.getValue();
 
         Predicate<MODEL_CLB> seasonFilter= club -> true; // Mặc định không lọc theo mùa giải
-        if(!Objects.equals(season, "All CLubs")) {
+        if(!Objects.equals(season, "Tất cả câu lạc bộ")) {
             MODEL_MUAGIAI selectedSeason = service.getTournamentByName(season);
             List<Integer> selectedClubParticipation = service.getRegistedClubIdsByTournament(selectedSeason.getMaMG());
             // Lọc câu lạc bộ theo mùa giải

@@ -14,20 +14,20 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane fx:id="mainContent" minWidth="-Infinity" prefHeight="625.0" prefWidth="966.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.MenuController">
+<BorderPane fx:id="mainContent" minWidth="-Infinity" prefHeight="625.0" prefWidth="980.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.MenuController">
    <left>
-      <VBox prefHeight="606.0" prefWidth="141.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="626.0" prefWidth="166.0" BorderPane.alignment="CENTER">
          <children>
-            <AnchorPane minWidth="166.0" prefHeight="625.0" prefWidth="231.0" styleClass="menuBar" stylesheets="@../CSS/Fixtures.css">
+            <AnchorPane maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="625.0" prefWidth="181.0" styleClass="menuBar" stylesheets="@../CSS/Fixtures.css">
                <children>
-                  <Pane layoutX="8.0" layoutY="22.0" prefHeight="54.0" prefWidth="150.0" styleClass="inner_pane" stylesheets="@../CSS/Fixtures.css">
+                  <Pane layoutX="15.0" layoutY="30.0" prefHeight="54.0" prefWidth="150.0" styleClass="inner_pane" stylesheets="@../CSS/Fixtures.css">
                      <children>
                         <ImageView fitHeight="39.0" fitWidth="42.0" layoutX="7.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../icons/logo.png" />
                            </image>
                         </ImageView>
-                        <Text fill="#991f18" layoutX="43.0" layoutY="22.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="title" text="Football Manager" textAlignment="CENTER" wrappingWidth="101.99999999999994">
+                        <Text fill="#991f18" layoutX="46.0" layoutY="22.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="title" text="Football Manager" textAlignment="CENTER" wrappingWidth="101.99999999999994">
                            <font>
                               <Font size="14.0" />
                            </font>
@@ -44,9 +44,9 @@
                         </DropShadow>
                      </effect>
                   </Pane>
-                  <VBox alignment="CENTER_LEFT" layoutX="-5.0" layoutY="99.0" prefHeight="411.0" prefWidth="169.0" spacing="10.0">
+                  <VBox alignment="CENTER_LEFT" layoutY="99.0" prefHeight="411.0" prefWidth="179.0" spacing="10.0">
                      <children>
-                        <Button id="homeMenuBtn" fx:id="homeMenuBtn" minWidth="144.0" mnemonicParsing="false" onAction="#clickOnHomeBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Home">
+                        <Button id="homeMenuBtn" fx:id="homeMenuBtn" minWidth="144.0" mnemonicParsing="false" onAction="#clickOnHomeBtn" prefHeight="33.0" prefWidth="185.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Màn hình chính">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                  <image>
@@ -61,7 +61,7 @@
                               <Font name="Arial" size="12.0" />
                            </font>
                         </Button>
-                        <Button id="fixtureMenuBtn" fx:id="fixtureMenuBtn" mnemonicParsing="false" onAction="#clickOnFixtureBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Fixtures">
+                        <Button id="fixtureMenuBtn" fx:id="fixtureMenuBtn" mnemonicParsing="false" onAction="#clickOnFixtureBtn" prefHeight="35.0" prefWidth="183.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Lịch thi đấu">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                  <image>
@@ -73,7 +73,7 @@
                               <Font name="Arial" size="12.0" />
                            </font>
                         </Button>
-                        <Button fx:id="resultMenuBtn" mnemonicParsing="false" onAction="#clickOnResultBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Results">
+                        <Button fx:id="resultMenuBtn" mnemonicParsing="false" onAction="#clickOnResultBtn" prefHeight="35.0" prefWidth="182.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Kết quả trận đấu">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                  <image>
@@ -85,7 +85,7 @@
                               <Font name="Arial" size="12.0" />
                            </font>
                         </Button>
-                        <Button fx:id="tableMenuBtn" mnemonicParsing="false" onAction="#clickOnTableBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="Tables">
+                        <Button fx:id="tableMenuBtn" mnemonicParsing="false" onAction="#clickOnTableBtn" prefHeight="39.0" prefWidth="182.0" styleClass="menuBtn" text="Bảng xếp hạng">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                  <image>
@@ -97,7 +97,7 @@
                               <Font name="Arial" size="12.0" />
                            </font>
                         </Button>
-                        <Button fx:id="clubMenuBtn" mnemonicParsing="false" onAction="#clickOnClubBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="Clubs">
+                        <Button fx:id="clubMenuBtn" mnemonicParsing="false" onAction="#clickOnClubBtn" prefHeight="39.0" prefWidth="182.0" styleClass="menuBtn" text="Câu lạc bộ">
                            <font>
                               <Font name="Arial" size="12.0" />
                            </font>
@@ -109,7 +109,7 @@
                               </ImageView>
                            </graphic>
                         </Button>
-                        <Button fx:id="playerMenuBtn" mnemonicParsing="false" onAction="#clickOnPlayerBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="Players">
+                        <Button fx:id="playerMenuBtn" mnemonicParsing="false" onAction="#clickOnPlayerBtn" prefHeight="39.0" prefWidth="182.0" styleClass="menuBtn" text="Cầu thủ">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                  <image>
@@ -121,7 +121,7 @@
                               <Font name="Arial" size="12.0" />
                            </font>
                         </Button>
-                        <Button fx:id="leagueMenuBtn" mnemonicParsing="false" onAction="#clickOnLeagueBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="League ">
+                        <Button fx:id="leagueMenuBtn" mnemonicParsing="false" onAction="#clickOnLeagueBtn" prefHeight="39.0" prefWidth="181.0" styleClass="menuBtn" text="Quản lý giải đấu">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                  <image>
@@ -133,7 +133,7 @@
                               <Font name="Arial" size="12.0" />
                            </font>
                         </Button>
-                        <Button fx:id="registryMenuBtn" mnemonicParsing="false" onAction="#clickOnRegistryBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="Registry">
+                        <Button fx:id="registryMenuBtn" mnemonicParsing="false" onAction="#clickOnRegistryBtn" prefHeight="39.0" prefWidth="182.0" styleClass="menuBtn" text="Đăng ký giải đấu">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                  <image>
@@ -145,7 +145,7 @@
                               <Font name="Arial" size="12.0" />
                            </font>
                         </Button>
-                        <Button fx:id="rulesMenuBtn" mnemonicParsing="false" onAction="#clickOnRulesBtn" prefHeight="42.0" prefWidth="166.0" styleClass="menuBtn" text="Rules">
+                        <Button fx:id="rulesMenuBtn" mnemonicParsing="false" onAction="#clickOnRulesBtn" prefHeight="41.0" prefWidth="181.0" styleClass="menuBtn" text="Quy định">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                  <image>
@@ -159,7 +159,7 @@
                         </Button>
                      </children>
                   </VBox>
-                  <ImageView fitHeight="53.0" fitWidth="57.0" layoutX="52.0" layoutY="538.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="53.0" fitWidth="57.0" layoutX="64.0" layoutY="539.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../icons/logo.png" />
                      </image>
@@ -170,7 +170,7 @@
       </VBox>
    </left>
    <center>
-      <Pane minHeight="-Infinity" minWidth="-Infinity" prefHeight="625.0" prefWidth="701.0" BorderPane.alignment="CENTER" />
+      <Pane maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="626.0" prefWidth="800.0" BorderPane.alignment="CENTER" />
    </center>
    <stylesheets>
       <URL value="@../CSS/Fixtures.css" />
