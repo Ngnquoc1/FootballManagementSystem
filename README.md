@@ -178,7 +178,7 @@ Ngoài ra còn có Bảng xếp hạng cầu thủ và các thống kê liên qu
    >  * Xuất báo cáo kết quả của giải đấu, bao gồm thông tin về các trận đấu, kết quả và thống kê.
         ![ranking1](./src/main/resources/Image/feature/ranking1.png)
 ---
-## 📂 Cấu trúc thư mục
+## Cấu trúc thư mục
 
 ```
 FootballManagementSystem/
@@ -201,10 +201,11 @@ FootballManagementSystem/
 ├— pom.xml 
 └— README.md
 ```
-
+## Repository
+👉 [Link github](https://github.com/Ngnquoc1/FootballManagementSystem.git)
 ---
 
-## 📌 Ghi chú
+## Ghi chú
 
 * Đảm bảo `Oracle` đang hoạt động trước khi chạy chương trình.
 * Nếu gặp lỗi kết nối, kiểm tra `username/password` và URL kết nối trong code.
