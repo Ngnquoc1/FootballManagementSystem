@@ -44,7 +44,7 @@
             <VBox layoutX="-10.0" prefHeight="58.0" prefWidth="220.0" styleClass="filter_element" HBox.hgrow="NEVER">
                <children>
                   <Label prefHeight="18.0" prefWidth="149.0" styleClass="filter_text" text="Lọc theo giải đấu" textAlignment="CENTER" />
-                  <ComboBox fx:id="compeFilter" prefHeight="18.0" prefWidth="180.0" promptText="Tất cả giải đấu" style="-fx-border-color: #991f18;" styleClass="menu-button" />
+                  <ComboBox fx:id="compeFilter" onAction="#filterByCompe" prefHeight="18.0" prefWidth="180.0" promptText="Tất cả giải đấu" style="-fx-border-color: #991f18;" styleClass="menu-button" />
                </children>
             </VBox>
             <VBox layoutX="10.0" layoutY="10.0" prefHeight="58.0" prefWidth="227.0" styleClass="filter_element">

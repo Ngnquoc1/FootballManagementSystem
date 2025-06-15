@@ -191,9 +191,6 @@ public class ClubManagementController implements Initializable {
         }
     }
 
-
-
-
     @FXML
     private void searchClub() {
         String searchTerm = searchClubField.getText().trim();

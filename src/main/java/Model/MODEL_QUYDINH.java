@@ -3,7 +3,7 @@ package Model;
 public class MODEL_QUYDINH {
 
     private int maMG, tuoiToiThieu, tuoiToiDa, soCTToiThieu, soCTToiDa,
-            soCTNuocNgoaiToiDa, phutGhiBanToiDa;
+            soCTNuocNgoaiToiDa, phutGhiBanToiDa,diemThang,diemThua,diemHoa;
 
     public MODEL_QUYDINH() {
         this.tuoiToiThieu = 16;
@@ -12,6 +12,9 @@ public class MODEL_QUYDINH {
         this.soCTToiDa = 22;
         this.soCTToiThieu = 15;
         this.phutGhiBanToiDa=90;
+        this.diemThang=3;
+        this.diemThua=0;
+        this.diemHoa=1;
     }
 
 
@@ -70,5 +73,23 @@ public class MODEL_QUYDINH {
     public void setPhutGhiBanToiDa(int phutGhiBanToiDa) {
         this.phutGhiBanToiDa = phutGhiBanToiDa;
     }
-    
+
+    public int getDiemThang() {
+        return diemThang;
+    }
+    public void setDiemThang(int diemThang) {
+        this.diemThang = diemThang;
+    }
+    public int getDiemThua() {
+        return diemThua;
+    }
+    public void setDiemThua(int diemThua) {
+        this.diemThua = diemThua;
+    }
+    public int getDiemHoa() {
+        return diemHoa;
+    }
+    public void setDiemHoa(int diemHoa) {
+        this.diemHoa = diemHoa;
+    }
 }

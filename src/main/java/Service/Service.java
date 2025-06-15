@@ -1168,7 +1168,7 @@ public class Service {
     }
 
     public boolean updateQD(MODEL_QUYDINH quyDinh) {
-        String sql = "UPDATE QUYDINH SET TuoiToiThieu = ?, TuoiToiDa = ?, SoCTToiThieu = ?, SoCTToiDa = ?, SoCTNuocNgoaiToiDa = ?, PhutGhiBanToiDa = ? WHERE MaMG = ?";
+        String sql = "UPDATE QUYDINH SET TuoiToiThieu = ?, TuoiToiDa = ?, SoCTToiThieu = ?, SoCTToiDa = ?, SoCTNuocNgoaiToiDa = ?, PhutGhiBanToiDa = ?, DiemThang= ?, DiemHoa = ?, DiemThua = ? WHERE MaMG = ?";
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -1178,7 +1178,10 @@ public class Service {
             pstmt.setInt(4, quyDinh.getSoCTToiDa());
             pstmt.setInt(5, quyDinh.getSoCTNuocNgoaiToiDa());
             pstmt.setInt(6, quyDinh.getPhutGhiBanToiDa());
-            pstmt.setInt(7, quyDinh.getMaMG());
+            pstmt.setInt(7, quyDinh.getDiemThang());
+            pstmt.setInt(8, quyDinh.getDiemHoa());
+            pstmt.setInt(9, quyDinh.getDiemThua());
+            pstmt.setInt(10, quyDinh.getMaMG());
 
             int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0;
@@ -1188,28 +1191,6 @@ public class Service {
             return false;
         }
     }
-
-    public boolean addQD(MODEL_QUYDINH quyDinh) {
-        String sql = "INSERT INTO QUYDINH (MaMG, TuoiToiThieu, TuoiToiDa, SoCTToiThieu, SoCTToiDa, SoCTNuocNgoaiToiDa, PhutGhiBanToiDa) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, quyDinh.getMaMG());
-            pstmt.setInt(2, quyDinh.getTuoiToiThieu());
-            pstmt.setInt(3, quyDinh.getTuoiToiDa());
-            pstmt.setInt(4, quyDinh.getSoCTToiThieu());
-            pstmt.setInt(5, quyDinh.getSoCTToiDa());
-            pstmt.setInt(6, quyDinh.getSoCTNuocNgoaiToiDa());
-            pstmt.setInt(7, quyDinh.getPhutGhiBanToiDa());
-
-            int rowsAffected = pstmt.executeUpdate();
-            return rowsAffected > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
     //    REGISTRATION
     public boolean checkRegistration(int maCLB, int maMG) {
         String sql = "SELECT COUNT(*) FROM CLB_THAMGIAMUAGIAI WHERE MaCLB = ? AND MaMG = ?";

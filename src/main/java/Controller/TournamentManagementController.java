@@ -1,10 +1,10 @@
 package Controller;
 
 import Model.MODEL_MUAGIAI;
-import Model.MODEL_THUTU_UUTIEN;
 import Model.MODEL_VONGDAU;
 import Service.Service;
 import Util.AlertUtils;
+import Util.FileUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -16,26 +16,21 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
+
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 public class TournamentManagementController {
     @FXML private Label totalTournamentsLabel;
@@ -60,26 +55,21 @@ public class TournamentManagementController {
     @FXML private ImageView logoImageView;
     @FXML private Button chooseLogoButton;
 
-    @FXML private Button addButton;
     @FXML private Button editButton;
     @FXML private Button deleteButton;
     @FXML private Button viewDetailsButton;
     @FXML private Button saveButton;
     @FXML private Button cancelButton;
-    @FXML private Button searchButton;
-    @FXML private Button clearButton;
 
-    private ObservableList<MODEL_MUAGIAI> tournamentsList = FXCollections.observableArrayList();
+    private final ObservableList<MODEL_MUAGIAI> tournamentsList = FXCollections.observableArrayList();
     private FilteredList<MODEL_MUAGIAI> filteredTournaments;
-    private List<MODEL_THUTU_UUTIEN> defaultPriority;
     private MODEL_MUAGIAI currentModel;
     private boolean isEditing = false;
-    private int nextId = 1;
 
-    private Service service = new Service();
+    private final Service service = new Service();
 
     private File selectedLogoFile;
-    private final String LOGO_DIRECTORY = "C:\\\\STUDY\\\\JAVA\\\\DEMO1\\\\src\\\\main\\\\resources\\\\Image\\\\LeagueLogo";
+    private final String LOGO_DIRECTORY = "src/main/resources/Image/LeagueLogo/";
 
     @FXML
     private void initialize() throws SQLException {
@@ -277,13 +267,12 @@ public class TournamentManagementController {
                 try {
                     service.deleteTournament(selectedTournament);}
                 catch (Exception e) {
-                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể xóa giải đấu", e.getMessage());
+                    AlertUtils.showError("Lỗi", "Không thể xóa giải đấu", e.getMessage());
                     return;
                 }
                     // Xóa giải đấu khỏi danh sách
                     tournamentsList.remove(selectedTournament);
                     updateStatistics();
-
             }
         }
     }
@@ -303,7 +292,7 @@ public class TournamentManagementController {
                 Image image = new Image(selectedLogoFile.toURI().toString());
                 logoImageView.setImage(image);
             } catch (Exception e) {
-                showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tải hình ảnh", e.getMessage());
+                AlertUtils.showError("Lỗi", "Không thể tải hình ảnh", e.getMessage());
             }
         }
     }
@@ -353,9 +342,9 @@ public class TournamentManagementController {
     }
 
     @FXML
-    private void handleSave() throws SQLException {
+    private void handleSave() throws SQLException, IOException {
         if (!validateForm()) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Thông tin không hợp lệ",
+            AlertUtils.showError("Lỗi", "Thông tin không hợp lệ",
                     "Vui lòng điền đầy đủ thông tin giải đấu và đảm bảo ngày kết thúc sau ngày bắt đầu!");
             return;
         }
@@ -382,9 +371,8 @@ public class TournamentManagementController {
                         System.err.println("Không thể xóa file logo cũ: " + e.getMessage());
                     }
                 }
-
                 // Lưu logo mới
-                String newLogoFileName = saveLogoFile(selectedLogoFile);
+                String newLogoFileName = FileUtils.copyLogoToDirectory(selectedLogoFile, LOGO_DIRECTORY, name);
                 if (newLogoFileName != null) {
                     currentModel.setLogoFileName(newLogoFileName);
                 }
@@ -396,7 +384,7 @@ public class TournamentManagementController {
             String logoFileName = null;
 
             if (selectedLogoFile != null) {
-                logoFileName = saveLogoFile(selectedLogoFile);
+                logoFileName = FileUtils.copyLogoToDirectory(selectedLogoFile, LOGO_DIRECTORY, name);
             }
             MODEL_MUAGIAI newTournament = new MODEL_MUAGIAI(0, name, startDate, endDate, logoFileName);
             int newID=service.insertTournament(newTournament);
@@ -434,33 +422,8 @@ public class TournamentManagementController {
             stage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể mở màn hình quản lý vòng đấu", e.getMessage());
+            AlertUtils.showError("Lỗi","", "Không thể mở màn hình quản lý vòng đấu ");
         }
-    }
-    private String saveLogoFile(File logoFile) {
-        if (logoFile == null)
-            return null;
-
-        try {
-            String fileExtension = getFileExtension(logoFile.getName());
-            String uniqueFileName = generateUniqueFileName() + fileExtension;
-            Path targetPath = Paths.get(LOGO_DIRECTORY, uniqueFileName);
-
-            Files.copy(logoFile.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-            return uniqueFileName;
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể lưu logo", e.getMessage());
-            return null;
-        }
-    }
-
-    private String generateUniqueFileName() {
-        return System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8);
-    }
-
-    private String getFileExtension(String fileName) {
-        int lastDotIndex = fileName.lastIndexOf('.');
-        return lastDotIndex > 0 ? fileName.substring(lastDotIndex) : "";
     }
 
     @FXML
@@ -494,14 +457,6 @@ public class TournamentManagementController {
         chooseLogoButton.setDisable(!enable);
         saveButton.setDisable(!enable);
         cancelButton.setDisable(!enable);
-    }
-
-    private void showAlert(Alert.AlertType alertType, String title, String header, String content) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 
     @FXML

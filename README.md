@@ -7,7 +7,7 @@
 ## Mục tiêu của đề tài
 Mục tiêu của đề tài là xây dựng một hệ thống quản lý giải bóng đá hiện đại, dễ sử dụng và có tính ứng dụng thực tiễn cao trong mọi môi trường tổ chức thể thao từ phong trào, bán chuyên nghiệp đến chuyên nghiệp. Nhóm thực hiện kỳ vọng mang đến một giải pháp không chỉ tối ưu về mặt kỹ thuật mà còn phù hợp với nhu cầu sử dụng thực tế của các đơn vị tổ chức giải bóng đá trên toàn quốc. Đề tài cũng đặt mục tiêu đảm bảo hệ thống có khả năng tùy biến linh hoạt theo từng mùa giải, hỗ trợ các thể thức thi đấu khác nhau, và tạo ra trải nghiệm quản lý tiện lợi – an toàn – hiệu quả cho người dùng.
 
-## Nhóm Thực Hiện: QuackQuack
+## Nhóm Thực Hiện: 
 
 | MSSV     | Họ tên                 | Vai trò	     |
 |:---------|:------------------------|:-------------|
@@ -15,8 +15,6 @@ Mục tiêu của đề tài là xây dựng một hệ thống quản lý giả
 | 23520847 | Lý Phương Linh	         | Thành viên	  |
 | 23521312 | Tôn Đại Quốc	           | Thành viên	  |
 | 23521318 | Nguyễn Lê Phú Quý	      | Thành viên	  |
-
-### Giảng viên: Tạ Việt Phương
 
 
 ## Mô hình 

@@ -41,6 +41,8 @@ public class FixtureController implements Initializable {
     private ScrollPane Calendar;
     @FXML
     private ComboBox<String> compeFilter, clubFilter;
+
+    private String selectedCompe, selectedCLB;
     private Service service = new Service();
 
     @Override
@@ -68,7 +70,7 @@ public class FixtureController implements Initializable {
         if (userRole == 5 || userRole == 4 || userRole == 2 || userRole == 1) {
             if (addBtn != null) {
                 addBtn.setVisible(false);
-                addBtn.setManaged(false); // Không chiếm không gian trong layout
+                addBtn.setManaged(false);
             }
 
         }
@@ -81,6 +83,7 @@ public class FixtureController implements Initializable {
         for (MODEL_MUAGIAI mg : ds1) {
             dsMG.add(mg.getTenMG());
         }
+        compeFilter.getItems().add("Tất cả giải đấu");
         compeFilter.getItems().addAll(dsMG);
         compeFilter.getSelectionModel().selectFirst();
 
@@ -89,6 +92,7 @@ public class FixtureController implements Initializable {
         for (MODEL_CLB clb : ds2) {
             dsCLB.add(clb.getTenCLB());
         }
+        clubFilter.getItems().add("Tất cả câu lạc bộ");
         clubFilter.getItems().addAll(dsCLB);
     }
 
@@ -96,7 +100,7 @@ public class FixtureController implements Initializable {
         VBox mainContent = new VBox(20);
         mainContent.setPadding(new Insets(10));
 
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("EEEE dd MMMM yyyy");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("EEEE dd MMMM yyyy", new Locale("vi", "VN"));
 
         // Sort dates to ensure chronological order
         matchesByDate.keySet().stream().sorted().forEach(date -> {
@@ -223,27 +227,102 @@ public class FixtureController implements Initializable {
     }
 
     @FXML
+    public void filterByCompe() throws SQLException {
+        selectedCompe = compeFilter.getValue();
+        if( selectedCompe == null || selectedCompe.equals("Tất cả giải đấu")) {
+            selectedCompe=null;
+            filter();
+            return;
+        }
+        else{
+            filter();
+        }
+    }
+    @FXML
     public void filterByCLB() throws SQLException {
-        String selectedCLB = clubFilter.getSelectionModel().getSelectedItem();
+        selectedCLB= clubFilter.getValue();
+        if( selectedCLB == null || selectedCLB.equals("Tất cả câu lạc bộ")) {
+            selectedCLB=null;
+            filter();
+            return;
+        }
+        else{
+            filter();
+        }
+    }
+
+    public void filter() throws SQLException {
         Map<LocalDate, List<Match>> matchesByDate = service.getUpcomingMatchs();
+        if (selectedCompe != null && selectedCLB != null) {
+            matchesByDate = filterMatchesByCompeAndCLB(matchesByDate, selectedCompe, selectedCLB);
+        } else if (selectedCompe != null) {
+            matchesByDate = filterMatchesByCompe(matchesByDate, selectedCompe);
+        } else if (selectedCLB != null) {
+            matchesByDate = filterMatchesByCLB(matchesByDate, selectedCLB);
+        }
+        createFullMatch(matchesByDate);
 
+    }
+
+    private Map<LocalDate, List<Match>> filterMatchesByCLB(Map<LocalDate, List<Match>> matchesByDate, String selectedCLB) {
         Map<LocalDate, List<Match>> filteredMatches = new HashMap<>();
-
         for (Map.Entry<LocalDate, List<Match>> entry : matchesByDate.entrySet()) {
-            List<Match> filteredList = entry.getValue().stream()
-                    .filter(match -> match.getTenCLB1().equals(selectedCLB) || match.getTenCLB2().equals(selectedCLB))
-                    .toList();
+            LocalDate date = entry.getKey();
+            List<Match> matches = entry.getValue();
+            List<Match> filteredList = new ArrayList<>();
+            for (Match match : matches) {
+                if (match.getTenCLB1().equals(selectedCLB) || match.getTenCLB2().equals(selectedCLB)) {
+                    filteredList.add(match);
+                }
+            }
             if (!filteredList.isEmpty()) {
-                filteredMatches.put(entry.getKey(), filteredList);
+                filteredMatches.put(date, filteredList);
             }
         }
-        createFullMatch(filteredMatches);
+        return filteredMatches;
+    }
+
+    private Map<LocalDate, List<Match>> filterMatchesByCompe(Map<LocalDate, List<Match>> matchesByDate, String selectedCompe) {
+        Map<LocalDate, List<Match>> filteredMatches = new HashMap<>();
+        for (Map.Entry<LocalDate, List<Match>> entry : matchesByDate.entrySet()) {
+            LocalDate date = entry.getKey();
+            List<Match> matches = entry.getValue();
+            List<Match> filteredList = new ArrayList<>();
+            for (Match match : matches) {
+                if (match.getTenMuaGiai().equals(selectedCompe)) {
+                    filteredList.add(match);
+                }
+            }
+            if (!filteredList.isEmpty()) {
+                filteredMatches.put(date, filteredList);
+            }
+        }
+        return filteredMatches;
+    }
+
+    private Map<LocalDate, List<Match>> filterMatchesByCompeAndCLB(Map<LocalDate, List<Match>> matchesByDate, String selectedCompe, String selectedCLB) {
+        Map<LocalDate, List<Match>> filteredMatches = new HashMap<>();
+        for (Map.Entry<LocalDate, List<Match>> entry : matchesByDate.entrySet()) {
+            LocalDate date = entry.getKey();
+            List<Match> matches = entry.getValue();
+            List<Match> filteredList = new ArrayList<>();
+            for (Match match : matches) {
+                if (match.getTenMuaGiai().equals(selectedCompe) &&
+                        (match.getTenCLB1().equals(selectedCLB) || match.getTenCLB2().equals(selectedCLB))) {
+                    filteredList.add(match);
+                }
+            }
+            if (!filteredList.isEmpty()) {
+                filteredMatches.put(date, filteredList);
+            }
+        }
+        return filteredMatches;
     }
 
     @FXML
     public void resetFilter() throws SQLException {
         Map<LocalDate, List<Match>> matchesByDate = service.getUpcomingMatchs();
-        clubFilter.getSelectionModel().clearSelection();
+        clubFilter.getSelectionModel().selectFirst();
         compeFilter.getSelectionModel().selectFirst();
         createFullMatch(matchesByDate);
     }
@@ -443,7 +522,9 @@ public class FixtureController implements Initializable {
         calendarIcon.getStyleClass().add("stadium-icon");
 
         // Format the date as shown in the image
-        String dateStr = match.getNgayThiDau().format(DateTimeFormatter.ofPattern("EEEE dd MMMM yyyy"));
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("EEEE dd MMMM yyyy", new Locale("vi", "VN"));
+
+        String dateStr = match.getNgayThiDau().format(dateFormatter);
         Label dateLabel = new Label(dateStr);
         dateLabel.setStyle("-fx-text-fill: #991f18; -fx-font-size: 16px;");
         dateBox.getChildren().addAll(calendarIcon, dateLabel);
@@ -532,7 +613,7 @@ public class FixtureController implements Initializable {
 
         // Stadium Info button
         HBox containerButton = new HBox(15);
-        Button stadiumButton = new Button("Stadium Information");
+        Button stadiumButton = new Button("Thông tin Sân thi đấu");
         stadiumButton.setStyle(
                 "-fx-border-width: none;-fx-background-color: white;-fx-text-fill: #991f18; -fx-font-size: 16px;");
         stadiumButton.setPrefWidth(180);

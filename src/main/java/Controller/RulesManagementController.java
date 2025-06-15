@@ -43,22 +43,13 @@ public class RulesManagementController implements Initializable {
     private Label lblTrangThaiQuyDinh;
 
     @FXML
-    private Spinner<Integer> spnTuoiToiThieu;
+    private Spinner<Integer> spnTuoiToiThieu,spnTuoiToiDa;
 
     @FXML
-    private Spinner<Integer> spnTuoiToiDa;
+    private Spinner<Integer> spnSoCTToiThieu,spnSoCTToiDa,spnSoCTNuocNgoaiToiDa;
 
     @FXML
-    private Spinner<Integer> spnSoCTToiThieu;
-
-    @FXML
-    private Spinner<Integer> spnSoCTToiDa;
-
-    @FXML
-    private Spinner<Integer> spnSoCTNuocNgoaiToiDa;
-
-    @FXML
-    private Spinner<Integer> spnPhutGhiBanToiDa;
+    private Spinner<Integer> spnPhutGhiBanToiDa,spnSoDiemThang, spnSoDiemHoa, spnSoDiemThua;
 
     @FXML
     private TableView<MODEL_THUTU_UUTIEN> priorityOrderTable;
@@ -118,6 +109,9 @@ public class RulesManagementController implements Initializable {
         spnSoCTToiDa.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(15, 50, 22));
         spnSoCTNuocNgoaiToiDa.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, 3));
         spnPhutGhiBanToiDa.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(60, 120, 90));
+        spnSoDiemThang.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 20, 3));
+        spnSoDiemHoa.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 19, 1));
+        spnSoDiemThua.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 18, 0));
 
         // Thêm listener để kiểm tra logic
         spnTuoiToiThieu.valueProperty().addListener((obs, oldVal, newVal) -> {
@@ -141,6 +135,37 @@ public class RulesManagementController implements Initializable {
         spnSoCTToiDa.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null && newVal <= spnSoCTToiThieu.getValue()) {
                 spnSoCTToiThieu.getValueFactory().setValue(newVal - 1);
+            }
+        });
+        spnSoDiemThang.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                if (newVal <= spnSoDiemHoa.getValue()) {
+                    spnSoDiemHoa.getValueFactory().setValue(newVal - 1);
+                }
+                if (spnSoDiemHoa.getValue() <= spnSoDiemThua.getValue()) {
+                    spnSoDiemThua.getValueFactory().setValue(spnSoDiemHoa.getValue() - 1);
+                }
+            }
+        });
+        spnSoDiemHoa.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                if (newVal >= spnSoDiemThang.getValue()) {
+                    spnSoDiemThang.getValueFactory().setValue(newVal + 1);
+                }
+                if (newVal <= spnSoDiemThua.getValue()) {
+                    spnSoDiemThua.getValueFactory().setValue(newVal - 1);
+                }
+            }
+        });
+
+        spnSoDiemThua.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                if (newVal >= spnSoDiemHoa.getValue()) {
+                    spnSoDiemHoa.getValueFactory().setValue(newVal + 1);
+                }
+                if (spnSoDiemHoa.getValue() >= spnSoDiemThang.getValue()) {
+                    spnSoDiemThang.getValueFactory().setValue(spnSoDiemHoa.getValue() + 1);
+                }
             }
         });
     }
@@ -194,7 +219,9 @@ public class RulesManagementController implements Initializable {
             spnSoCTToiDa.getValueFactory().setValue(quyDinhHienTai.getSoCTToiDa());
             spnSoCTNuocNgoaiToiDa.getValueFactory().setValue(quyDinhHienTai.getSoCTNuocNgoaiToiDa());
             spnPhutGhiBanToiDa.getValueFactory().setValue(quyDinhHienTai.getPhutGhiBanToiDa());
-
+            spnSoDiemThang.getValueFactory().setValue(quyDinhHienTai.getDiemThang());
+            spnSoDiemHoa.getValueFactory().setValue(quyDinhHienTai.getDiemHoa());
+            spnSoDiemThua.getValueFactory().setValue(quyDinhHienTai.getDiemThua());
             lblTrangThaiQuyDinh.setText("Đã có quy định");
             lblTrangThaiQuyDinh.setTextFill(javafx.scene.paint.Color.GREEN);
 
@@ -302,6 +329,9 @@ public class RulesManagementController implements Initializable {
         spnSoCTToiDa.getValueFactory().setValue(macDinh.getSoCTToiDa());
         spnSoCTNuocNgoaiToiDa.getValueFactory().setValue(macDinh.getSoCTNuocNgoaiToiDa());
         spnPhutGhiBanToiDa.getValueFactory().setValue(macDinh.getPhutGhiBanToiDa());
+        spnSoDiemThang.getValueFactory().setValue(macDinh.getDiemThang());
+        spnSoDiemHoa.getValueFactory().setValue(macDinh.getDiemHoa());
+        spnSoDiemThua.getValueFactory().setValue(macDinh.getDiemThua());
 
         List<MODEL_THUTU_UUTIEN> defaultPriorityList = MODEL_THUTU_UUTIEN.getDefaultList(macDinh.getMaMG());
         priorityList.setAll(defaultPriorityList);
@@ -315,6 +345,9 @@ public class RulesManagementController implements Initializable {
         spnSoCTToiDa.setDisable(disable);
         spnSoCTNuocNgoaiToiDa.setDisable(disable);
         spnPhutGhiBanToiDa.setDisable(disable);
+        spnSoDiemThang.setDisable(disable);
+        spnSoDiemHoa.setDisable(disable);
+        spnSoDiemThua.setDisable(disable);
     }
 
     private MODEL_QUYDINH layThongTinTuForm() {
@@ -326,7 +359,9 @@ public class RulesManagementController implements Initializable {
         quyDinh.setSoCTToiDa(spnSoCTToiDa.getValue());
         quyDinh.setSoCTNuocNgoaiToiDa(spnSoCTNuocNgoaiToiDa.getValue());
         quyDinh.setPhutGhiBanToiDa(spnPhutGhiBanToiDa.getValue());
-
+        quyDinh.setDiemThang(spnSoDiemThang.getValue());
+        quyDinh.setDiemHoa(spnSoDiemHoa.getValue());
+        quyDinh.setDiemThua(spnSoDiemThua.getValue());
         return quyDinh;
     }
 
@@ -345,7 +380,24 @@ public class RulesManagementController implements Initializable {
             sb.append("Số cầu thủ nước ngoài không được vượt quá tổng số cầu thủ tối đa!\n");
         }
 
-        if (sb.length() > 0) {
+        if (spnPhutGhiBanToiDa.getValue() <= 0) {
+            sb.append("Phút ghi bàn tối đa phải lớn hơn 0!\n");
+        }
+
+        if (spnSoDiemThang.getValue() <= 0 || spnSoDiemHoa.getValue() < 0 || spnSoDiemThua.getValue() < 0) {
+            sb.append("Điểm thắng, hòa và thua phải lớn hơn hoặc bằng 0!\n");
+        }
+        if (spnSoDiemThang.getValue() <= spnSoDiemHoa.getValue()) {
+            sb.append("Điểm thắng phải lớn hơn điểm hòa!\n");
+        }
+        if (spnSoDiemHoa.getValue() <= spnSoDiemThua.getValue()) {
+            sb.append("Điểm hòa phải lớn hơn điểm thua!\n");
+        }
+        if (priorityList.isEmpty()) {
+            sb.append("Danh sách thứ tự ưu tiên không được để trống!\n");
+        }
+
+        if (!sb.isEmpty()) {
             AlertUtils.showError("Lỗi", "Kiểm tra dữ liệu không hợp lệ", sb.toString());
             return false;
         }

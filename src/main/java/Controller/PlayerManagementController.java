@@ -5,6 +5,7 @@ import Model.MODEL_CLB;
 import Model.MODEL_VITRITD;
 import Service.Service;
 import Util.AlertUtils;
+import Util.FileUtils;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -79,15 +80,21 @@ public class PlayerManagementController implements Initializable {
     private File selectedAvaFile;
     private PlayerController preController;
 
+    public void setPreController(PlayerController playerController) {
+        this.preController = playerController;
+    }
+
     public void setPlayersClub(MODEL_CLB club) {
         this.currentClub = club;
         initializeData();
         loadPlayersData();
     }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
     }
+
     public void initializeData() {
         service = new Service();
 
@@ -341,10 +348,8 @@ public class PlayerManagementController implements Initializable {
                             return;
                         }
                     }
-                    String newLogoFileName = saveAvaFile(selectedAvaFile, player.getTenCT());
-                    if (newLogoFileName != null) {
-                        selectedPlayer.setAvatar(newLogoFileName);
-                    }
+                    String newLogoFileName = FileUtils.copyLogoToDirectory(selectedAvaFile, AVA_DIRECTORY, player.getTenCT());
+                    selectedPlayer.setAvatar(newLogoFileName);
                     selectedAvaFile = null;
                 }
                 service.updatePlayer(selectedPlayer);
@@ -356,10 +361,8 @@ public class PlayerManagementController implements Initializable {
 
                 if (selectedAvaFile != null) {
                     assert player != null;
-                    logoFileName = saveAvaFile(selectedAvaFile, player.getTenCT());
-                    if (logoFileName != null) {
-                        player.setAvatar(logoFileName);
-                    }
+                    logoFileName = FileUtils.copyLogoToDirectory(selectedAvaFile, AVA_DIRECTORY, player.getTenCT());
+                    player.setAvatar(logoFileName);
                 }
                 else{
                     assert player != null;
@@ -429,37 +432,6 @@ public class PlayerManagementController implements Initializable {
             }
         }
     }
-    
-    public String saveAvaFile( File avaFile, String playerName) {
-        if (avaFile != null) {
-            try {
-                String fileExtension = getFileExtension(avaFile.getName());
-                String uniqueFileName = generateUniqueFileName(playerName) + fileExtension;
-                Path targetPath = Paths.get(AVA_DIRECTORY, uniqueFileName);
-
-                Files.copy(avaFile.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-                return uniqueFileName;
-            } catch (IOException e) {
-                AlertUtils.showError("Error", "File Error", "An error occurred while saving the file.");
-                return null;
-            }
-        }
-        return null;
-    }
-    private String getFileExtension(String fileName) {
-        int lastDotIndex = fileName.lastIndexOf('.');
-        return lastDotIndex > 0 ? fileName.substring(lastDotIndex) : "";
-    }
-    private String generateUniqueFileName(String playerName) {
-        // Remove spaces and special characters from the player's name
-        String sanitizedPlayerName = playerName.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
-
-        // Append a unique identifier (timestamp) to the sanitized name
-        return sanitizedPlayerName + "_" + System.currentTimeMillis();
-    }
-    public void setPreController(PlayerController preController) {
-        this.preController=preController;
-    }
 
     @FXML
     public void closeBtn(){
@@ -473,5 +445,7 @@ public class PlayerManagementController implements Initializable {
             AlertUtils.showError("Error", "Close Error", "An error occurred while closing the window.");
         }
     }
+
+
 }
 
