@@ -102,7 +102,7 @@ public class ExportService {
 
                 int col = 0;
                 Cell c1 = row.createCell(col++);
-                c1.setCellValue(clb.getMaMG());
+                c1.setCellValue(clb.getMaGD());
                 c1.setCellStyle(numberStyle);
 
                 Cell c2 = row.createCell(col++);
@@ -251,7 +251,7 @@ public class ExportService {
 
                 int col = 0;
                 Cell c1 = row.createCell(col++);
-                c1.setCellValue(ranking.getMaMG());
+                c1.setCellValue(ranking.getMaGD());
                 c1.setCellStyle(numberStyle);
 
                 Cell c2 = row.createCell(col++);

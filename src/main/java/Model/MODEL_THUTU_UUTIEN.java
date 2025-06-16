@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MODEL_THUTU_UUTIEN {
-    private int maMG;
+    private int maGD;
     private String tenTTUT;
     private int thuTu;
 
@@ -21,17 +21,17 @@ public class MODEL_THUTU_UUTIEN {
     }
 
     public MODEL_THUTU_UUTIEN(int maMG, String tenTTUT, int thuTu) {
-        this.maMG = maMG;
+        this.maGD = maMG;
         this.tenTTUT = tenTTUT;
         this.thuTu = thuTu;
     }
 
-    public int getMaMG() {
-        return maMG;
+    public int getMaGD() {
+        return maGD;
     }
 
-    public void setMaMG(int maTTUT) {
-        this.maMG = maTTUT;
+    public void setMaGD(int maTTUT) {
+        this.maGD = maTTUT;
     }
 
     public String getTenTTUT() {

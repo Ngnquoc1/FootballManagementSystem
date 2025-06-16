@@ -95,10 +95,10 @@ public class ResultManagementController implements Initializable {
 
     private void setCombobox() throws SQLException {
 
-        List<MODEL_MUAGIAI> ds1 = service.getAllTournament();
+        List<MODEL_GIAIDAU> ds1 = service.getAllTournament();
         ArrayList<String> dsMG = new ArrayList<>();
-        for (MODEL_MUAGIAI mg : ds1) {
-            dsMG.add(mg.getTenMG());
+        for (MODEL_GIAIDAU mg : ds1) {
+            dsMG.add(mg.getTenGD());
         }
         compeFilter.getItems().addAll(dsMG);
         compeFilter.getSelectionModel().selectFirst();
@@ -112,8 +112,8 @@ public class ResultManagementController implements Initializable {
             clubFilter.getItems().addAll(dsCLB);
         }
         else {
-            MODEL_MUAGIAI mg=service.getTournamentByName(compeFilter.getValue());
-            List<Integer> ds2 = service.getRegistedClubIdsByTournament(mg.getMaMG());
+            MODEL_GIAIDAU mg=service.getTournamentByName(compeFilter.getValue());
+            List<Integer> ds2 = service.getRegistedClubIdsByTournament(mg.getMaGD());
             ArrayList<String> dsCLB = new ArrayList<>();
             for(Integer id : ds2) {
                 MODEL_CLB clb = service.getCLBByID(id);
@@ -147,7 +147,7 @@ public class ResultManagementController implements Initializable {
             List<Match> matches1 = service.getResultedMatchList();
             List<Match> matches1F = new ArrayList<>();
             for (Match match : matches1) {
-                if (Objects.equals(match.getTenMuaGiai(), compe)) {
+                if (Objects.equals(match.getTenGiaiDau(), compe)) {
                     if (clb != null) {
                         if (Objects.equals(match.getTenCLB1(), clb) ||
                                 Objects.equals(match.getTenCLB2(), clb)) {
@@ -161,7 +161,7 @@ public class ResultManagementController implements Initializable {
             List<Match> matches2 = service.getPendingMatchList();
             List<Match> matches2F = new ArrayList<>();
             for (Match match : matches2) {
-                if (Objects.equals(match.getTenMuaGiai(), compe)) {
+                if (Objects.equals(match.getTenGiaiDau(), compe)) {
                     if (clb != null) {
                         if (Objects.equals(match.getTenCLB1(), clb) ||
                                 Objects.equals(match.getTenCLB2(), clb)) {

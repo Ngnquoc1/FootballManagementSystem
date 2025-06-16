@@ -137,11 +137,11 @@ public class PlayerController implements Initializable {
     }
 
     public void setFilter() throws SQLException {
-        List<MODEL_MUAGIAI> ds1 = service.getAllTournament();
+        List<MODEL_GIAIDAU> ds1 = service.getAllTournament();
         ArrayList<String> dsMG = new ArrayList<>();
         dsMG.add("Chọn giải đấu");
-        for (MODEL_MUAGIAI mg : ds1) {
-            dsMG.add(mg.getTenMG());
+        for (MODEL_GIAIDAU mg : ds1) {
+            dsMG.add(mg.getTenGD());
         }
         compeFilter.getItems().addAll(dsMG);
 
@@ -201,8 +201,8 @@ public class PlayerController implements Initializable {
                 List<MODEL_CAUTHUTHAMGIA_GIAIDAU> registedPlayers = service.getRegistedPlayersByCondition(sql);
                 if (!registedPlayers.isEmpty()) {
                     MODEL_CAUTHUTHAMGIA_GIAIDAU ct_clb = registedPlayers.getFirst();
-                    MODEL_MUAGIAI mgi = service.getTournamentByID(ct_clb.getMaMG());
-                    matchesCompetition = mgi.getTenMG().equals(selectedCompetition);
+                    MODEL_GIAIDAU mgi = service.getTournamentByID(ct_clb.getMaGD());
+                    matchesCompetition = mgi.getTenGD().equals(selectedCompetition);
                 } else {
                     matchesCompetition = false;
                 }

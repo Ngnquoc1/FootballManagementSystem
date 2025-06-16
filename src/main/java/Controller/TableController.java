@@ -121,7 +121,7 @@ public class TableController {
         configureUIBasedOnRole();
         // Thiết lập các ComboBox
         compeFilter.setItems(FXCollections.observableArrayList(
-                service.getAllTournament().stream().map(MODEL_MUAGIAI::getTenMG).toList()));
+                service.getAllTournament().stream().map(MODEL_GIAIDAU::getTenGD).toList()));
         rankingTypeFilter.setItems(FXCollections.observableArrayList("BXH CLB", "Vua phá lưới","Thống kê"));
 
         // Thiết lập giá trị mặc định
@@ -180,7 +180,7 @@ public class TableController {
 
             // Tạo series mới
             XYChart.Series<String, Number> series = new XYChart.Series<>();
-            int tournamentId = service.getTournamentByName(compeFilter.getValue()).getMaMG();
+            int tournamentId = service.getTournamentByName(compeFilter.getValue()).getMaGD();
             // Thiết lập tên series và nhãn trục y dựa trên loại dữ liệu
             switch (dataType) {
                 case "points":
@@ -228,13 +228,13 @@ public class TableController {
 
     private void setupClubTableColumns() throws SQLException {
         String condition = "TenMG = '" + compeFilter.getValue() + "'";
-        List<MODEL_MUAGIAI> musimList = service.getAllTournament();
+        List<MODEL_GIAIDAU> musimList = service.getAllTournament();
 
         if (musimList == null || musimList.isEmpty()) {
             throw new RuntimeException("No matching season found for condition: " + condition);
         }
 
-        int maMG = musimList.get(0).getMaMG();
+        int maMG = musimList.get(0).getMaGD();
         clubRankColumn.setCellValueFactory(new PropertyValueFactory<>("Hang"));
         clubNameColumn.setCellValueFactory(cellData -> {
             try {
@@ -279,7 +279,7 @@ public class TableController {
 
     private void setupScorerTableColumns() throws SQLException {
         String condition = "TenMG = '" + compeFilter.getValue() + "'";
-        int maMG = service.getTournamentByName(compeFilter.getValue()).getMaMG();
+        int maMG = service.getTournamentByName(compeFilter.getValue()).getMaGD();
 
         scorerRankColumn.setCellValueFactory(new PropertyValueFactory<>("Hang"));
         scorerNameColumn.setCellValueFactory(cellData -> {
@@ -294,8 +294,8 @@ public class TableController {
         scorerClubColumn.setCellValueFactory(cellData -> {
             try {
                 int maCT = cellData.getValue().getMaCT();
-                String condition1 = "MaCT = " + maCT + " AND MaMG = " + maMG;
-                int maCLB = service.getRegistedPlayersByCondition(condition1).get(0).getMaCLB();
+                String condition1 = "MaCT = " + maCT + " AND MaGD = " + maMG;
+                int maCLB = service.getRegistedPlayersByCondition(condition1).getFirst().getMaCLB();
                 String clubName = service.getCLBByID(maCLB).getTenCLB();
                 return new SimpleStringProperty(clubName != null ? clubName : "Unknown");
             } catch (Exception e) {
@@ -338,13 +338,13 @@ public class TableController {
     private void updateTableView() {
         String competition = compeFilter.getValue();
         String rankingType = rankingTypeFilter.getValue();
-        MODEL_MUAGIAI selectedTournament = service.getTournamentByName(competition);
+        MODEL_GIAIDAU selectedTournament = service.getTournamentByName(competition);
         competitionInfoLabel.setText(competition);
         scorerCompetitionInfoLabel.setText(competition + " - Vua phá lưới");
-        List<MODEL_BXH_CLB> clubParticipation = service.getBxhCLBByTournamentId(selectedTournament.getMaMG());
+        List<MODEL_BXH_CLB> clubParticipation = service.getBxhCLBByTournamentId(selectedTournament.getMaGD());
         vleagueClubRankings.clear();
         vleagueClubRankings.addAll(clubParticipation);
-        List<MODEL_BXH_BANTHANG> scorerParticipation = service.getBxhBanThangByTournamentId(selectedTournament.getMaMG());
+        List<MODEL_BXH_BANTHANG> scorerParticipation = service.getBxhBanThangByTournamentId(selectedTournament.getMaGD());
         vleagueScorerRankings.clear();
         vleagueScorerRankings.addAll(scorerParticipation);
         if ("BXH CLB".equals(rankingType)) {

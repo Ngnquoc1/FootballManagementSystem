@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class ClubController implements Initializable {
     @FXML
@@ -101,11 +100,11 @@ public class ClubController implements Initializable {
     }
 
     public void setFilter() throws SQLException {
-        List<MODEL_MUAGIAI> ds1 = service.getAllTournament();
+        List<MODEL_GIAIDAU> ds1 = service.getAllTournament();
         ArrayList<String> dsMG = new ArrayList<>();
         dsMG.add("Tất cả câu lạc bộ");
-        for (MODEL_MUAGIAI mg : ds1) {
-            dsMG.add(mg.getTenMG());
+        for (MODEL_GIAIDAU mg : ds1) {
+            dsMG.add(mg.getTenGD());
         }
         compeFilter.getItems().addAll(dsMG);
         compeFilter.getSelectionModel().selectFirst();
@@ -117,8 +116,8 @@ public class ClubController implements Initializable {
 
         Predicate<MODEL_CLB> seasonFilter= club -> true; // Mặc định không lọc theo mùa giải
         if(!Objects.equals(season, "Tất cả câu lạc bộ")) {
-            MODEL_MUAGIAI selectedSeason = service.getTournamentByName(season);
-            List<Integer> selectedClubParticipation = service.getRegistedClubIdsByTournament(selectedSeason.getMaMG());
+            MODEL_GIAIDAU selectedSeason = service.getTournamentByName(season);
+            List<Integer> selectedClubParticipation = service.getRegistedClubIdsByTournament(selectedSeason.getMaGD());
             // Lọc câu lạc bộ theo mùa giải
             seasonFilter = club -> selectedClubParticipation.contains(club.getMaCLB());
         }

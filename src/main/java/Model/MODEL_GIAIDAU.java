@@ -6,36 +6,36 @@ import javafx.scene.image.Image;
 import java.io.File;
 import java.time.LocalDate;
 
-public class MODEL_MUAGIAI {
-    private final IntegerProperty maMG;
-    private final StringProperty tenMG;
+public class MODEL_GIAIDAU {
+    private final IntegerProperty maGD;
+    private final StringProperty tenGD;
     private final ObjectProperty<LocalDate> ngayBD;
     private final ObjectProperty<LocalDate> ngayKT;
     private final StringProperty logoFileName; // Chỉ lưu tên file, không lưu đường dẫn đầy đủ
 
-    public MODEL_MUAGIAI(int maMG, String tenMG, LocalDate ngayBD, LocalDate ngayKT) {
+    public MODEL_GIAIDAU(int maMG, String tenMG, LocalDate ngayBD, LocalDate ngayKT) {
         this(maMG, tenMG, ngayBD, ngayKT, null);
     }
 
-    public MODEL_MUAGIAI(int maMG, String tenMG, LocalDate ngayBD, LocalDate ngayKT, String logoFileName) {
-        this.maMG = new SimpleIntegerProperty(maMG);
-        this.tenMG = new SimpleStringProperty(tenMG);
+    public MODEL_GIAIDAU(int maMG, String tenMG, LocalDate ngayBD, LocalDate ngayKT, String logoFileName) {
+        this.maGD = new SimpleIntegerProperty(maMG);
+        this.tenGD = new SimpleStringProperty(tenMG);
         this.ngayBD = new SimpleObjectProperty<>(ngayBD);
         this.ngayKT = new SimpleObjectProperty<>(ngayKT);
         this.logoFileName = new SimpleStringProperty(logoFileName);
     }
 
-    public MODEL_MUAGIAI(IntegerProperty maMG, StringProperty tenMG, ObjectProperty<LocalDate> ngayBD, ObjectProperty<LocalDate> ngayKT, StringProperty logoFileName) {
-        this.maMG = maMG;
-        this.tenMG = tenMG;
+    public MODEL_GIAIDAU(IntegerProperty maMG, StringProperty tenMG, ObjectProperty<LocalDate> ngayBD, ObjectProperty<LocalDate> ngayKT, StringProperty logoFileName) {
+        this.maGD = maMG;
+        this.tenGD = tenMG;
         this.ngayBD = ngayBD;
         this.ngayKT = ngayKT;
         this.logoFileName = logoFileName;
     }
 
     // Getters
-    public int getMaMG() { return maMG.get(); }
-    public String getTenMG() { return tenMG.get(); }
+    public int getMaGD() { return maGD.get(); }
+    public String getTenGD() { return tenGD.get(); }
     public LocalDate getNgayBD() { return ngayBD.get(); }
     public LocalDate getNgayKT() { return ngayKT.get(); }
     public String getLogoFileName() { return logoFileName.get(); }
@@ -58,15 +58,15 @@ public class MODEL_MUAGIAI {
     }
 
     // Setters
-    public void setMaMG(int id) { this.maMG.set(id); }
-    public void setTenMG(String name) { this.tenMG.set(name); }
+    public void setMaGD(int id) { this.maGD.set(id); }
+    public void setTenGD(String name) { this.tenGD.set(name); }
     public void setNgayBD(LocalDate ngayBD) { this.ngayBD.set(ngayBD); }
     public void setNgayKT(LocalDate ngayKT) { this.ngayKT.set(ngayKT); }
     public void setLogoFileName(String logoFileName) { this.logoFileName.set(logoFileName); }
 
     // Property getters
-    public IntegerProperty idProperty() { return maMG; }
-    public StringProperty nameProperty() { return tenMG; }
+    public IntegerProperty idProperty() { return maGD; }
+    public StringProperty nameProperty() { return tenGD; }
     public ObjectProperty<LocalDate> ngayBDProperty() { return ngayBD; }
     public ObjectProperty<LocalDate> ngayKTProperty() { return ngayKT; }
     public StringProperty logoFileNameProperty() { return logoFileName; }

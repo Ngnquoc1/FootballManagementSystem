@@ -1,13 +1,13 @@
 package Model;
 
 public class MODEL_BXH_CLB {
-    private int MaMG,MaCLB;
+    private int MaGD,MaCLB;
     private int SoTran,Thang,Hoa,Thua,HieuSo,Hang,Diem;
     public MODEL_BXH_CLB() {
     }
 
-    public MODEL_BXH_CLB(int maMG, int maCLB, int SoTran, int Thang, int Hoa, int Thua, int hieuSo, int Hang, int diem) {
-        this.MaMG = maMG;
+    public MODEL_BXH_CLB(int maGD, int maCLB, int SoTran, int Thang, int Hoa, int Thua, int hieuSo, int Hang, int diem) {
+        this.MaGD = maGD;
         this.MaCLB = maCLB;
         this.SoTran = SoTran;
         this.Thang = Thang;
@@ -18,12 +18,12 @@ public class MODEL_BXH_CLB {
         this.Diem = diem;
     }
 
-    public int getMaMG() {
-        return MaMG;
+    public int getMaGD() {
+        return MaGD;
     }
 
-    public void setMaMG(int maMG) {
-        MaMG = maMG;
+    public void setMaGD(int MaGD) {
+        MaGD = MaGD;
     }
 
     public int getMaCLB() {

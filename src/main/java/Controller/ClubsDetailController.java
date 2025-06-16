@@ -1,11 +1,16 @@
 package Controller;
 
 import Model.MODEL_CLB;
+import Model.MODEL_GIAIDAU;
 import Model.MODEL_SAN;
+import Service.Service;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebView;
 import javafx.scene.web.WebEngine;
@@ -17,7 +22,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -32,7 +37,7 @@ public class ClubsDetailController {
     @FXML private Label colorLabel;
     @FXML private Label coachLabel;
     @FXML private Label leagueLabel;
-
+    @FXML private VBox achievementsContainer;
 
     // Stadium information
     @FXML private Label stadiumNameLabel;
@@ -46,11 +51,10 @@ public class ClubsDetailController {
     private MODEL_CLB club;
     private MODEL_SAN stadium;
     private String logoDirectory = "src/main/resources/image/ClubLogo/";
-
+    private Service service;
     @FXML
     private void initialize() {
     }
-
 
     private void displayClubData() {
         // Set additional club info (this would come from an extended model or database)
@@ -162,6 +166,7 @@ public class ClubsDetailController {
             e.printStackTrace();
         }
     }
+
     private double[] getCoordinatesFromAddress(String address) {
         try {
             // Encode địa chỉ
@@ -202,14 +207,70 @@ public class ClubsDetailController {
         return new double[] {21.0285, 105.8542}; // Tọa độ mặc định (Hà Nội)
     }
 
+    private void displayArchivedData() {
+        Map<Integer, MODEL_GIAIDAU> achievements = service.getArchivedData(this.club.getMaCLB());
+        achievementsContainer.getChildren().clear();
+        achievementsContainer.setSpacing(10);
+        achievementsContainer.setStyle("-fx-padding: 10;");
+
+        for (Map.Entry<Integer, MODEL_GIAIDAU> entry : achievements.entrySet()) {
+            HBox achievementRow = new HBox(15); // Increased spacing between elements
+            achievementRow.setAlignment(Pos.CENTER_LEFT);
+            achievementRow.setStyle("-fx-padding: 10; -fx-background-color: white; -fx-background-radius: 5; "
+                    + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 1);");
+
+            // Rank label with special styling for champion
+            Label rankLabel = new Label();
+            if (entry.getKey() == 1) {
+                rankLabel.setText("Vô địch");
+                rankLabel.setStyle("-fx-font-weight: bold; -fx-min-width: 80px; -fx-text-fill: gold; "
+                        + "-fx-background-color: linear-gradient(to right, #FFD700, #FFA500); "
+                        + "-fx-background-radius: 15; -fx-padding: 5 10; -fx-text-fill: white;");
+            } else {
+                rankLabel.setText("Hạng " + entry.getKey());
+                rankLabel.setStyle("-fx-font-weight: bold; -fx-min-width: 80px; -fx-text-fill: #2c3e50; "
+                        + "-fx-background-color: #ecf0f1; -fx-background-radius: 15; -fx-padding: 5 10;");
+            }
+
+            // League name label
+            Label leagueLabel = new Label(entry.getValue().getTenGD());
+            leagueLabel.setStyle("-fx-min-width: 200px; -fx-font-size: 14px; -fx-text-fill: #2c3e50;");
+
+            // Year label with custom styling
+            Label yearLabel = new Label(entry.getValue().getNgayKT().getYear() + "");
+            yearLabel.setStyle("-fx-min-width: 60px; -fx-text-fill: #7f8c8d; -fx-font-style: italic;");
+
+            achievementRow.getChildren().addAll(rankLabel, leagueLabel, yearLabel);
+
+            // Add hover effect
+            achievementRow.setOnMouseEntered(e ->
+                    achievementRow.setStyle("-fx-padding: 10; -fx-background-color: #f8f9fa; -fx-background-radius: 5; "
+                            + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);"));
+            achievementRow.setOnMouseExited(e ->
+                    achievementRow.setStyle("-fx-padding: 10; -fx-background-color: white; -fx-background-radius: 5; "
+                            + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 1);"));
+
+            achievementsContainer.getChildren().add(achievementRow);
+        }
+
+        if (achievements.isEmpty()) {
+            Label noDataLabel = new Label("Chưa có thành tích");
+            noDataLabel.setStyle("-fx-text-fill: #95a5a6; -fx-font-style: italic; -fx-font-size: 14px; "
+                    + "-fx-padding: 20; -fx-alignment: center;");
+            achievementsContainer.getChildren().add(noDataLabel);
+        }
+    }
+
     // Method to set club and stadium data from outside
     public void setData(MODEL_CLB club, MODEL_SAN stadium) {
+        service= new Service();
         this.club = club;
         this.stadium = stadium;
         initialize();
         displayClubData();
         displayStadiumData();
         displayStadiumLocation();
+        displayArchivedData();
     }
 
 }

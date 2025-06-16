@@ -70,10 +70,10 @@ public class FixtureManagementController implements Initializable {
     }
     private void setCombobox() throws SQLException {
 
-        List<MODEL_MUAGIAI> ds1 = service.getAllTournament();
+        List<MODEL_GIAIDAU> ds1 = service.getAllTournament();
         ArrayList<String> dsMG = new ArrayList<>();
-        for (MODEL_MUAGIAI mg : ds1) {
-            dsMG.add(mg.getTenMG());
+        for (MODEL_GIAIDAU mg : ds1) {
+            dsMG.add(mg.getTenGD());
         }
         compeFilter.getItems().addAll(dsMG);
         compeForm.getItems().addAll(dsMG);
@@ -82,8 +82,8 @@ public class FixtureManagementController implements Initializable {
         clubFilter.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             clubFilter.getItems().clear();
             if (compeFilter.getValue() != null) {
-                MODEL_MUAGIAI mg = service.getTournamentByName(compeFilter.getValue());
-                List<Integer> dsClbIds = service.getRegistedClubIdsByTournament(mg.getMaMG());
+                MODEL_GIAIDAU mg = service.getTournamentByName(compeFilter.getValue());
+                List<Integer> dsClbIds = service.getRegistedClubIdsByTournament(mg.getMaGD());
                 for (Integer clbId : dsClbIds) {
                     MODEL_CLB clb = service.getCLBByID(clbId);
                     if (clb != null) {
@@ -95,8 +95,8 @@ public class FixtureManagementController implements Initializable {
 
         roundForm.addEventFilter( MouseEvent.MOUSE_CLICKED, event -> {;
             if (compeForm.getValue() != null) {
-                MODEL_MUAGIAI mg= service.getTournamentByName(compeForm.getValue());
-                List<MODEL_VONGDAU> ds2 = service.getAllRoundByTournament(mg.getMaMG());
+                MODEL_GIAIDAU mg= service.getTournamentByName(compeForm.getValue());
+                List<MODEL_VONGDAU> ds2 = service.getAllRoundByTournament(mg.getMaGD());
                 ArrayList<String> dsVD = new ArrayList<>();
                 for (MODEL_VONGDAU vd : ds2) {
                     dsVD.add(vd.getTenVD());
@@ -106,8 +106,8 @@ public class FixtureManagementController implements Initializable {
         });
         clbForm1.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             if (compeForm.getValue() != null) {
-                MODEL_MUAGIAI mg = service.getTournamentByName(compeForm.getValue());
-                List<Integer> dsClbIds = service.getRegistedClubIdsByTournament(mg.getMaMG());
+                MODEL_GIAIDAU mg = service.getTournamentByName(compeForm.getValue());
+                List<Integer> dsClbIds = service.getRegistedClubIdsByTournament(mg.getMaGD());
                 for( Integer clbId : dsClbIds) {
                     MODEL_CLB clb = service.getCLBByID(clbId);
                     if (clb != null) {
@@ -118,8 +118,8 @@ public class FixtureManagementController implements Initializable {
         });
         clbForm2.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             if (compeForm.getValue() != null) {
-                MODEL_MUAGIAI mg = service.getTournamentByName(compeForm.getValue());
-                List<Integer> dsClbIds = service.getRegistedClubIdsByTournament(mg.getMaMG());
+                MODEL_GIAIDAU mg = service.getTournamentByName(compeForm.getValue());
+                List<Integer> dsClbIds = service.getRegistedClubIdsByTournament(mg.getMaGD());
                 for( Integer clbId : dsClbIds) {
                     MODEL_CLB clb = service.getCLBByID(clbId);
                     if (clb != null && (clbForm1.getValue()!=null && !clb.getTenCLB().equals(clbForm1.getValue()))) {
@@ -143,8 +143,8 @@ public class FixtureManagementController implements Initializable {
         } );
         staForm.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             if(compeForm.getValue() != null) {
-                MODEL_MUAGIAI mg = service.getTournamentByName(compeForm.getValue());
-                List<Integer> dsClbIds = service.getRegistedClubIdsByTournament(mg.getMaMG());
+                MODEL_GIAIDAU mg = service.getTournamentByName(compeForm.getValue());
+                List<Integer> dsClbIds = service.getRegistedClubIdsByTournament(mg.getMaGD());
                 List<String> dsSanNames = new ArrayList<>();
                 for (Integer clbId : dsClbIds) {
                     MODEL_CLB clb = service.getCLBByID(clbId);
@@ -272,7 +272,7 @@ public class FixtureManagementController implements Initializable {
         Match selectedMatch = fixtureTable.getSelectionModel().getSelectedItem();
         if (selectedMatch != null) {
             String id = String.valueOf(selectedMatch.getId());
-            String tenMG = selectedMatch.getTenMuaGiai();
+            String tenMG = selectedMatch.getTenGiaiDau();
             String tenCLB1 = selectedMatch.getTenCLB1();
             String tenCLB2 = selectedMatch.getTenCLB2();
             String sanThiDau = selectedMatch.getSanThiDau();

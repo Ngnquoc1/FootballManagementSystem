@@ -1,10 +1,10 @@
 package Model;
 
 public class MODEL_BXH_BANTHANG {
-    private int MaMG, MaCT,SoBanThang, Penalty,Hang;
+    private int MaGD, MaCT,SoBanThang, Penalty,Hang;
 
-    public MODEL_BXH_BANTHANG(int maMG, int maCT, int soBanThang, int penalty, int hang) {
-        MaMG = maMG;
+    public MODEL_BXH_BANTHANG(int maGD, int maCT, int soBanThang, int penalty, int hang) {
+        MaGD = maGD;
         MaCT = maCT;
         SoBanThang = soBanThang;
         Penalty = penalty;
@@ -15,12 +15,12 @@ public class MODEL_BXH_BANTHANG {
 
     }
 
-    public int getMaMG() {
-        return MaMG;
+    public int getMaGD() {
+        return this.MaGD;
     }
 
-    public void setMaMG(int maMG) {
-        MaMG = maMG;
+    public void setMaGD(int MaGD) {
+        this.MaGD = MaGD;
     }
 
     public int getMaCT() {

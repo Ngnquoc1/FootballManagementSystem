@@ -1,6 +1,6 @@
 package Controller;
 
-import Model.MODEL_MUAGIAI;
+import Model.MODEL_GIAIDAU;
 import Model.MODEL_QUYDINH;
 
 import Model.MODEL_THUTU_UUTIEN;
@@ -15,17 +15,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
-import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
-import java.io.IOException;
 
-import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
@@ -34,7 +29,7 @@ import java.util.ResourceBundle;
 
 public class RulesManagementController implements Initializable {
     @FXML
-    private ComboBox<MODEL_MUAGIAI> cboMuaGiai;
+    private ComboBox<MODEL_GIAIDAU> cboMuaGiai;
 
     @FXML
     private Label lblTrangThaiMuaGiai;
@@ -61,7 +56,7 @@ public class RulesManagementController implements Initializable {
     private final ObservableList<MODEL_THUTU_UUTIEN> priorityList = FXCollections.observableArrayList();
     private Service service;
 
-    private ObservableList<MODEL_MUAGIAI> danhSachMuaGiai;
+    private ObservableList<MODEL_GIAIDAU> danhSachMuaGiai;
     private MODEL_QUYDINH quyDinhHienTai;
 
     @Override
@@ -88,14 +83,14 @@ public class RulesManagementController implements Initializable {
     }
 
     private void setupComboBox() {
-        cboMuaGiai.setConverter(new StringConverter<MODEL_MUAGIAI>() {
+        cboMuaGiai.setConverter(new StringConverter<MODEL_GIAIDAU>() {
             @Override
-            public String toString(MODEL_MUAGIAI muaGiai) {
-                return muaGiai != null ? muaGiai.getTenMG() : "";
+            public String toString(MODEL_GIAIDAU muaGiai) {
+                return muaGiai != null ? muaGiai.getTenGD() : "";
             }
 
             @Override
-            public MODEL_MUAGIAI fromString(String string) {
+            public MODEL_GIAIDAU fromString(String string) {
                 return null;
             }
         });
@@ -171,14 +166,14 @@ public class RulesManagementController implements Initializable {
     }
 
     private void taiDanhSachMuaGiai() throws SQLException {
-        List<MODEL_MUAGIAI> list = service.getAllTournament();
+        List<MODEL_GIAIDAU> list = service.getAllTournament();
         danhSachMuaGiai = FXCollections.observableArrayList(list);
         cboMuaGiai.setItems(danhSachMuaGiai);
     }
 
     @FXML
     private void chonMuaGiai(ActionEvent event) {
-        MODEL_MUAGIAI selectedMuaGiai = cboMuaGiai.getValue();
+        MODEL_GIAIDAU selectedMuaGiai = cboMuaGiai.getValue();
         if (selectedMuaGiai != null) {
             // Hiển thị trạng thái mùa giải
             lblTrangThaiMuaGiai.setText("(" + selectedMuaGiai.getStatus() + ")");
@@ -197,7 +192,7 @@ public class RulesManagementController implements Initializable {
             }
 
             // Tải quy định của mùa giải
-            taiQuyDinhMuaGiai(selectedMuaGiai.getMaMG());
+            taiQuyDinhMuaGiai(selectedMuaGiai.getMaGD());
 
             // Kích hoạt form
             vohieuhoaForm(false);
@@ -209,7 +204,7 @@ public class RulesManagementController implements Initializable {
     }
 
     private void taiQuyDinhMuaGiai(int maMG) {
-        quyDinhHienTai = service.getQDByMaMG(maMG);
+        quyDinhHienTai = service.getQDByMaGD(maMG);
 
         if (quyDinhHienTai != null) {
             // Hiển thị quy định hiện có
@@ -268,7 +263,7 @@ public class RulesManagementController implements Initializable {
 
     @FXML
     private void apDungMacDinh(ActionEvent event) {
-        MODEL_MUAGIAI selectedMuaGiai = cboMuaGiai.getValue();
+        MODEL_GIAIDAU selectedMuaGiai = cboMuaGiai.getValue();
         if (selectedMuaGiai == null) {
             AlertUtils.showError("Lỗi", "Chưa chọn mùa giải", "Vui lòng chọn mùa giải trước khi áp dụng quy định mặc định.");
             return;
@@ -280,13 +275,13 @@ public class RulesManagementController implements Initializable {
         if (choosen) {
             apDungGiaTriMacDinh();
             AlertUtils.showInformation("Thông báo", "Áp dụng quy định mặc định",
-                    "Đã áp dụng quy định mặc định cho mùa giải: " + selectedMuaGiai.getTenMG());
+                    "Đã áp dụng quy định mặc định cho mùa giải: " + selectedMuaGiai.getTenGD());
         }
     }
 
     @FXML
     private void capNhatQuyDinh(ActionEvent event) {
-        MODEL_MUAGIAI selectedMuaGiai = cboMuaGiai.getValue();
+        MODEL_GIAIDAU selectedMuaGiai = cboMuaGiai.getValue();
         if (selectedMuaGiai == null) {
             AlertUtils.showError("Lỗi", "Chưa chọn mùa giải", "Vui lòng chọn mùa giải trước khi cập nhật quy định.");
             return;
@@ -300,21 +295,21 @@ public class RulesManagementController implements Initializable {
                 "Bạn có chắc chắn muốn cập nhật quy định cho mùa giải này?");
         if (result) {
             MODEL_QUYDINH quyDinh = layThongTinTuForm();
-            quyDinh.setMaMG(selectedMuaGiai.getMaMG());
+            quyDinh.setMaGD(selectedMuaGiai.getMaGD());
 
             boolean ketQua;
             ketQua = service.updateQD(quyDinh);
             // Save to DB if a tournament is selected
-            service.savePriorityOrder(selectedMuaGiai.getMaMG(), priorityList);
+            service.savePriorityOrder(selectedMuaGiai.getMaGD(), priorityList);
 
             if (ketQua) {
                 AlertUtils.showInformation("Thông báo", "Cập nhật quy định thành công",
-                        "Quy định đã được cập nhật thành công cho mùa giải: " + selectedMuaGiai.getTenMG());
+                        "Quy định đã được cập nhật thành công cho mùa giải: " + selectedMuaGiai.getTenGD());
                 // Tải lại quy định
-                taiQuyDinhMuaGiai(selectedMuaGiai.getMaMG());
+                taiQuyDinhMuaGiai(selectedMuaGiai.getMaGD());
             } else {
                 AlertUtils.showError("Lỗi", "Cập nhật quy định thất bại",
-                        "Không thể cập nhật quy định cho mùa giải: " + selectedMuaGiai.getTenMG());
+                        "Không thể cập nhật quy định cho mùa giải: " + selectedMuaGiai.getTenGD());
             }
         }
     }
@@ -333,7 +328,7 @@ public class RulesManagementController implements Initializable {
         spnSoDiemHoa.getValueFactory().setValue(macDinh.getDiemHoa());
         spnSoDiemThua.getValueFactory().setValue(macDinh.getDiemThua());
 
-        List<MODEL_THUTU_UUTIEN> defaultPriorityList = MODEL_THUTU_UUTIEN.getDefaultList(macDinh.getMaMG());
+        List<MODEL_THUTU_UUTIEN> defaultPriorityList = MODEL_THUTU_UUTIEN.getDefaultList(macDinh.getMaGD());
         priorityList.setAll(defaultPriorityList);
         updatePriorityOrder();
     }

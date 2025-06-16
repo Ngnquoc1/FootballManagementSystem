@@ -118,11 +118,11 @@ public class ResultsController implements Initializable {
 
     private void setFilter() throws SQLException {
 
-        List<MODEL_MUAGIAI> ds1 = service.getAllTournament();
+        List<MODEL_GIAIDAU> ds1 = service.getAllTournament();
         ArrayList<String> dsMG = new ArrayList<>();
         compeFilter.getItems().add("Tất cả giải đấu");
-        for (MODEL_MUAGIAI mg : ds1) {
-            dsMG.add(mg.getTenMG());
+        for (MODEL_GIAIDAU mg : ds1) {
+            dsMG.add(mg.getTenGD());
         }
         compeFilter.getItems().addAll(dsMG);
         compeFilter.getSelectionModel().selectFirst();
@@ -144,7 +144,7 @@ public class ResultsController implements Initializable {
         matchesByDate.keySet().stream().sorted().forEach(date -> {
             List<Match> matches = matchesByDate.get(date);
             List<String> tournamentNames = matches.stream()
-                    .map(Match::getTenMuaGiai)
+                    .map(Match::getTenGiaiDau)
                     .distinct()
                     .toList();
             for(String tournamentName : tournamentNames) {
@@ -154,7 +154,7 @@ public class ResultsController implements Initializable {
                 mainContent.getChildren().add(dateHeader);
                 // Add match rows for this date and tournament
                 for (Match match : matches) {
-                    if( !match.getTenMuaGiai().equals(tournamentName)) {
+                    if( !match.getTenGiaiDau().equals(tournamentName)) {
                         continue; // Skip matches not in the current tournament
                     }
                     HBox matchRow = createMatchRow(match);
@@ -333,7 +333,7 @@ public class ResultsController implements Initializable {
             List<Match> filteredList = new ArrayList<>();
 
             for (Match match : matches) {
-                if (match.getTenMuaGiai().equals(selectedCompe)) {
+                if (match.getTenGiaiDau().equals(selectedCompe)) {
                     filteredList.add(match);
                 }
             }
@@ -353,7 +353,7 @@ public class ResultsController implements Initializable {
             List<Match> filteredList = new ArrayList<>();
 
             for (Match match : matches) {
-                if (match.getTenMuaGiai().equals(selectedCompe) && (match.getTenCLB1().equals(selectedCLB)
+                if (match.getTenGiaiDau().equals(selectedCompe) && (match.getTenCLB1().equals(selectedCLB)
                         || match.getTenCLB2().equals(selectedCLB))) {
                     filteredList.add(match);
                 }

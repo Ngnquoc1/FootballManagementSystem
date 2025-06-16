@@ -1,6 +1,6 @@
 package Controller;
 
-import Model.MODEL_MUAGIAI;
+import Model.MODEL_GIAIDAU;
 import Model.MODEL_VONGDAU;
 import Service.Service;
 import Util.AlertUtils;
@@ -43,7 +43,7 @@ public class RoundController {
     @FXML private Button cancelButton;
     @FXML private Button finishButton;
 
-    private MODEL_MUAGIAI tournament;
+    private MODEL_GIAIDAU tournament;
     private ObservableList<MODEL_VONGDAU> roundsList = FXCollections.observableArrayList();
     private MODEL_VONGDAU currentRound;
     private boolean isEditing = false;
@@ -152,11 +152,11 @@ public class RoundController {
     }
 
     // Phương thức để thiết lập thông tin giải đấu
-    public void setTournament(MODEL_MUAGIAI tournament) {
+    public void setTournament(MODEL_GIAIDAU tournament) {
         this.tournament = tournament;
 
         // Cập nhật thông tin giải đấu trên giao diện
-        tournamentNameLabel.setText("QUẢN LÝ VÒNG ĐẤU - " + tournament.getTenMG());
+        tournamentNameLabel.setText("QUẢN LÝ VÒNG ĐẤU - " + tournament.getTenGD());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         String dateRange = tournament.getNgayBD().format(formatter) + " - " + tournament.getNgayKT().format(formatter);
@@ -185,7 +185,7 @@ public class RoundController {
     private void loadRounds() {
         try {
             // Tải danh sách vòng đấu từ cơ sở dữ liệu
-            List<MODEL_VONGDAU> rounds = service.getAllRoundByTournament(tournament.getMaMG());
+            List<MODEL_VONGDAU> rounds = service.getAllRoundByTournament(tournament.getMaGD());
             roundsList.clear();
             roundsList.addAll(rounds);
 
@@ -266,8 +266,8 @@ public class RoundController {
 
         try {
             String name = nameField.getText() ;
-            if(!name.contains(tournament.getTenMG()))
-                name+=" (" + tournament.getTenMG() + ")";
+            if(!name.contains(tournament.getTenGD()))
+                name+=" (" + tournament.getTenGD() + ")";
             LocalDate startDate = startDatePicker.getValue();
             LocalDate endDate = endDatePicker.getValue();
 
@@ -289,7 +289,7 @@ public class RoundController {
                 // Tạo vòng đấu mới
                 MODEL_VONGDAU newRound = new MODEL_VONGDAU();
                 newRound.setTenVD(name);
-                newRound.setMaMG(tournament.getMaMG());
+                newRound.setMaGD(tournament.getMaGD());
                 newRound.setNgayBD(Date.valueOf(startDate));
                 newRound.setNgayKT(Date.valueOf(endDate));
 

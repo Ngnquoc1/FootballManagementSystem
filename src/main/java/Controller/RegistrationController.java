@@ -35,7 +35,7 @@ public class RegistrationController implements Initializable {
     private ComboBox<MODEL_CLB> cboCLB;
 
     @FXML
-    private ComboBox<MODEL_MUAGIAI> cboMuaGiai;
+    private ComboBox<MODEL_GIAIDAU> cboMuaGiai;
 
     @FXML
     private Label lblTrangThaiDangKy, lblTrangThaiMuaGiai, lblTuoiToiThieu,
@@ -74,7 +74,7 @@ public class RegistrationController implements Initializable {
     private Service service;
 
     private ObservableList<MODEL_CLB> danhSachCLB;
-    private ObservableList<MODEL_MUAGIAI> danhSachMuaGiai;
+    private ObservableList<MODEL_GIAIDAU> danhSachMuaGiai;
     private ObservableList<CauThuViewModel> danhSachCauThu;
 
     private MODEL_QUYDINH quyDinhHienTai;
@@ -113,14 +113,14 @@ public class RegistrationController implements Initializable {
         });
 
         // ComboBox Mùa giải
-        cboMuaGiai.setConverter(new StringConverter<MODEL_MUAGIAI>() {
+        cboMuaGiai.setConverter(new StringConverter<MODEL_GIAIDAU>() {
             @Override
-            public String toString(MODEL_MUAGIAI muaGiai) {
-                return muaGiai != null ? muaGiai.getTenMG() : "";
+            public String toString(MODEL_GIAIDAU muaGiai) {
+                return muaGiai != null ? muaGiai.getTenGD() : "";
             }
 
             @Override
-            public MODEL_MUAGIAI fromString(String string) {
+            public MODEL_GIAIDAU fromString(String string) {
                 return null;
             }
         });
@@ -156,7 +156,7 @@ public class RegistrationController implements Initializable {
     }
 
     private void loadTournamentList() throws SQLException {
-        List<MODEL_MUAGIAI> list = service.getAllTournament();
+        List<MODEL_GIAIDAU> list = service.getAllTournament();
         danhSachMuaGiai = FXCollections.observableArrayList(list);
         cboMuaGiai.setItems(danhSachMuaGiai);
     }
@@ -172,7 +172,7 @@ public class RegistrationController implements Initializable {
 
     @FXML
     private void selectTournament(ActionEvent event) {
-        MODEL_MUAGIAI selectedMuaGiai = cboMuaGiai.getValue();
+        MODEL_GIAIDAU selectedMuaGiai = cboMuaGiai.getValue();
         if (selectedMuaGiai != null) {
             // Hiển thị trạng thái mùa giải
             lblTrangThaiMuaGiai.setText(selectedMuaGiai.getStatus());
@@ -190,7 +190,7 @@ public class RegistrationController implements Initializable {
                     break;
             }
 
-            loadTournamentRules(selectedMuaGiai.getMaMG());
+            loadTournamentRules(selectedMuaGiai.getMaGD());
             checkRegistrationStatus();
         }
         else {System.out.println("aaaaa");}
@@ -214,7 +214,7 @@ public class RegistrationController implements Initializable {
     }
 
     private void loadTournamentRules(int maMG) {
-        quyDinhHienTai = service.getQDByMaMG(maMG);
+        quyDinhHienTai = service.getQDByMaGD(maMG);
         if (quyDinhHienTai != null) {
             lblTuoiToiThieu.setText(String.valueOf(quyDinhHienTai.getTuoiToiThieu()));
             lblTuoiToiDa.setText(String.valueOf(quyDinhHienTai.getTuoiToiDa()));
@@ -226,15 +226,15 @@ public class RegistrationController implements Initializable {
 
     private void checkRegistrationStatus() {
         MODEL_CLB selectedCLB = cboCLB.getValue();
-        MODEL_MUAGIAI selectedMuaGiai = cboMuaGiai.getValue();
+        MODEL_GIAIDAU selectedMuaGiai = cboMuaGiai.getValue();
 
         if (selectedCLB != null && selectedMuaGiai != null) {
-            boolean daDangKy = service.checkRegistration(selectedCLB.getMaCLB(), selectedMuaGiai.getMaMG());
+            boolean daDangKy = service.checkRegistration(selectedCLB.getMaCLB(), selectedMuaGiai.getMaGD());
             if (daDangKy) {
                 lblTrangThaiDangKy.setText("Đã đăng ký");
                 lblTrangThaiDangKy.setTextFill(javafx.scene.paint.Color.GREEN);
                 // Load danh sách cầu thủ đã đăng ký
-                loadRegistedPlayers(selectedCLB.getMaCLB(), selectedMuaGiai.getMaMG());
+                loadRegistedPlayers(selectedCLB.getMaCLB(), selectedMuaGiai.getMaGD());
             } else {
                 lblTrangThaiDangKy.setText("Chưa đăng ký");
                 lblTrangThaiDangKy.setTextFill(javafx.scene.paint.Color.RED);
@@ -334,7 +334,7 @@ public class RegistrationController implements Initializable {
     @FXML
     private void addRegistration(ActionEvent event) throws SQLException {
         MODEL_CLB selectedCLB = cboCLB.getValue();
-        MODEL_MUAGIAI selectedMuaGiai = cboMuaGiai.getValue();
+        MODEL_GIAIDAU selectedMuaGiai = cboMuaGiai.getValue();
 
         if (selectedCLB == null || selectedMuaGiai == null) {
             AlertUtils.showError("Lỗi", "Chưa chọn CLB hoặc mùa giải!",
@@ -359,7 +359,7 @@ public class RegistrationController implements Initializable {
         if (ok) {
             boolean ketQua = false;
             int maClb = selectedCLB.getMaCLB();
-            int maMG = selectedMuaGiai.getMaMG();
+            int maMG = selectedMuaGiai.getMaGD();
             List<CauThuViewModel> danhSachDaChon = getPlayerList();
             List<Integer> maCTList = danhSachDaChon.stream()
                     .map(CauThuViewModel::getMaCT)
@@ -386,7 +386,7 @@ public class RegistrationController implements Initializable {
     @FXML
     private void removeRegistration(ActionEvent event) {
         MODEL_CLB selectedCLB = cboCLB.getValue();
-        MODEL_MUAGIAI selectedMuaGiai = cboMuaGiai.getValue();
+        MODEL_GIAIDAU selectedMuaGiai = cboMuaGiai.getValue();
 
         if (selectedCLB == null || selectedMuaGiai == null) {
             AlertUtils.showError("Lỗi", "Chưa chọn CLB hoặc mùa giải!",
@@ -405,7 +405,7 @@ public class RegistrationController implements Initializable {
                 "Hủy đăng ký tham gia mùa giải",
                 "Bạn có chắc chắn muốn hủy đăng ký tham gia mùa giải này?");
         if (ok) {
-            boolean ketQua = service.removeRegistration(selectedCLB.getMaCLB(), selectedMuaGiai.getMaMG());
+            boolean ketQua = service.removeRegistration(selectedCLB.getMaCLB(), selectedMuaGiai.getMaGD());
             if (ketQua) {
                 AlertUtils.showInformation("Thông báo", "Hủy đăng ký thành công!",
                         "Bạn đã hủy đăng ký tham gia mùa giải thành công!");

@@ -1,11 +1,11 @@
 package Model;
 
 public class MODEL_CLBTHAMGIAMUAGIAI {
-    public int maCLB,maMG, soLanVoDich;
+    public int maCLB, maGD;
     public MODEL_CLBTHAMGIAMUAGIAI() {}
 
-    public void setMaMG(int maMG) {
-        this.maMG = maMG;
+    public void setMaGD(int maGD) {
+        this.maGD = maGD;
     }
 
     public void setMaCLB(int maCLB) {
@@ -16,16 +16,8 @@ public class MODEL_CLBTHAMGIAMUAGIAI {
         return maCLB;
     }
 
-    public int getMaMG() {
-        return maMG;
-    }
-
-    public int getSoLanVoDich() {
-        return soLanVoDich;
-    }
-
-    public void setSoLanVoDich(int soLanVoDich) {
-        this.soLanVoDich = soLanVoDich;
+    public int getMaGD() {
+        return maGD;
     }
     
 }

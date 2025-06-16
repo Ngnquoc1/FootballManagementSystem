@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Match {
     private int id;
-    private String tenMuaGiai;
+    private String tenGiaiDau;
     private String tenVongDau;
     private String tenCLB1;
     private String tenCLB2;
@@ -28,7 +28,7 @@ public class Match {
     // Constructor
     public Match(int id,String tenMG,String tenVD, String tenCLB1, String tenCLB2, LocalTime gioThiDau, LocalDate ngayThiDau, String sanThiDau, String logoCLB1, String logoCLB2, Integer scoreCLB1, Integer scoreCLB2) {
         this.id = id;
-        this.tenMuaGiai = tenMG;
+        this.tenGiaiDau = tenMG;
         this.tenVongDau = tenVD;
         this.tenCLB1 = tenCLB1;
         this.tenCLB2 = tenCLB2;
@@ -62,11 +62,11 @@ public class Match {
     public void setScoreCLB1(Integer scoreCLB1) { this.scoreCLB1 = scoreCLB1; }
     public Integer getScoreCLB2() { return scoreCLB2; }
     public void setScoreCLB2(Integer scoreCLB2) { this.scoreCLB2 = scoreCLB2; }
-    public String getTenMuaGiai() {
-        return tenMuaGiai;
+    public String getTenGiaiDau() {
+        return tenGiaiDau;
     }
-    public void setTenMuaGiai(String tenMuaGiai) {
-        this.tenMuaGiai = tenMuaGiai;
+    public void setTenGiaiDau(String tenGiaiDau) {
+        this.tenGiaiDau = tenGiaiDau;
     }
     public String getTenVongDau() {
         return tenVongDau;
@@ -97,7 +97,7 @@ public class Match {
                 ? scoreCLB1 + " - " + scoreCLB2
                 : "Chưa có kết quả";
 
-        return  "Mùa giải: " + tenMuaGiai + "\n" +
+        return  "Mùa giải: " + tenGiaiDau + "\n" +
                 "Vòng đấu: " + tenVongDau + "\n" +
                 "Trận đấu: " + tenCLB1 + " vs " + tenCLB2 + "\n" +
                 "Tỷ số: " + score + "\n" +

@@ -2,7 +2,7 @@ package Model;
 
 public class MODEL_QUYDINH {
 
-    private int maMG, tuoiToiThieu, tuoiToiDa, soCTToiThieu, soCTToiDa,
+    private int maGD, tuoiToiThieu, tuoiToiDa, soCTToiThieu, soCTToiDa,
             soCTNuocNgoaiToiDa, phutGhiBanToiDa,diemThang,diemThua,diemHoa;
 
     public MODEL_QUYDINH() {
@@ -58,12 +58,12 @@ public class MODEL_QUYDINH {
         this.tuoiToiThieu = tuoiToiThieu;
     }
 
-    public int getMaMG() {
-        return maMG;
+    public int getMaGD() {
+        return maGD;
     }
 
-    public void setMaMG(int maMG) {
-        this.maMG = maMG;
+    public void setMaGD(int maGD) {
+        this.maGD = maGD;
     }
 
     public int getPhutGhiBanToiDa() {

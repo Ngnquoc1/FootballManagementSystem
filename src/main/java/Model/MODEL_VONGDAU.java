@@ -3,7 +3,7 @@ package Model;
 import java.sql.Date;
 
 public class MODEL_VONGDAU {
-    private int maVD, maMG;
+    private int maVD, maGD;
     private String tenVD;  // Đã thay đổi từ int sang String
     private Date ngayBD, ngayKT;
 
@@ -12,7 +12,7 @@ public class MODEL_VONGDAU {
     public MODEL_VONGDAU(int maVD, String tenVD, int maMG, Date ngayBD, Date ngayKT) {
         this.maVD = maVD;
         this.tenVD = tenVD;
-        this.maMG = maMG;
+        this.maGD = maMG;
         this.ngayBD = ngayBD;
         this.ngayKT = ngayKT;
     }
@@ -33,12 +33,12 @@ public class MODEL_VONGDAU {
         this.tenVD = tenVD;
     }
 
-    public int getMaMG() {
-        return maMG;
+    public int getMaGD() {
+        return maGD;
     }
 
-    public void setMaMG(int maMG) {
-        this.maMG = maMG;
+    public void setMaGD(int maGD) {
+        this.maGD = maGD;
     }
 
     public Date getNgayBD() {
