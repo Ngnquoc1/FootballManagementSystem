@@ -34,10 +34,8 @@ import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
+
 import Service.Service;
 
 public class PlayerController implements Initializable {
@@ -195,7 +193,6 @@ public class PlayerController implements Initializable {
             }
 
             // Lọc theo mùa giải
-            // Lọc theo mùa giải
             if (selectedCompetition != null && !selectedCompetition.isEmpty()) {
                 String sql = "MaCT = " + player.getMaCT();
                 List<MODEL_CAUTHUTHAMGIA_GIAIDAU> registedPlayers = service.getRegistedPlayersByCondition(sql);
@@ -236,9 +233,6 @@ public class PlayerController implements Initializable {
         }
     }
 
-    /**
-     * Hiển thị thông báo khi không có kết quả tìm kiếm
-     */
     private void displayNoResults() {
         HBox noResultsRow = new HBox();
         noResultsRow.setPadding(new Insets(20));
@@ -369,7 +363,6 @@ public class PlayerController implements Initializable {
         positionLabel.getStyleClass().add("player_info");
 
         // Nationality with flag
-        // NationalityLogo từ trang https://www.countryflags.com/image-overview/
         ImageView flagImage = new ImageView();
         try {
             File flagFile = new File(flagPath + player.getQuocTich() + ".png");
@@ -455,7 +448,7 @@ public class PlayerController implements Initializable {
             // Create scene with our overlay root
             Scene popupScene = new Scene(overlayRoot);
             popupScene.setFill(Color.TRANSPARENT); // Make scene background transparent
-            popupScene.getStylesheets().add(getClass().getResource("/css/Player.css").toExternalForm());
+            popupScene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/Player.css")).toExternalForm());
 
             // Allow clicking outside the popup content to close the popup
             overlayRoot.setOnMouseClicked(event -> {
@@ -552,7 +545,7 @@ public class PlayerController implements Initializable {
             String sql = "MaCT= " + playerId;
             List<MODEL_CAUTHUTHAMGIA_GIAIDAU> registedPlayers = service.getRegistedPlayersByCondition(sql);
             if (!registedPlayers.isEmpty()) {
-                data.ctclb = registedPlayers.get(0);
+                data.ctclb = registedPlayers.getFirst();
                 data.clb = service.getCLBByID(data.ctclb.getMaCLB());
             } else {
                 data.ctclb = null;
@@ -597,7 +590,7 @@ public class PlayerController implements Initializable {
         }
         catch (Exception e){
             // Use a placeholder if image not found
-            image = new Image(getClass().getResourceAsStream("/Image/PlayerAva/default_ava.png"));
+            image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Image/PlayerAva/default_ava.png")));
         }
 
         playerImage.setImage(image);
@@ -732,7 +725,7 @@ public class PlayerController implements Initializable {
             File clubLogoFile = new File("src/main/resources/Image/ClubLogo/" + clb.getLogoCLB());
             image= new Image(clubLogoFile.toURI().toString());
         } catch (Exception e) {
-            image= new Image(getClass().getResourceAsStream("/Image/ClubLogo/default_logo.png"));
+            image= new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Image/ClubLogo/default_logo.png")));
         }
         clubImage.setImage(image);
         clubImage.getStyleClass().add("detail_image");

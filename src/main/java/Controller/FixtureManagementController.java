@@ -44,7 +44,7 @@ public class FixtureManagementController implements Initializable {
     public void initialize(java.net.URL location, java.util.ResourceBundle resources) {
         // Ánh xạ các cột với thuộc tính của lớp Match
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
-        leagueCol.setCellValueFactory(new PropertyValueFactory<>("tenMuaGiai"));
+        leagueCol.setCellValueFactory(new PropertyValueFactory<>("tenGiaiDau"));
         roundCol.setCellValueFactory(new PropertyValueFactory<>("tenVongDau"));
         homeTeamCol.setCellValueFactory(new PropertyValueFactory<>("tenCLB1"));
         awayTeamCol.setCellValueFactory(new PropertyValueFactory<>("tenCLB2"));
@@ -188,7 +188,7 @@ public class FixtureManagementController implements Initializable {
             AlertUtils.showError("Error"," ", "Round field is required.");
             return null;
         }
-        String tenMuaGiai = compeForm.getValue();
+        String tenGiaiDau = compeForm.getValue();
         String tenVongDau = roundForm.getValue();
         String tenCLB1 = clbForm1.getValue();
         String tenCLB2 = clbForm2.getValue();
@@ -198,7 +198,7 @@ public class FixtureManagementController implements Initializable {
         int minute = minSpinner.getValue();
         LocalTime time = LocalTime.of(hour, minute);
         int id = idLabel.getText().isEmpty() ? 0 : Integer.parseInt(idLabel.getText());
-        return new Match(id, tenMuaGiai,tenVongDau, tenCLB1, tenCLB2, time, date, tenSan, null, null, null, null);
+        return new Match(id, tenGiaiDau,tenVongDau, tenCLB1, tenCLB2, time, date, tenSan, null, null, null, null);
     }
 
     @FXML
@@ -226,7 +226,7 @@ public class FixtureManagementController implements Initializable {
         String compe = compeFilter.getValue();
         String clb = clubFilter.getValue();
 
-        String sql = "m.TenMG= '" + compe + "'";
+        String sql = "m.TenGD= '" + compe + "'";
         if (clb!=null) {
             sql += " and (c1.TenCLB='" + clb + "' or c2.TenCLB= '" + clb + "')";
         }
@@ -272,7 +272,7 @@ public class FixtureManagementController implements Initializable {
         Match selectedMatch = fixtureTable.getSelectionModel().getSelectedItem();
         if (selectedMatch != null) {
             String id = String.valueOf(selectedMatch.getId());
-            String tenMG = selectedMatch.getTenGiaiDau();
+            String tenGD = selectedMatch.getTenGiaiDau();
             String tenCLB1 = selectedMatch.getTenCLB1();
             String tenCLB2 = selectedMatch.getTenCLB2();
             String sanThiDau = selectedMatch.getSanThiDau();
@@ -281,9 +281,8 @@ public class FixtureManagementController implements Initializable {
             LocalDate date = selectedMatch.getNgayThiDau();
             LocalTime time = selectedMatch.getGioThiDau();
 
-            System.out.println(tenVD+" "+tenMG);
             idLabel.setText(id);
-            compeForm.getSelectionModel().select(tenMG);
+            compeForm.getSelectionModel().select(tenGD);
             clbForm1.getSelectionModel().select(tenCLB1);
             clbForm2.getSelectionModel().select(tenCLB2);
             roundForm.getSelectionModel().select(tenVD);

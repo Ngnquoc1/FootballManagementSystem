@@ -120,12 +120,19 @@ public class TableController {
         exportService = new ExportService();
         configureUIBasedOnRole();
         // Thiết lập các ComboBox
-        compeFilter.setItems(FXCollections.observableArrayList(
-                service.getAllTournament().stream().map(MODEL_GIAIDAU::getTenGD).toList()));
+        List<MODEL_GIAIDAU> tournaments = service.getAllTournament();
+        if (tournaments == null || tournaments.isEmpty()) {
+            compeFilter.setItems(FXCollections.observableArrayList());
+            return;
+        }
+        else {
+            compeFilter.setItems(FXCollections.observableArrayList(
+                    tournaments.stream().map(MODEL_GIAIDAU::getTenGD).toList()));
+            compeFilter.getSelectionModel().selectFirst();
+        }
         rankingTypeFilter.setItems(FXCollections.observableArrayList("BXH CLB", "Vua phá lưới","Thống kê"));
 
         // Thiết lập giá trị mặc định
-        compeFilter.getSelectionModel().selectFirst();
         rankingTypeFilter.setValue("BXH CLB");
 
         // Thiết lập các cột cho bảng xếp hạng CLB
@@ -234,7 +241,7 @@ public class TableController {
             throw new RuntimeException("No matching season found for condition: " + condition);
         }
 
-        int maMG = musimList.get(0).getMaGD();
+        int maMG = musimList.getFirst().getMaGD();
         clubRankColumn.setCellValueFactory(new PropertyValueFactory<>("Hang"));
         clubNameColumn.setCellValueFactory(cellData -> {
             try {

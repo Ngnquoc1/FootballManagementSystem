@@ -31,7 +31,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import Service.EmailService;
+import Service.ExportService;
 public class TournamentManagementController {
     @FXML private Label totalTournamentsLabel;
     @FXML private Label activeTournamentsLabel;
@@ -60,6 +63,7 @@ public class TournamentManagementController {
     @FXML private Button viewDetailsButton;
     @FXML private Button saveButton;
     @FXML private Button cancelButton;
+    @FXML private Button sendInfoButton; // Thêm khai báo nút
 
     private final ObservableList<MODEL_GIAIDAU> tournamentsList = FXCollections.observableArrayList();
     private FilteredList<MODEL_GIAIDAU> filteredTournaments;
@@ -491,5 +495,50 @@ public class TournamentManagementController {
             System.err.println("Lỗi hiển thị UserPopup: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    private void handleSendInfoToClubs() {
+        MODEL_GIAIDAU selectedTournament = tournamentsTableView.getSelectionModel().getSelectedItem();
+        if (selectedTournament == null) {
+            AlertUtils.showWarning("Chú ý", "Chưa chọn giải đấu", "Vui lòng chọn một giải đấu để gửi thông tin.");
+            return;
+        }
+
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Nhập email CLB");
+        dialog.setHeaderText("Gửi thông tin & quy định cho CLB");
+        dialog.setContentText("Nhập email của CLB muốn gửi:");
+
+        String email = dialog.showAndWait().orElse(null);
+        if (email == null || email.trim().isEmpty()) {
+            AlertUtils.showWarning("Chú ý", "Chưa nhập email", "Vui lòng nhập email của CLB.");
+            return;
+        }
+
+        if (!isValidEmail(email.trim())) {
+            AlertUtils.showError("Lỗi", "Email không hợp lệ", "Vui lòng nhập đúng định dạng email.");
+            return;
+        }
+
+        try {
+            String subject = "Thông tin & Quy định giải đấu: " + selectedTournament.getTenGD();
+            String content = service.getTournamentInfoAndRules(selectedTournament.getMaGD());
+            EmailService emailService = new EmailService();
+            ExportService exportService = new ExportService();
+            File file =exportService.exportTournamentInfo(selectedTournament.getMaGD());
+            emailService.sendEmail(email.trim(), subject, content,file);
+            AlertUtils.showInformation("Thành công", "Đã gửi email", "Thông tin và quy định giải đấu đã được gửi đến CLB.");
+        } catch (Exception e) {
+            AlertUtils.showError("Lỗi", "Không thể gửi email", e.getMessage());
+        }
+    }
+
+    // Hàm kiểm tra định dạng email hợp lệ
+    private boolean isValidEmail(String email) {
+        String regex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 }

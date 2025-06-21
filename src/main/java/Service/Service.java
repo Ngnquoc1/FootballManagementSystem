@@ -1667,4 +1667,30 @@ public class Service {
         }
         return archivedData;
     }
+
+    public String getTournamentInfoAndRules(int maGD) {
+        StringBuilder sb = new StringBuilder();
+        String sql = "SELECT GD.TenGD, GD.NGAYKHAIMAC, GD.NGAYBEMAC, QD.TuoiToiThieu, QD.TuoiToiDa, " +
+                "QD.SoCTToiThieu, QD.SoCTToiDa, QD.SoCTNuocNgoaiToiDa, QD.PhutGhiBanToiDa " +
+                "FROM GIAIDAU GD JOIN QUYDINH QD ON GD.MaGD = QD.MaGD WHERE GD.MaGD = ?";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, maGD);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                sb.append("Tournament Name: ").append(rs.getString("TenGD")).append("\n");
+                sb.append("Start Date: ").append(rs.getDate("NGAYKHAIMAC")).append("\n");
+                sb.append("End Date: ").append(rs.getDate("NGAYBEMAC")).append("\n");
+                sb.append("Minimum Age: ").append(rs.getInt("TuoiToiThieu")).append("\n");
+                sb.append("Maximum Age: ").append(rs.getInt("TuoiToiDa")).append("\n");
+                sb.append("Minimum Players: ").append(rs.getInt("SoCTToiThieu")).append("\n");
+                sb.append("Maximum Players: ").append(rs.getInt("SoCTToiDa")).append("\n");
+                sb.append("Maximum Foreign Players: ").append(rs.getInt("SoCTNuocNgoaiToiDa")).append("\n");
+                sb.append("Maximum Minutes to Score: ").append(rs.getInt("PhutGhiBanToiDa")).append("\n");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return sb.toString();
+    }
 }

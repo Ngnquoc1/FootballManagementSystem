@@ -2,6 +2,8 @@ package Service;
 
 import Model.MODEL_BXH_BANTHANG;
 import Model.MODEL_BXH_CLB;
+import Model.MODEL_GIAIDAU;
+import Util.AlertUtils;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
@@ -10,11 +12,13 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class ExportService {
-    private final Service service= new Service();
+    private final Service service = new Service();
+
     public void exportClubRankingsToExcel(ObservableList<MODEL_BXH_CLB> vleagueClubRankings, File file, String tournamentName, String rankingType) {
         try (FileOutputStream fileOut = new FileOutputStream(file);
              XSSFWorkbook workbook = new XSSFWorkbook()) {
@@ -25,7 +29,7 @@ public class ExportService {
             CellStyle headerStyle = workbook.createCellStyle();
             Font headerFont = workbook.createFont();
             headerFont.setBold(true);
-            headerFont.setFontHeightInPoints((short)12);
+            headerFont.setFontHeightInPoints((short) 12);
             headerStyle.setFont(headerFont);
             headerStyle.setAlignment(HorizontalAlignment.CENTER);
             headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
@@ -38,7 +42,7 @@ public class ExportService {
             CellStyle infoStyle = workbook.createCellStyle();
             Font infoFont = workbook.createFont();
             infoFont.setBold(true);
-            infoFont.setFontHeightInPoints((short)11);
+            infoFont.setFontHeightInPoints((short) 11);
             infoStyle.setFont(infoFont);
 
             // Cell style
@@ -112,7 +116,8 @@ public class ExportService {
                 String clubName = "Unknown";
                 try {
                     clubName = service.getCLBByID(clb.getMaCLB()).getTenCLB();
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
                 Cell c3 = row.createCell(col++);
                 c3.setCellValue(clubName);
                 c3.setCellStyle(rowStyle);
@@ -168,6 +173,7 @@ public class ExportService {
             });
         }
     }
+
     public void exportScorerRankingsToExcel(ObservableList<MODEL_BXH_BANTHANG> vleagueScorerRankings, File file, String tournamentName, String rankingType) {
         try (FileOutputStream fileOut = new FileOutputStream(file);
              XSSFWorkbook workbook = new XSSFWorkbook()) {
@@ -178,7 +184,7 @@ public class ExportService {
             CellStyle headerStyle = workbook.createCellStyle();
             Font headerFont = workbook.createFont();
             headerFont.setBold(true);
-            headerFont.setFontHeightInPoints((short)12);
+            headerFont.setFontHeightInPoints((short) 12);
             headerStyle.setFont(headerFont);
             headerStyle.setAlignment(HorizontalAlignment.CENTER);
             headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
@@ -190,7 +196,7 @@ public class ExportService {
             CellStyle infoStyle = workbook.createCellStyle();
             Font infoFont = workbook.createFont();
             infoFont.setBold(true);
-            infoFont.setFontHeightInPoints((short)11);
+            infoFont.setFontHeightInPoints((short) 11);
             infoStyle.setFont(infoFont);
 
             CellStyle cellStyle = workbook.createCellStyle();
@@ -291,6 +297,81 @@ public class ExportService {
                 alert.setContentText("Please check if the file is open or the path is valid.");
                 alert.showAndWait();
             });
+        }
+    }
+
+    public File exportTournamentInfo(int tournamentId) {
+        try {
+            MODEL_GIAIDAU tournament = service.getTournamentByID(tournamentId);
+            if (tournament == null) {
+                Platform.runLater(() -> {
+                    AlertUtils.showError("Lỗi", "", "Không tìm thấy giải đấu với mã: " + tournamentId);
+                });
+                return null;
+            }
+
+            File file = new File("src/main/resources/Export/TournamentInfo_" + tournament.getMaGD() + ".xlsx");
+            try (FileOutputStream fileOut = new FileOutputStream(file);
+                 XSSFWorkbook workbook = new XSSFWorkbook()) {
+
+                XSSFSheet sheet = workbook.createSheet("Tournament Info");
+
+                // Styles
+                CellStyle headerStyle = workbook.createCellStyle();
+                Font headerFont = workbook.createFont();
+                headerFont.setBold(true);
+                headerFont.setFontHeightInPoints((short) 12);
+                headerStyle.setFont(headerFont);
+                headerStyle.setAlignment(HorizontalAlignment.CENTER);
+                headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+                CellStyle infoStyle = workbook.createCellStyle();
+                Font infoFont = workbook.createFont();
+                infoFont.setBold(true);
+                infoFont.setFontHeightInPoints((short) 11);
+                infoStyle.setFont(infoFont);
+
+                // Info rows
+                Row tournamentRow = sheet.createRow(0);
+                Cell tournamentCell = tournamentRow.createCell(0);
+                tournamentCell.setCellValue("Mã giải đấu: " + tournament.getMaGD());
+                tournamentCell.setCellStyle(infoStyle);
+
+                Row nameRow = sheet.createRow(1);
+                Cell nameCell = nameRow.createCell(0);
+                nameCell.setCellValue("Tên giải đấu: " + tournament.getTenGD());
+                nameCell.setCellStyle(infoStyle);
+
+                Row startDateRow = sheet.createRow(2);
+                Cell startDateCell = startDateRow.createCell(0);
+                startDateCell.setCellValue("Ngày bắt đầu: " + tournament.getNgayBD());
+                startDateCell.setCellStyle(infoStyle);
+
+                Row endDateRow = sheet.createRow(3);
+                Cell endDateCell = endDateRow.createCell(0);
+                endDateCell.setCellValue("Ngày kết thúc: " + tournament.getNgayKT());
+                endDateCell.setCellStyle(infoStyle);
+
+                String qd= service.getTournamentInfoAndRules(tournamentId);
+                Row rulesRow = sheet.createRow(4);
+                Cell rulesCell = rulesRow.createCell(0);
+                rulesCell.setCellValue("Quy định: " + qd);
+
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            Platform.runLater(() -> {
+                AlertUtils.showInformation("Xuất thành công", "Thông tin giải đấu đã được xuất thành công", "File: " + file.getAbsolutePath());
+            });
+            return file;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Platform.runLater(() -> {
+                AlertUtils.showError("Lỗi", "Không thể xuất thông tin giải đấu", e.getMessage());
+            });
+            return null;
         }
     }
 }

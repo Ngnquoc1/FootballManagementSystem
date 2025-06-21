@@ -37,7 +37,7 @@ public class ResultManagementController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
-        leagueCol.setCellValueFactory(new PropertyValueFactory<>("tenMuaGiai"));
+        leagueCol.setCellValueFactory(new PropertyValueFactory<>("tenGiaiDau"));
         roundCol.setCellValueFactory(new PropertyValueFactory<>("tenVongDau"));
         homeTeamCol.setCellValueFactory(new PropertyValueFactory<>("tenCLB1"));
         awayTeamCol.setCellValueFactory(new PropertyValueFactory<>("tenCLB2"));
@@ -46,7 +46,7 @@ public class ResultManagementController implements Initializable {
         scoreCol2.setCellValueFactory(new PropertyValueFactory<>("scoreCLB2"));
 
         idCol1.setCellValueFactory(new PropertyValueFactory<>("id"));
-        leagueCol1.setCellValueFactory(new PropertyValueFactory<>("tenMuaGiai"));
+        leagueCol1.setCellValueFactory(new PropertyValueFactory<>("tenGiaiDau"));
         roundCol1.setCellValueFactory(new PropertyValueFactory<>("tenVongDau"));
         homeTeamCol1.setCellValueFactory(new PropertyValueFactory<>("tenCLB1"));
         awayTeamCol1.setCellValueFactory(new PropertyValueFactory<>("tenCLB2"));

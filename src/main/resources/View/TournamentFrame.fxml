@@ -146,6 +146,11 @@
                         <Button fx:id="editButton" mnemonicParsing="false" onAction="#handleEditTournament" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #991f18; -fx-text-fill: white;" styleClass="ManagementBtn" text="Sửa" />
                         <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#handleDeleteTournament" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #991f18; -fx-text-fill: white;" styleClass="ManagementBtn" text="Xóa" />
                         <Button fx:id="viewDetailsButton" mnemonicParsing="false" onAction="#handleViewDetails" prefHeight="35.0" prefWidth="150.0" style="-fx-background-color: #991f18; -fx-text-fill: white;" styleClass="ManagementBtn" text="Xem chi tiết" />
+                        <Button fx:id="sendInfoButton" mnemonicParsing="false" onAction="#handleSendInfoToClubs"
+                                prefHeight="35.0" prefWidth="180.0"
+                                style="-fx-background-color: #991f18; -fx-text-fill: white;"
+                                styleClass="ManagementBtn"
+                                text="Gửi thông tin &amp; quy định" />
                      </children>
                   </HBox>
                   <Separator />

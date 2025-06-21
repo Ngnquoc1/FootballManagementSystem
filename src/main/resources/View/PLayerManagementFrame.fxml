@@ -97,6 +97,7 @@
             </TableView>
                 <HBox alignment="CENTER" prefHeight="18.0" prefWidth="722.0" spacing="15.0">
                     <children>
+                        <Button fx:id="btnAddFromCSV" minHeight="-Infinity" mnemonicParsing="false" onAction="#handleAddFromCSV" prefHeight="30.0" prefWidth="93.0" style="-fx-border-color: #991f18; -fx-background-color: #991f18; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-border-radius: 5;" styleClass="ManagementBtn" text="Thêm từ CSV" />
                         <Button fx:id="addBtn" minHeight="-Infinity" mnemonicParsing="false" onAction="#add" prefHeight="30.0" prefWidth="90.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Thêm" />
                         <Button fx:id="removeBtn" minHeight="-Infinity" mnemonicParsing="false" onAction="#remove" prefHeight="30.0" prefWidth="90.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Xóa" />
                         <Button fx:id="updateBtn" minHeight="-Infinity" mnemonicParsing="false" onAction="#update" prefHeight="30.0" prefWidth="90.0" styleClass="ManagementBtn" stylesheets="@../CSS/Fixtures.css" text="Sửa" />
@@ -111,7 +112,7 @@
                         <Font name="System Bold" size="14.0" />
                     </font>
                 </Label>
-            <VBox prefHeight="224.0" prefWidth="753.0" spacing="5.0" style="-fx-background-color: #f5f5f5; -fx-padding: 15; -fx-background-radius: 8;">
+            <VBox prefHeight="224.0" prefWidth="753.0" style="-fx-background-color: #f5f5f5; -fx-padding: 15; -fx-background-radius: 8;">
                <children>
                   <HBox prefHeight="159.0" prefWidth="722.0" style="-fx-background-color: #f5f5f5; -fx-background-radius: 8;">
                      <children>
@@ -191,9 +192,9 @@
                         </HBox>
                </children>
             </VBox>
-                <HBox alignment="CENTER_RIGHT" prefWidth="668.0">
+                <HBox alignment="CENTER_RIGHT" prefWidth="668.0" spacing="20.0">
                     <children>
-                        <Button fx:id="closeBtn" minHeight="-Infinity" mnemonicParsing="false" onAction="#closeBtn" prefHeight="34.0" prefWidth="150.0" style="-fx-border-color: #991f18; -fx-background-color: #991f18; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-border-radius: 5;" styleClass="ManagementBtn" text="Hoàn thành" />
+                  <Button fx:id="closeBtn" minHeight="-Infinity" mnemonicParsing="false" onAction="#closeBtn" prefHeight="34.0" prefWidth="150.0" style="-fx-border-color: #991f18; -fx-background-color: #991f18; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-border-radius: 5;" styleClass="ManagementBtn" text="Hoàn thành" />
                     </children>
                 </HBox>
             </children>
@@ -203,6 +204,6 @@
         </VBox>
     </children>
     <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
     </padding>
 </VBox>

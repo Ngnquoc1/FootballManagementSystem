@@ -13,7 +13,7 @@
 -- DROP TABLE CLB CASCADE CONSTRAINTS;
 -- DROP TABLE SAN CASCADE CONSTRAINTS;
 -- DROP TABLE VongDau CASCADE CONSTRAINTS;
--- DROP TABLE MuaGiai CASCADE CONSTRAINTS;
+-- DROP TABLE GIAIDAU CASCADE CONSTRAINTS;
 -- DROP TABLE LoaiBanThang CASCADE CONSTRAINTS;
 -- DROP TABLE TaiKhoan CASCADE CONSTRAINTS;
 
@@ -521,7 +521,6 @@ EXCEPTION
 END RecalculateRankingPositions;
 /
 -----------------UpdateRanking--------------
-select * from BANGXEPHANG_CLB where MaGD = 1;
 CREATE OR REPLACE PROCEDURE UpdateRanking(
     p_maTD IN NUMBER,
     p_diemCLB1_old IN NUMBER ,
@@ -722,7 +721,7 @@ BEGIN
             c2.LogoCLB AS LogoCLB2,
             td.ThoiGian AS ThoiGian,
             s.TenSan AS SanThiDau,
-            m.TenMG AS TenGiaiDau,
+            m.TenGD AS TenGiaiDau,
             kq.DiemCLB1 as Score1,
             kq.DiemCLB2 as Score2
         FROM TranDau td
@@ -730,9 +729,9 @@ BEGIN
         JOIN CLB c1 ON td.MaCLB1 = c1.MaCLB
         JOIN CLB c2 ON td.MaCLB2 = c2.MaCLB
         JOIN SAN s ON td.MaSan = s.MaSan
-        JOIN MuaGiai m ON v.MaGD = m.MaGD
+        JOIN GiaiDau m ON v.MaGD = m.MaGD
         LEFT JOIN KetQuaTD kq ON td.MaTD = kq.MaTD
-        WHERE td.ThoiGian >= TRUNC(SYSDATE)';
+        WHERE kq.MaTD IS NULL';
 
     -- Thêm điều kiện nếu có
     IF p_condition IS NOT NULL THEN
@@ -749,6 +748,7 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20020, 'Lỗi khi thực thi procedure: ' || SQLERRM);
 END GetUpComingMatchesByCondition;
 /
+
 ----------------GetUpComingMatches---------
 CREATE OR REPLACE PROCEDURE GetUpcomingMatches(
     p_result OUT SYS_REFCURSOR
@@ -903,7 +903,7 @@ COMMIT;
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
         ROLLBACK;
-        RAISE_APPLICATION_ERROR(-20001, 'Không tìm thấy dữ liệu tương ứng (MuaGiai, CLB, SAN hoặc VongDau).');
+        RAISE_APPLICATION_ERROR(-20001, 'Không tìm thấy dữ liệu tương ứng (GiaiDau, CLB, SAN hoặc VongDau).');
 WHEN OTHERS THEN
         ROLLBACK;
         RAISE_APPLICATION_ERROR(-20003, 'Lỗi khi chèn trận đấu: ' || SQLERRM);
@@ -971,7 +971,7 @@ COMMIT;
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
         ROLLBACK;
-        RAISE_APPLICATION_ERROR(-20001, 'Không tìm thấy dữ liệu tương ứng (MuaGiai, CLB, SAN hoặc VongDau).');
+        RAISE_APPLICATION_ERROR(-20001, 'Không tìm thấy dữ liệu tương ứng (GiaiDau, CLB, SAN hoặc VongDau).');
 WHEN OTHERS THEN
         ROLLBACK;
         RAISE_APPLICATION_ERROR(-20003, 'Lỗi khi cập nhật trận đấu: ' || SQLERRM);
@@ -1545,9 +1545,11 @@ INSERT INTO ViTriTD (MaVT, TenVT) VALUES (4, 'Goalkeeper');
 
 INSERT INTO LoaiCauThu (MaLoaiCT, TenLoaiCT) VALUES (0, 'Cầu thủ nội');
 INSERT INTO LoaiCauThu (MaLoaiCT, TenLoaiCT)VALUES (1, 'Cầu thủ ngoại');
-
+select * from GiaiDau;
 INSERT INTO GiaiDau (MaGD, TenGD, NgayKhaiMac, NgayBeMac, LogoGD)
 VALUES (1, 'V-League 2025', TO_DATE('2025-05-21', 'YYYY-MM-DD'), TO_DATE('2026-05-21', 'YYYY-MM-DD'), 'Vleague2025.png');
+INSERT INTO GiaiDau (MaGD, TenGD, NgayKhaiMac, NgayBeMac, LogoGD)
+VALUES (2, 'V-League 2026', TO_DATE('2026-01-01', 'YYYY-MM-DD'), TO_DATE('2026-06-15', 'YYYY-MM-DD'), 'Vleague2026.png');
 
 Insert Into QuyDinh(MaGD)VALUES (1);
 
@@ -1603,9 +1605,10 @@ INSERT INTO CauThu (MaCT, TenCT, NgaySinh, QuocTich, Avatar, SoAo, LoaiCT, MaCLB
 
 
 commit;
+select * from TranDau;
 -- select * from MuaGiai;
 -- select * from QuyDinh;
--- select * from VongDau;
+-- select * from VongDau ;
 -- select * from THUTU_UUTIEN;
 -- select * from SAN;
 -- select * from CLB;
@@ -1618,7 +1621,7 @@ commit;
 -- select * from CAUTHU_THAMGIAMUAGIAI ;
 -- select * from BANTHANG;
 -- select * from BANGXEPHANG_BANTHANG;
--- delete from MuaGiai;
+-- delete from GiaiDau;
 -- delete from QuyDinh ;
 -- delete from VongDau ;
 -- delete from THUTU_UUTIEN;

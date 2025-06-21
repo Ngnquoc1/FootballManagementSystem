@@ -19,6 +19,9 @@ import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.nio.charset.StandardCharsets;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -51,7 +54,7 @@ public class PlayerManagementController implements Initializable {
     private TableColumn<MODEL_CAUTHU, String> playerAvaColumn;
 
     @FXML
-    private Label idLabel,clubNameLabel;
+    private Label idLabel, clubNameLabel;
     @FXML
     private TextField playerNameField;
     @FXML
@@ -66,9 +69,9 @@ public class PlayerManagementController implements Initializable {
     @FXML
     private ComboBox<String> posFilter, playerNoFilter;
     @FXML
-    private Button chooseAvaButton,closeBtn;
+    private Button chooseAvaButton, closeBtn, btnAddFromCSV;
     @FXML
-    private ImageView avaImageView,clubImgaeView;
+    private ImageView avaImageView, clubImgaeView;
 
     private MODEL_CLB currentClub;
     private Service service;
@@ -92,7 +95,6 @@ public class PlayerManagementController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
     }
 
     public void initializeData() {
@@ -136,8 +138,7 @@ public class PlayerManagementController implements Initializable {
         try {
             Image clubLogo = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Image/ClubLogo/" + currentClub.getLogoCLB())));
             clubImgaeView.setImage(clubLogo);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Image defaultLogo = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Image/ClubLogo/default_logo.png")));
             clubImgaeView.setImage(defaultLogo);
         }
@@ -150,6 +151,7 @@ public class PlayerManagementController implements Initializable {
             directory.mkdirs();
         }
     }
+
     private void setupPlayersTable() {
         idColumn.setCellValueFactory(
                 new PropertyValueFactory<>("maCT")
@@ -247,11 +249,10 @@ public class PlayerManagementController implements Initializable {
             player.setSoAo(Integer.parseInt(playerNumberField.getText()));
             player.setMaCLB(currentClub.getMaCLB());
             player.setMaVT(service.getPositionIdByName(playerPositionCombo.getValue()));
-            if(idLabel.getText()==null || idLabel.getText().isEmpty()){
+            if (idLabel.getText() == null || idLabel.getText().isEmpty()) {
                 player.setMaCT(0);
-            }
-            else
-            player.setMaCT(Integer.parseInt(idLabel.getText()));
+            } else
+                player.setMaCT(Integer.parseInt(idLabel.getText()));
             return player;
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -277,12 +278,14 @@ public class PlayerManagementController implements Initializable {
         }
 
     }
+
     @FXML
-    private void resetFilter()  {
+    private void resetFilter() {
         playerNoFilter.setValue(null);
         posFilter.setValue(null);
         filteredPlayersList.setPredicate(null);
     }
+
     @FXML
     private void resetForm() {
         playerNameField.clear();
@@ -298,8 +301,9 @@ public class PlayerManagementController implements Initializable {
     private void add() {
         resetForm();
     }
+
     @FXML
-    private void update(){
+    private void update() {
         selectedPlayer = playersTableView.getSelectionModel().getSelectedItem();
         if (selectedPlayer != null) {
             idLabel.setText(String.valueOf(selectedPlayer.getMaCT()));
@@ -310,7 +314,7 @@ public class PlayerManagementController implements Initializable {
             playerPositionCombo.setValue(service.getPositionById(selectedPlayer.getMaVT()));
             Image avaImg;
             try {
-                String path="src/main/resources/Image/PlayerAva/" + selectedPlayer.getAvatar();
+                String path = "src/main/resources/Image/PlayerAva/" + selectedPlayer.getAvatar();
                 File avaFile = new File(path);
                 if (avaFile.exists()) {
                     avaImg = new Image(avaFile.toURI().toString());
@@ -322,14 +326,15 @@ public class PlayerManagementController implements Initializable {
             }
             avaImageView.setImage(avaImg);
         } else {
-            AlertUtils.showWarning("Warning", "No Player Selected", "Please select a player to update.");
+            AlertUtils.showWarning("Lỗi", "Chưa chọn cầu thủ", "Hãy chọn cầu thủ để cập nhật.");
         }
     }
+
     @FXML
     private void save() {
         try {
             MODEL_CAUTHU player = collectFormData();
-            if(selectedPlayer != null){
+            if (selectedPlayer != null) {
                 selectedPlayer.setMaVT(player.getMaVT());
                 selectedPlayer.setTenCT(player.getTenCT());
                 selectedPlayer.setNgaysinh(player.getNgaysinh());
@@ -337,9 +342,9 @@ public class PlayerManagementController implements Initializable {
                 selectedPlayer.setSoAo(player.getSoAo());
                 selectedPlayer.setLoaiCT(player.getLoaiCT());
                 selectedPlayer.setMaCLB(player.getMaCLB());
-                if(selectedAvaFile != null) {
+                if (selectedAvaFile != null) {
                     String oldLogoFileName = selectedPlayer.getAvatar();
-                    if (oldLogoFileName!= null && !oldLogoFileName.isEmpty()) {
+                    if (oldLogoFileName != null && !oldLogoFileName.isEmpty()) {
                         try {
                             Files.deleteIfExists(Paths.get(AVA_DIRECTORY, oldLogoFileName));
                             System.out.println("Đã xóa file logo cũ: " + oldLogoFileName);
@@ -354,37 +359,36 @@ public class PlayerManagementController implements Initializable {
                 }
                 service.updatePlayer(selectedPlayer);
                 loadPlayersData();
-                AlertUtils.showInformation("Success", "Player Updated", "Player has been updated successfully.");
-            }
-            else  {
+                AlertUtils.showInformation("Thành công", "Cập nhật cầu thủ", "Cầu thủ đã được cập nhật thành công.");
+            } else {
                 String logoFileName = null;
 
                 if (selectedAvaFile != null) {
                     assert player != null;
                     logoFileName = FileUtils.copyLogoToDirectory(selectedAvaFile, AVA_DIRECTORY, player.getTenCT());
                     player.setAvatar(logoFileName);
-                }
-                else{
+                } else {
                     assert player != null;
                     player.setAvatar("default_ava.png");
-                    AlertUtils.showError("Error", "Avatar Error", "Please choose an avatar.");
+                    AlertUtils.showError("Lỗi", "Lỗi avatar", "Vui lòng chọn ảnh đại diện.");
                     return;
                 }
-                int id=service.addPlayer(player);
+                int id = service.addPlayer(player);
                 player.setMaCT(id);
                 playersList.add(player);
                 idLabel.setText(String.valueOf(id));
                 loadPlayersData();
-                AlertUtils.showInformation("Success", "Player Added", "Player has been added successfully.");
+                AlertUtils.showInformation("Thành công", "Thêm cầu thủ", "Cầu thủ đã được thêm thành công.");
                 playersTableView.refresh();
             }
         } catch (SQLException e) {
-                AlertUtils.showError("Error", "Database Error", "An error occurred while accessing the database."+ e.getMessage());
+            AlertUtils.showError("Lỗi", "Lỗi cơ sở dữ liệu", "Có lỗi xảy ra khi truy cập cơ sở dữ liệu: " + e.getMessage());
         } catch (Exception e) {
-            AlertUtils.showError("Error", "Database Error 1", "An error occurred while accessing the database."+e.getMessage());
+            AlertUtils.showError("Lỗi", "Lỗi cơ sở dữ liệu", "Có lỗi xảy ra khi truy cập cơ sở dữ liệu: " + e.getMessage());
 
         }
     }
+
     @FXML
     private void remove() {
         MODEL_CAUTHU selectedPlayer = playersTableView.getSelectionModel().getSelectedItem();
@@ -401,24 +405,26 @@ public class PlayerManagementController implements Initializable {
                 }
                 try {
                     service.removePlayer(selectedPlayer.getMaCT());
-                    AlertUtils.showInformation("Success", "Player Deleted", "Player has been deleted successfully.");
+                    AlertUtils.showInformation("Thành công", "Xóa cầu thủ", "Cầu thủ đã được xóa thành công.");
                     playersList.remove(selectedPlayer);
                     loadPlayersData();
                     resetForm();
                 } catch (Exception e) {
-                    AlertUtils.showError("Lỗi", "Không thể xóa Cầu thủ này", "Cầu thủ này đang được đăng ký. Nếu muốn xóa, hãy hủy đăng ký trước.");
+                    AlertUtils.showError("Lỗi", "Không thể xóa cầu thủ này", "Cầu thủ này đang được đăng ký. Nếu muốn xóa, hãy hủy đăng ký trước.");
                 }
             }
         } else {
-            AlertUtils.showWarning("Warning", "No Player Selected", "Please select a player to delete.");
+            AlertUtils.showWarning("Lỗi", "Chưa chọn cầu thủ", "Vui lòng chọn một cầu thủ để xóa.");
         }
     }
+
     @FXML
-    public void cancel(){
+    public void cancel() {
         resetForm();
     }
+
     @FXML
-    public void handleChooseAva(){
+    public void handleChooseAva() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose Avatar");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
@@ -434,7 +440,46 @@ public class PlayerManagementController implements Initializable {
     }
 
     @FXML
-    public void closeBtn(){
+    private void handleAddFromCSV() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Chọn file CSV");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+        File file = fileChooser.showOpenDialog(btnAddFromCSV.getScene().getWindow());
+        if (file != null) {
+            try (BufferedReader br = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
+                String line;
+                boolean isFirstLine = true;
+                while ((line = br.readLine()) != null) {
+                    if (isFirstLine) { // Bỏ qua header nếu có
+                        isFirstLine = false;
+                        if (line.toLowerCase().contains("tên") || line.toLowerCase().contains("name")) continue;
+                    }
+                    String[] cols = line.split(",");
+                    if (cols.length < 5) continue; // Số cột tối thiểu
+                    MODEL_CAUTHU player = new MODEL_CAUTHU();
+                    player.setSoAo(Integer.parseInt(cols[0].trim()));
+                    player.setTenCT(cols[1].trim());
+                    player.setNgaysinh(java.sql.Date.valueOf(cols[2].trim()));
+                    player.setMaVT(service.getPositionIdByName(cols[3].trim()));
+                    player.setQuocTich(cols[4].trim());
+                    player.setMaCLB(currentClub.getMaCLB());
+                    player.setLoaiCT("Vietnam".equalsIgnoreCase(cols[4].trim()) ? 0 : 1);
+                    player.setAvatar("default_ava.png");
+                    // Thêm vào DB và danh sách
+                    int id = service.addPlayer(player);
+                    player.setMaCT(id);
+                    playersList.add(player);
+                }
+                playersTableView.refresh();
+                AlertUtils.showInformation("Thành công", "Đã thêm danh sách cầu thủ từ file CSV!", "");
+            } catch (Exception e) {
+                AlertUtils.showError("Lỗi", "Không thể đọc file CSV", e.getMessage());
+            }
+        }
+    }
+
+    @FXML
+    public void closeBtn() {
         Stage stage = (Stage) closeBtn.getScene().getWindow();
         try {
             if (preController != null) {
@@ -442,10 +487,7 @@ public class PlayerManagementController implements Initializable {
             }
             stage.close();
         } catch (Exception e) {
-            AlertUtils.showError("Error", "Close Error", "An error occurred while closing the window.");
+            AlertUtils.showError("Lỗi", "Lỗi đóng cửa sổ", "Có lỗi xảy ra khi đóng cửa sổ: " + e.getMessage());
         }
     }
-
-
 }
-
