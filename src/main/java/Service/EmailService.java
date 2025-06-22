@@ -30,7 +30,6 @@ public class EmailService {
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
         message.setSubject(subject);
 
-        // Body part for the message text
         MimeBodyPart textPart = new MimeBodyPart();
         textPart.setText(content);
 

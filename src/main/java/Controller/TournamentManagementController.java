@@ -1,7 +1,9 @@
 package Controller;
 
 import Model.MODEL_GIAIDAU;
+import Model.MODEL_TRANDAU;
 import Model.MODEL_VONGDAU;
+import Model.Match;
 import Service.Service;
 import Util.AlertUtils;
 import Util.FileUtils;
@@ -31,6 +33,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import Service.EmailService;
@@ -233,7 +237,7 @@ public class TournamentManagementController {
     }
 
     @FXML
-    private void handleEditTournament() {
+    private void handleEditTournament() throws SQLException {
         MODEL_GIAIDAU selectedTournament = tournamentsTableView.getSelectionModel().getSelectedItem();
         if (selectedTournament != null) {
             currentModel = selectedTournament;
@@ -250,6 +254,33 @@ public class TournamentManagementController {
             selectedLogoFile = null;
 
             enableForm(true);
+            //Lấy vòng đấu sớm nhất của giải đấu
+            List<MODEL_VONGDAU> listVD = service.getAllRoundByTournament(selectedTournament.getMaGD());
+            listVD.sort((vd1, vd2) -> vd1.getNgayBD().compareTo(vd2.getNgayBD()));
+            // Nếu có vòng đấu, giới hạn thay đổi ngày bắt đầu truoc ngày bắt đầu của vòng đấu đầu tiên
+            if (!listVD.isEmpty()) {
+                LocalDate firstRoundStartDate = listVD.getFirst().getNgayBD().toLocalDate();
+                System.out.println(firstRoundStartDate);
+                startDatePicker.setDayCellFactory(picker -> new DateCell() {
+                    @Override
+                    public void updateItem(LocalDate item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item.isBefore(firstRoundStartDate)) {
+                            setDisable(false);
+                        } else {
+                            setDisable(true);
+                            setStyle("");
+                        }
+                    }
+                });
+            }
+            // Vô hiệu hóa nút lưu nếu giải đấu đã kết thúc
+            if (selectedTournament.getNgayKT().isBefore(LocalDate.now())) {
+                endDatePicker.setDisable(true);
+            } else {
+                endDatePicker.setDisable(false);
+            }
+
         }
     }
 
@@ -377,9 +408,7 @@ public class TournamentManagementController {
                 }
                 // Lưu logo mới
                 String newLogoFileName = FileUtils.copyLogoToDirectory(selectedLogoFile, LOGO_DIRECTORY, name);
-                if (newLogoFileName != null) {
-                    currentModel.setLogoFileName(newLogoFileName);
-                }
+                currentModel.setLogoFileName(newLogoFileName);
             }
             service.updateTournament(currentModel);
             tournamentsTableView.refresh();
@@ -523,7 +552,14 @@ public class TournamentManagementController {
 
         try {
             String subject = "Thông tin & Quy định giải đấu: " + selectedTournament.getTenGD();
-            String content = service.getTournamentInfoAndRules(selectedTournament.getMaGD());
+            String content = "Xin chào,\n\n" +
+                    "Chúng tôi xin gửi đến CLB thông tin và quy định của giải đấu " + selectedTournament.getTenGD() + ".\n\n" +
+                    "Thông tin giải đấu:\n" +
+                    "ID: " + selectedTournament.getMaGD() + "\n" +
+                    "Ngày bắt đầu: " + selectedTournament.getNgayBD().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "\n" +
+                    "Ngày kết thúc: " + selectedTournament.getNgayKT().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "\n\n" +
+                    "Trân trọng,\n" +
+                    "Ban tổ chức giải đấu";
             EmailService emailService = new EmailService();
             ExportService exportService = new ExportService();
             File file =exportService.exportTournamentInfo(selectedTournament.getMaGD());

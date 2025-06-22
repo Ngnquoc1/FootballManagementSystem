@@ -606,7 +606,12 @@ BEGIN
 
     FOR i IN 1..2 LOOP
         UPDATE BANGXEPHANG_CLB
-        SET Thang = Thang + (CASE WHEN p_action!='DELETE' and v_diem_new_calc(i) = v_diemThang THEN 1 ELSE 0 END)
+        SET
+            SoTran = SoTran + (CASE WHEN p_action='INSERT' THEN 1
+                                    WHEN p_action='DELETE' THEN -1
+                                    WHEN p_action='UPDATE' THEN 0
+                                END),
+            Thang = Thang + (CASE WHEN p_action!='DELETE' and v_diem_new_calc(i) = v_diemThang THEN 1 ELSE 0 END)
                           - (CASE WHEN p_action !='INSERT' and v_diem_old_calc(i) = v_diemThang THEN 1 ELSE 0 END),
             Hoa = Hoa + (CASE WHEN p_action!='DELETE' and v_diem_new_calc(i) = v_diemHoa THEN 1 ELSE 0 END)
                       - (CASE WHEN p_action !='INSERT'and v_diem_old_calc(i) = v_diemHoa THEN 1 ELSE 0 END),
@@ -1003,9 +1008,6 @@ BEGIN
     -- Thêm bản ghi mới
     INSERT INTO KetQuaTD (MaTD, DiemCLB1, DiemCLB2)
     VALUES (p_maTD, p_diemCLB1, p_diemCLB2);
-    COMMIT;
-    UpdateRanking(p_maTD);
-    -- Commit giao dịch
     COMMIT;
 
 EXCEPTION
@@ -1547,17 +1549,27 @@ INSERT INTO LoaiCauThu (MaLoaiCT, TenLoaiCT) VALUES (0, 'Cầu thủ nội');
 INSERT INTO LoaiCauThu (MaLoaiCT, TenLoaiCT)VALUES (1, 'Cầu thủ ngoại');
 select * from GiaiDau;
 INSERT INTO GiaiDau (MaGD, TenGD, NgayKhaiMac, NgayBeMac, LogoGD)
-VALUES (1, 'V-League 2025', TO_DATE('2025-05-21', 'YYYY-MM-DD'), TO_DATE('2026-05-21', 'YYYY-MM-DD'), 'Vleague2025.png');
+VALUES (1, 'V-League 2025', TO_DATE('2025-06-21', 'YYYY-MM-DD'), TO_DATE('2025-12-30', 'YYYY-MM-DD'), 'Vleague2025.png');
 INSERT INTO GiaiDau (MaGD, TenGD, NgayKhaiMac, NgayBeMac, LogoGD)
 VALUES (2, 'V-League 2026', TO_DATE('2026-01-01', 'YYYY-MM-DD'), TO_DATE('2026-06-15', 'YYYY-MM-DD'), 'Vleague2026.png');
 
-Insert Into QuyDinh(MaGD)VALUES (1);
+BEGIN
+    InsertQuyDinhForMuaGiai(1);
+     InsertQuyDinhForMuaGiai(2);
+end;
 
 INSERT INTO VongDau (MaVD, TenVD, MaGD, NgayBD, NgayKT)
-VALUES (1, 'Lượt đi', 1, TO_DATE('2025-05-22', 'YYYY-MM-DD'), TO_DATE('2025-11-22', 'YYYY-MM-DD'));
+VALUES (1, 'Lượt đi(V-League 2025)', 1, TO_DATE('2025-06-21', 'YYYY-MM-DD'), TO_DATE('2025-12-30', 'YYYY-MM-DD'));
 
 INSERT INTO VongDau (MaVD, TenVD, MaGD, NgayBD, NgayKT)
-VALUES (2, 'Lượt về', 1, TO_DATE('2025-12-01', 'YYYY-MM-DD'), TO_DATE('2026-05-21', 'YYYY-MM-DD'));
+VALUES (2, 'Lượt về(V-League 2025)', 1, TO_DATE('2026-04-01', 'YYYY-MM-DD'), TO_DATE('2026-06-15', 'YYYY-MM-DD'));
+
+
+INSERT INTO VongDau (MaVD, TenVD, MaGD, NgayBD, NgayKT)
+VALUES (1, 'Lượt đi(V-League 2026)', 2, TO_DATE('2026-01-01', 'YYYY-MM-DD'), TO_DATE('2026-03-31', 'YYYY-MM-DD'));
+
+INSERT INTO VongDau (MaVD, TenVD, MaGD, NgayBD, NgayKT)
+VALUES (2, 'Lượt về(V-League 2026)', 2, TO_DATE('2026-04-01', 'YYYY-MM-DD'), TO_DATE('2026-06-15', 'YYYY-MM-DD'));
 
 INSERT INTO SAN (MaSan, TenSan, DiaChi, Succhua) VALUES (1, 'Lạch Tray', 'Sân Lạch Tray, Hải Phòng', 50000);
 INSERT INTO SAN (MaSan, TenSan, DiaChi, Succhua) VALUES (2, 'Mỹ Đình', 'Sân Mỹ Đình, Hà Nội', 100000);
@@ -1606,7 +1618,7 @@ INSERT INTO CauThu (MaCT, TenCT, NgaySinh, QuocTich, Avatar, SoAo, LoaiCT, MaCLB
 
 commit;
 select * from TranDau;
--- select * from MuaGiai;
+-- select * from GiaiDau;
 -- select * from QuyDinh;
 -- select * from VongDau ;
 -- select * from THUTU_UUTIEN;

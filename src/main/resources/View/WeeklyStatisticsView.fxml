@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.AreaChart?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="800.0" prefWidth="1200.0" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.WeeklyStatisticsController">
+
+    <top>
+        <VBox spacing="10.0" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+            <children>
+                <Label text="THỐNG KÊ THEO TUẦN/VÒNG ĐẤU" textAlignment="CENTER">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+
+                <!-- Bộ lọc -->
+                <HBox alignment="CENTER_LEFT" spacing="15.0">
+                    <children>
+                        <Label text="Giải đấu:" />
+                        <ComboBox fx:id="tournamentComboBox" prefWidth="200.0" promptText="Chọn giải đấu" />
+
+                        <Label text="Lọc theo:" />
+                        <ComboBox fx:id="periodFilterComboBox" prefWidth="120.0" promptText="Tất cả" />
+
+                        <Button fx:id="refreshButton" text="Làm mới" />
+                    </children>
+                </HBox>
+
+                <!-- Chế độ xem -->
+                <HBox alignment="CENTER_LEFT" spacing="15.0">
+                    <children>
+                        <Label text="Chế độ xem:" />
+                        <RadioButton fx:id="weeklyRadio" selected="true" text="Theo tuần" toggleGroup="$viewModeToggleGroup">
+                            <toggleGroup>
+                                <ToggleGroup fx:id="viewModeToggleGroup" />
+                            </toggleGroup>
+                        </RadioButton>
+                        <RadioButton fx:id="roundRadio" text="Theo vòng đấu" toggleGroup="$viewModeToggleGroup" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </top>
+
+    <center>
+        <TabPane tabClosingPolicy="UNAVAILABLE">
+            <!-- Tab Tổng quan -->
+            <Tab text="Tổng quan">
+                <ScrollPane fitToWidth="true">
+                    <VBox spacing="15.0">
+                        <padding>
+                            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                        </padding>
+                        <children>
+                            <!-- Thống kê tổng quan -->
+                            <VBox spacing="10.0">
+                                <children>
+                                    <Label text="THỐNG KÊ TỔNG QUAN">
+                                        <font>
+                                            <Font name="System Bold" size="14.0" />
+                                        </font>
+                                    </Label>
+                                    <GridPane hgap="20.0" vgap="10.0">
+                                        <columnConstraints>
+                                            <ColumnConstraints />
+                                            <ColumnConstraints />
+                                            <ColumnConstraints />
+                                            <ColumnConstraints />
+                                            <ColumnConstraints />
+                                        </columnConstraints>
+                                        <children>
+                                            <VBox alignment="CENTER" GridPane.columnIndex="0">
+                                                <children>
+                                                    <Label text="Tổng số trận" />
+                                                    <Label fx:id="totalMatchesLabel" text="0">
+                                                        <font>
+                                                            <Font name="System Bold" size="16.0" />
+                                                        </font>
+                                                    </Label>
+                                                </children>
+                                            </VBox>
+                                            <VBox alignment="CENTER" GridPane.columnIndex="1">
+                                                <children>
+                                                    <Label text="Tổng bàn thắng" />
+                                                    <Label fx:id="totalGoalsLabel" text="0">
+                                                        <font>
+                                                            <Font name="System Bold" size="16.0" />
+                                                        </font>
+                                                    </Label>
+                                                </children>
+                                            </VBox>
+                                            <VBox alignment="CENTER" GridPane.columnIndex="2">
+                                                <children>
+                                                    <Label text="TB bàn thắng/trận" />
+                                                    <Label fx:id="avgGoalsPerMatchLabel" text="0.0">
+                                                        <font>
+                                                            <Font name="System Bold" size="16.0" />
+                                                        </font>
+                                                    </Label>
+                                                </children>
+                                            </VBox>
+                                            <VBox alignment="CENTER" GridPane.columnIndex="3">
+                                                <children>
+                                                    <Label text="Tổng thẻ phạt" />
+                                                    <Label fx:id="totalCardsLabel" text="0">
+                                                        <font>
+                                                            <Font name="System Bold" size="16.0" />
+                                                        </font>
+                                                    </Label>
+                                                </children>
+                                            </VBox>
+                                            <VBox alignment="CENTER" GridPane.columnIndex="4">
+                                                <children>
+                                                    <Label text="TB khán giả" />
+                                                    <Label fx:id="avgAttendanceLabel" text="0">
+                                                        <font>
+                                                            <Font name="System Bold" size="16.0" />
+                                                        </font>
+                                                    </Label>
+                                                </children>
+                                            </VBox>
+                                        </children>
+                              <rowConstraints>
+                                 <RowConstraints />
+                              </rowConstraints>
+                                    </GridPane>
+                                </children>
+                            </VBox>
+
+                            <!-- Biểu đồ phân bố kết quả -->
+                            <VBox spacing="10.0">
+                                <children>
+                                    <Label text="PHÂN BỐ KẾT QUẢ TRẬN ĐẤU">
+                                        <font>
+                                            <Font name="System Bold" size="14.0" />
+                                        </font>
+                                    </Label>
+                                    <PieChart fx:id="resultDistributionPieChart" prefHeight="300.0" />
+                                </children>
+                            </VBox>
+
+                            <!-- Xu hướng theo thời gian -->
+                            <VBox spacing="10.0">
+                                <children>
+                                    <Label text="XU HƯỚNG THEO THỜI GIAN">
+                                        <font>
+                                            <Font name="System Bold" size="14.0" />
+                                        </font>
+                                    </Label>
+                                    <HBox spacing="15.0">
+                                        <children>
+                                            <RadioButton fx:id="matchesTrendRadio" selected="true" text="Số trận đấu">
+                                    <toggleGroup>
+                                       <ToggleGroup fx:id="trendToggleGroup" />
+                                    </toggleGroup></RadioButton>
+                                            <RadioButton fx:id="goalsTrendRadio" text="Số bàn thắng" toggleGroup="$trendToggleGroup" />
+                                        </children>
+                                    </HBox>
+                                    <LineChart fx:id="trendLineChart" prefHeight="300.0">
+                                        <xAxis>
+                                            <CategoryAxis fx:id="timeAxis" />
+                                        </xAxis>
+                                        <yAxis>
+                                            <NumberAxis fx:id="trendValueAxis" />
+                                        </yAxis>
+                                    </LineChart>
+                                </children>
+                            </VBox>
+                        </children>
+                    </VBox>
+                </ScrollPane>
+            </Tab>
+
+            <!-- Tab Chi tiết theo thời gian -->
+            <Tab text="Chi tiết theo thời gian">
+                <VBox spacing="15.0">
+                    <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                    </padding>
+                    <children>
+                        <!-- Bảng thống kê chi tiết -->
+                        <VBox spacing="10.0">
+                            <children>
+                                <HBox alignment="CENTER_LEFT" spacing="15.0">
+                                    <children>
+                                        <Label text="THỐNG KÊ CHI TIẾT">
+                                            <font>
+                                                <Font name="System Bold" size="14.0" />
+                                            </font>
+                                        </Label>
+                                        <Button fx:id="exportDetailedButton" text="Xuất báo cáo" />
+                                    </children>
+                                </HBox>
+                                <TableView fx:id="detailedStatsTable" prefHeight="300.0">
+                                    <columns>
+                                        <TableColumn fx:id="periodColumn" prefWidth="120.0" text="Thời gian" />
+                                        <TableColumn fx:id="matchCountColumn" prefWidth="80.0" text="Số trận" />
+                                        <TableColumn fx:id="goalCountColumn" prefWidth="139.9999542236328" text="Tổng bàn thắng" />
+                                        <TableColumn fx:id="avgGoalsColumn" prefWidth="114.39996337890625" text="TB bàn thắng" />
+                                    </columns>
+                                </TableView>
+                            </children>
+                        </VBox>
+
+                        <!-- Biểu đồ so sánh -->
+                        <VBox spacing="10.0">
+                            <children>
+                                <Label text="BIỂU ĐỒ SO SÁNH">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <BarChart fx:id="comparisonBarChart" prefHeight="300.0">
+                                    <xAxis>
+                                        <CategoryAxis fx:id="comparisonTimeAxis" />
+                                    </xAxis>
+                                    <yAxis>
+                                        <NumberAxis fx:id="comparisonValueAxis" />
+                                    </yAxis>
+                                </BarChart>
+                            </children>
+                        </VBox>
+
+                        <!-- Biểu đồ hiệu suất ghi bàn -->
+                        <VBox spacing="10.0">
+                            <children>
+                                <Label text="HIỆU SUẤT GHI BÀN">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <AreaChart fx:id="goalEfficiencyAreaChart" prefHeight="250.0">
+                                    <xAxis>
+                                        <CategoryAxis fx:id="efficiencyTimeAxis" />
+                                    </xAxis>
+                                    <yAxis>
+                                        <NumberAxis fx:id="efficiencyGoalAxis" />
+                                    </yAxis>
+                                </AreaChart>
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+            </Tab>
+
+            <!-- Tab Phân tích hiệu suất -->
+            <Tab text="Phân tích hiệu suất">
+                <VBox spacing="15.0">
+                    <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                    </padding>
+                    <children>
+                        <!-- Bảng xếp hạng hiệu suất -->
+                        <VBox spacing="10.0">
+                            <children>
+                                <Label text="XẾP HẠNG HIỆU SUẤT">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <TableView fx:id="performanceRankingTable" prefHeight="300.0">
+                                    <columns>
+                                        <TableColumn fx:id="rankPeriodColumn" prefWidth="120.0" text="Thời gian" />
+                                        <TableColumn fx:id="rankPositionColumn" prefWidth="60.0" text="Hạng" />
+                                        <TableColumn fx:id="rankScoreColumn" prefWidth="119.19996643066406" text="Điểm hiệu suất" />
+                                        <TableColumn fx:id="rankGoalRatioColumn" prefWidth="98.39996337890625" text="Tỷ lệ ghi bàn" />
+                                        <TableColumn fx:id="rankNotesColumn" prefWidth="150.0" text="Ghi chú" />
+                                    </columns>
+                                </TableView>
+                            </children>
+                        </VBox>
+
+                        <!-- Biểu đồ radar (placeholder) -->
+                        <VBox spacing="10.0">
+                            <children>
+                                <Label text="BIỂU ĐỒ RADAR HIỆU SUẤT">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="radarChartPlaceholder" alignment="CENTER" prefHeight="200.0" text="Biểu đồ radar sẽ được triển khai trong phiên bản tiếp theo" textAlignment="CENTER">
+                                    <font>
+                                        <Font name="System Italic" size="12.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+            </Tab>
+
+            <!-- Tab So sánh -->
+            <Tab text="So sánh">
+                <VBox spacing="15.0">
+                    <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                    </padding>
+                    <children>
+                        <!-- Chọn thời gian so sánh -->
+                        <VBox spacing="10.0">
+                            <children>
+                                <Label text="CHỌN THỜI GIAN SO SÁNH">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <HBox alignment="CENTER_LEFT" spacing="15.0">
+                                    <children>
+                                        <Label text="Thời gian 1:" />
+                                        <ComboBox fx:id="period1ComboBox" prefWidth="150.0" promptText="Chọn thời gian 1" />
+
+                                        <Label text="Thời gian 2:" />
+                                        <ComboBox fx:id="period2ComboBox" prefWidth="150.0" promptText="Chọn thời gian 2" />
+
+                                        <Button fx:id="compareButton" text="So sánh" />
+                                        <Button fx:id="exportComparisonButton" text="Xuất báo cáo so sánh" />
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+
+                        <!-- Bảng so sánh -->
+                        <VBox spacing="10.0">
+                            <children>
+                                <Label text="KẾT QUẢ SO SÁNH">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <TableView fx:id="comparisonTable" prefHeight="250.0">
+                                    <columns>
+                                        <TableColumn fx:id="metricColumn" prefWidth="150.0" text="Chỉ số" />
+                                        <TableColumn fx:id="period1ValueColumn" prefWidth="120.0" text="Thời gian 1" />
+                                        <TableColumn fx:id="period2ValueColumn" prefWidth="120.0" text="Thời gian 2" />
+                                        <TableColumn fx:id="differenceColumn" prefWidth="100.0" text="Chênh lệch" />
+                                        <TableColumn fx:id="percentageColumn" prefWidth="100.0" text="Phần trăm" />
+                                    </columns>
+                                </TableView>
+                            </children>
+                        </VBox>
+
+                        <!-- Phân tích -->
+                        <VBox spacing="10.0">
+                            <children>
+                                <Label text="PHÂN TÍCH TỰ ĐỘNG">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <TextArea fx:id="analysisTextArea" prefHeight="150.0" wrapText="true" />
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+            </Tab>
+        </TabPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="10.0">
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+            <children>
+                <Button fx:id="exportSummaryButton" text="Xuất báo cáo tổng hợp" />
+                <Button fx:id="closeButton" text="Đóng" />
+            </children>
+        </HBox>
+    </bottom>
+
+</BorderPane>

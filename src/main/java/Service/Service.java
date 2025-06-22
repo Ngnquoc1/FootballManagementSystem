@@ -1116,7 +1116,7 @@ public class Service {
 
     //    QUYDINH
     public void insertDefaultQD(int MaGD) {
-        String sql = "{Call InsertQuyDinhForGIAIDAU(?)}";
+        String sql = "{Call InsertQuyDinhForMuaGiai(?)}";
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, MaGD);
@@ -1670,27 +1670,451 @@ public class Service {
 
     public String getTournamentInfoAndRules(int maGD) {
         StringBuilder sb = new StringBuilder();
-        String sql = "SELECT GD.TenGD, GD.NGAYKHAIMAC, GD.NGAYBEMAC, QD.TuoiToiThieu, QD.TuoiToiDa, " +
-                "QD.SoCTToiThieu, QD.SoCTToiDa, QD.SoCTNuocNgoaiToiDa, QD.PhutGhiBanToiDa " +
+        String sql = "SELECT QD.* " +
                 "FROM GIAIDAU GD JOIN QUYDINH QD ON GD.MaGD = QD.MaGD WHERE GD.MaGD = ?";
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, maGD);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                sb.append("Tournament Name: ").append(rs.getString("TenGD")).append("\n");
-                sb.append("Start Date: ").append(rs.getDate("NGAYKHAIMAC")).append("\n");
-                sb.append("End Date: ").append(rs.getDate("NGAYBEMAC")).append("\n");
-                sb.append("Minimum Age: ").append(rs.getInt("TuoiToiThieu")).append("\n");
-                sb.append("Maximum Age: ").append(rs.getInt("TuoiToiDa")).append("\n");
-                sb.append("Minimum Players: ").append(rs.getInt("SoCTToiThieu")).append("\n");
-                sb.append("Maximum Players: ").append(rs.getInt("SoCTToiDa")).append("\n");
-                sb.append("Maximum Foreign Players: ").append(rs.getInt("SoCTNuocNgoaiToiDa")).append("\n");
-                sb.append("Maximum Minutes to Score: ").append(rs.getInt("PhutGhiBanToiDa")).append("\n");
+                sb.append("Tuổi tối thiểu: ").append(rs.getInt("TuoiToiThieu")).append("\n");
+                sb.append("Tuổi tối đa: ").append(rs.getInt("TuoiToiDa")).append("\n");
+                sb.append("Số cầu thủ tối thiểu: ").append(rs.getInt("SoCTToiThieu")).append("\n");
+                sb.append("Số cầu thủ tối đa: ").append(rs.getInt("SoCTToiDa")).append("\n");
+                sb.append("Số cầu thủ nước ngoài tối đa: ").append(rs.getInt("SoCTNuocNgoaiToiDa")).append("\n");
+                sb.append("Phút ghi bàn tối đa: ").append(rs.getInt("PhutGhiBanToiDa")).append("\n");
+                sb.append("Điểm thắng: ").append(rs.getString("DiemThang")).append("\n");
+                sb.append("Điểm hòa: ").append(rs.getString("DiemHoa")).append("\n");
+                sb.append("Điểm thua: ").append(rs.getString("DiemThua")).append("\n");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        String sql1 = "SELECT * FROM THUTU_UUTIEN WHERE MaGD = ? ORDER BY DoUuTien ASC";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql1)) {
+            pstmt.setInt(1, maGD);
+            ResultSet rs = pstmt.executeQuery();
+            sb.append("Thứ tự ưu tiên:\n");
+            while (rs.next()) {
+                String tieuChi = rs.getString("TieuChi");
+                int doUuTien = rs.getInt("DoUuTien");
+                sb.append(tieuChi).append(": ").append(doUuTien).append("\n");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();}
         return sb.toString();
+
+    }
+    public List<WeeklyStatistics> getWeeklyStatistics(int tournamentId,  boolean isWeeklyMode) throws Exception {
+        List<WeeklyStatistics> statisticsList = new ArrayList<>();
+
+        String query;
+        if (isWeeklyMode) {
+            // Thống kê theo tuần
+            query = "SELECT " +
+                    "EXTRACT(YEAR FROM td.ThoiGian) AS Nam, " +
+                    "TO_CHAR(td.ThoiGian, 'IW') AS Tuan, " +
+                    "COUNT(td.MaTD) AS SoTranDau, " +
+                    "SUM(NVL(kq.DiemCLB1, 0) + NVL(kq.DiemCLB2, 0)) AS TongBanThang, " +
+                    "AVG(NVL(kq.DiemCLB1, 0) + NVL(kq.DiemCLB2, 0)) AS TrungBinhBanThang, " +
+                    "FROM TranDau td " +
+                    "JOIN VongDau vd ON td.MaVD = vd.MaVD " +
+                    "LEFT JOIN KetQuaTD kq ON td.MaTD = kq.MaTD " +
+                    "LEFT JOIN BanThang bt ON td.MaTD = bt.MaTD " +
+                    "WHERE vd.MaGD = ? " +
+                    "GROUP BY EXTRACT(YEAR FROM td.ThoiGian), TO_CHAR(td.ThoiGian, 'IW') " +
+                    "ORDER BY Nam, Tuan";
+        } else {
+            // Thống kê theo vòng đấu
+            query = "SELECT " +
+                    "vd.MaVD, " +
+                    "vd.TenVD, " +
+                    "COUNT(td.MaTD) AS SoTranDau, " +
+                    "SUM(NVL(kq.DiemCLB1, 0) + NVL(kq.DiemCLB2, 0)) AS TongBanThang, " +
+                    "AVG(NVL(kq.DiemCLB1, 0) + NVL(kq.DiemCLB2, 0)) AS TrungBinhBanThang, " +
+                    "FROM VongDau vd " +
+                    "LEFT JOIN TranDau td ON vd.MaVD = td.MaVD " +
+                    "LEFT JOIN KetQuaTD kq ON td.MaTD = kq.MaTD " +
+                    "LEFT JOIN BanThang bt ON td.MaTD = bt.MaTD " +
+                    "WHERE vd.MaGD = ? " +
+                    "GROUP BY vd.MaVD, vd.TenVD " +
+                    "ORDER BY vd.MaVD";
+        }
+
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, tournamentId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    WeeklyStatistics stats = new WeeklyStatistics();
+
+                    if (isWeeklyMode) {
+                        int year = rs.getInt("Nam");
+                        int week = rs.getInt("Tuan");
+                        stats.setPeriod("Tuần " + week + "/" + year);
+                        stats.setWeek(week);
+                        stats.setYear(year);
+                    } else {
+                        String roundName = rs.getString("TenVD");
+                        stats.setPeriod(roundName != null ? roundName : "Vòng " + rs.getInt("MaVD"));
+                        stats.setRound(rs.getInt("MaVD"));
+                    }
+
+                    stats.setMatchCount(rs.getInt("SoTranDau"));
+                    stats.setGoalCount(rs.getInt("TongBanThang"));
+                    stats.setAvgGoals(rs.getDouble("TrungBinhBanThang"));
+
+                    statisticsList.add(stats);
+                }
+            }
+        }
+
+        return statisticsList;
+    }
+    public Map<String, Integer> getResultDistribution(int tournamentId) throws Exception {
+        Map<String, Integer> resultCounts = new HashMap<>();
+        resultCounts.put("Thắng đội nhà", 0);
+        resultCounts.put("Hòa", 0);
+        resultCounts.put("Thắng đội khách", 0);
+
+        String query = "SELECT " +
+                "SUM(CASE WHEN kq.DiemCLB1 > kq.DiemCLB2 THEN 1 ELSE 0 END) AS ThangDoiNha, " +
+                "SUM(CASE WHEN kq.DiemCLB1 = kq.DiemCLB2 THEN 1 ELSE 0 END) AS Hoa, " +
+                "SUM(CASE WHEN kq.DiemCLB1 < kq.DiemCLB2 THEN 1 ELSE 0 END) AS ThangDoiKhach " +
+                "FROM TranDau td " +
+                "JOIN VongDau vd ON td.MaVD = vd.MaVD " +
+                "JOIN KetQuaTD kq ON td.MaTD = kq.MaTD " +
+                "WHERE vd.MaGD = ?";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, tournamentId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    resultCounts.put("Thắng đội nhà", rs.getInt("ThangDoiNha"));
+                    resultCounts.put("Hòa", rs.getInt("Hoa"));
+                    resultCounts.put("Thắng đội khách", rs.getInt("ThangDoiKhach"));
+                }
+            }
+        }
+
+        return resultCounts;
+    }
+
+    /**
+     * Lấy xếp hạng hiệu suất theo thời gian
+     */
+    public List<PerformanceRanking> getPerformanceRanking(int tournamentId,  boolean isWeeklyMode) throws Exception {
+        List<PerformanceRanking> rankings = new ArrayList<>();
+        List<WeeklyStatistics> statistics = getWeeklyStatistics(tournamentId, isWeeklyMode);
+
+        // Tính toán điểm hiệu suất cho mỗi thời kỳ
+        for (int i = 0; i < statistics.size(); i++) {
+            WeeklyStatistics stat = statistics.get(i);
+            PerformanceRanking ranking = new PerformanceRanking();
+
+            ranking.setPeriod(stat.getPeriod());
+            ranking.setPosition(i + 1);
+
+            // Tính điểm hiệu suất (công thức tùy chỉnh)
+            double performanceScore = calculatePerformanceScore(stat);
+            ranking.setPerformanceScore(performanceScore);
+
+            // Tính tỷ lệ ghi bàn
+            double goalRatio = stat.getMatchCount() > 0 ? (double) stat.getGoalCount() / stat.getMatchCount() : 0.0;
+            ranking.setGoalRatio(goalRatio);
+
+            // Tạo ghi chú
+            String notes = generateNotes(stat, i, statistics.size());
+            ranking.setNotes(notes);
+
+            rankings.add(ranking);
+        }
+
+        // Sắp xếp theo điểm hiệu suất
+        rankings.sort((r1, r2) -> Double.compare(r2.getPerformanceScore(), r1.getPerformanceScore()));
+
+        // Cập nhật lại vị trí xếp hạng
+        for (int i = 0; i < rankings.size(); i++) {
+            rankings.get(i).setPosition(i + 1);
+        }
+
+        return rankings;
+    }
+
+    /**
+     * Lấy dữ liệu so sánh giữa hai thời kỳ
+     */
+    public List<ComparisonData> getComparisonData(int tournamentId, String period1, String period2, boolean isWeeklyMode) throws Exception {
+        List<ComparisonData> comparisonList = new ArrayList<>();
+        List<WeeklyStatistics> statistics = getWeeklyStatistics(tournamentId, isWeeklyMode);
+
+        WeeklyStatistics stat1 = statistics.stream()
+                .filter(s -> s.getPeriod().equals(period1))
+                .findFirst()
+                .orElse(null);
+
+        WeeklyStatistics stat2 = statistics.stream()
+                .filter(s -> s.getPeriod().equals(period2))
+                .findFirst()
+                .orElse(null);
+
+        if (stat1 == null || stat2 == null) {
+            throw new Exception("Không tìm thấy dữ liệu cho các thời kỳ được chọn");
+        }
+
+        // So sánh số trận đấu
+        comparisonList.add(createComparisonData("Số trận đấu",
+                stat1.getMatchCount(), stat2.getMatchCount()));
+
+        // So sánh số bàn thắng
+        comparisonList.add(createComparisonData("Số bàn thắng",
+                stat1.getGoalCount(), stat2.getGoalCount()));
+
+        // So sánh trung bình bàn thắng
+        comparisonList.add(createComparisonData("Trung bình bàn thắng",
+                stat1.getAvgGoals(), stat2.getAvgGoals()));
+
+
+        return comparisonList;
+    }
+
+    /**
+     * Lấy thống kê trận đấu theo vòng
+     */
+    public List<Map<String, Object>> getMatchStatisticsByRound(int tournamentId, String season) throws Exception {
+        List<Map<String, Object>> roundStatsList = new ArrayList<>();
+
+        String query = "SELECT " +
+                "vd.MaVD, " +
+                "vd.TenVD, " +
+                "COUNT(td.MaTD) AS SoTranDau, " +
+                "SUM(NVL(kq.DiemCLB1, 0) + NVL(kq.DiemCLB2, 0)) AS TongBanThang, " +
+                "FROM VongDau vd " +
+                "LEFT JOIN TranDau td ON vd.MaVD = td.MaVD " +
+                "LEFT JOIN KetQuaTD kq ON td.MaTD = kq.MaTD " +
+                "WHERE vd.MaGD = ? " +
+                "GROUP BY vd.MaVD, vd.TenVD " +
+                "ORDER BY vd.MaVD";
+
+        try (
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, tournamentId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> roundStats = new HashMap<>();
+                    roundStats.put("round", rs.getInt("MaVD"));
+                    roundStats.put("roundName", rs.getString("TenVD"));
+                    roundStats.put("totalMatches", rs.getInt("SoTranDau"));
+                    roundStats.put("totalGoals", rs.getInt("TongBanThang"));
+
+                    roundStatsList.add(roundStats);
+                }
+            }
+        }
+
+        return roundStatsList;
+    }
+
+    private double calculatePerformanceScore(WeeklyStatistics stat) {
+        // Công thức tính điểm hiệu suất (có thể tùy chỉnh)
+        double goalScore = stat.getAvgGoals() * 10; // Điểm từ bàn thắng
+        double matchScore = stat.getMatchCount() * 2; // Điểm từ số trận
+
+        return goalScore + matchScore;
+    }
+
+
+    private String generateNotes(WeeklyStatistics stat, int index, int totalPeriods) {
+        StringBuilder notes = new StringBuilder();
+
+        if (index == 0) {
+            notes.append("Thời kỳ đầu tiên");
+        } else if (index == totalPeriods - 1) {
+            notes.append("Thời kỳ cuối cùng");
+        }
+
+        if (stat.getGoalCount() == 0) {
+            if (notes.length() > 0) notes.append(", ");
+            notes.append("Không có bàn thắng");
+        }
+
+        if (stat.getMatchCount() > 5) {
+            if (notes.length() > 0) notes.append(", ");
+            notes.append("Nhiều trận đấu");
+        }
+
+        return notes.length() > 0 ? notes.toString() : "Bình thường";
+    }
+
+    private ComparisonData createComparisonData(String metric, Number value1, Number value2) {
+        ComparisonData data = new ComparisonData();
+        data.setMetric(metric);
+        data.setPeriod1Value(formatValue(value1));
+        data.setPeriod2Value(formatValue(value2));
+
+        double diff = value2.doubleValue() - value1.doubleValue();
+        data.setDifference(formatDifference(diff));
+
+        double percentage = value1.doubleValue() != 0 ? (diff / value1.doubleValue()) * 100 : 0;
+        data.setPercentage(formatPercentage(percentage));
+
+        return data;
+    }
+
+    private String formatValue(Number value) {
+        if (value instanceof Integer) {
+            return String.valueOf(value.intValue());
+        } else {
+            return String.format("%.2f", value.doubleValue());
+        }
+    }
+
+    private String formatDifference(double diff) {
+        if (diff > 0) {
+            return "+" + String.format("%.2f", diff);
+        } else {
+            return String.format("%.2f", diff);
+        }
+    }
+
+    private String formatPercentage(double percentage) {
+        if (percentage > 0) {
+            return "+" + String.format("%.1f%%", percentage);
+        } else {
+            return String.format("%.1f%%", percentage);
+        }
+    }
+    public List<String> getSeasonsByTournamentId(int tournamentId) throws Exception {
+        List<String> seasons = new ArrayList<>();
+
+        // Lấy thông tin giải đấu
+        String query = "SELECT TenGD, EXTRACT(YEAR FROM NgayKhaiMac) AS NamBatDau, " +
+                "EXTRACT(YEAR FROM NgayBeMac) AS NamKetThuc " +
+                "FROM GiaiDau WHERE MaGD = ?";
+
+        try (
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, tournamentId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    String tournamentName = rs.getString("TenGD");
+                    int startYear = rs.getInt("NamBatDau");
+                    int endYear = rs.getInt("NamKetThuc");
+
+                    if (startYear == endYear) {
+                        seasons.add(tournamentName + " " + startYear);
+                    } else {
+                        seasons.add(tournamentName + " " + startYear + "-" + endYear);
+                    }
+                }
+            }
+        }
+
+        return seasons;
+    }
+    public List<Map<String, Object>> getAllTournamentsWithSeasons() throws Exception {
+        List<Map<String, Object>> tournaments = new ArrayList<>();
+        String query = "SELECT MaGD, TenGD, NgayKhaiMac, NgayBeMac, LogoGD FROM GiaiDau ORDER BY NgayKhaiMac DESC";
+
+        try (
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            while (rs.next()) {
+                Map<String, Object> tournament = new HashMap<>();
+                tournament.put("maGD", rs.getInt("MaGD"));
+                tournament.put("tenGD", rs.getString("TenGD"));
+                tournament.put("ngayKhaiMac", rs.getDate("NgayKhaiMac"));
+                tournament.put("ngayBeMac", rs.getDate("NgayBeMac"));
+                tournament.put("logoGD", rs.getString("LogoGD"));
+                tournaments.add(tournament);
+            }
+        }
+
+        return tournaments;
+    }
+
+    public List<MODEL_TRANDAU> getMatchByRound(int maVD) {
+        List<MODEL_TRANDAU> matchList = new ArrayList<>();
+        String query = "SELECT * FROM TRANDAU WHERE MaVD = ? ORDER BY ThoiGian ASC";
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, maVD);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                MODEL_TRANDAU match = new MODEL_TRANDAU();
+                match.setMaTD(rs.getInt("MaTD"));
+                match.setMaVD(rs.getInt("MaVD"));
+                match.setThoiGian(rs.getDate("ThoiGian"));
+                match.setMaSan(rs.getInt("MaSan"));
+                matchList.add(match);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+    }
+    return matchList;
+    }
+    public ArrayList<MODEL_BXH_CLB> getCurrentSeasonBxhCLB() {
+        java.util.Date currentDate = new java.util.Date();
+        String query = "SELECT MaGD FROM GIAIDAU WHERE ? BETWEEN NGAYKHAIMAC AND NGAYBEMAC";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setDate(1, new java.sql.Date(currentDate.getTime()));
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                int maGD = rs.getInt("MaGD");
+                return getBxhCLBByMaGD(maGD);
+            } else {
+                String fallbackQuery = "SELECT MaGD FROM GIAIDAU ORDER BY NGAYBEMAC DESC FETCH FIRST 1 ROW ONLY";
+                try (PreparedStatement fallbackStmt = conn.prepareStatement(fallbackQuery)) {
+                    ResultSet fallbackRs = fallbackStmt.executeQuery();
+                    if (fallbackRs.next()) {
+                        int maGD = fallbackRs.getInt("MaGD");
+                        return getBxhCLBByMaGD(maGD);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi lấy bảng xếp hạng của mùa giải hiện tại: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return new ArrayList<>();
+    }
+
+    private ArrayList<MODEL_BXH_CLB> getBxhCLBByMaGD(int maGD) {
+        ArrayList<MODEL_BXH_CLB> result = new ArrayList<>();
+        String query = "SELECT * FROM BANGXEPHANG_CLB WHERE MaGD = ? ORDER BY Hang";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, maGD);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                MODEL_BXH_CLB bxh = new MODEL_BXH_CLB();
+                bxh.setMaGD(rs.getInt("MaGD"));
+                bxh.setMaCLB(rs.getInt("MaCLB"));
+                bxh.setSoTran(rs.getInt("SoTran"));
+                bxh.setThang(rs.getInt("Thang"));
+                bxh.setHoa(rs.getInt("Hoa"));
+                bxh.setThua(rs.getInt("Thua"));
+                bxh.setHieuSo(rs.getInt("HieuSo"));
+                bxh.setDiem(rs.getInt("Diem"));
+                bxh.setHang(rs.getInt("Hang"));
+                result.add(bxh);
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi lấy bảng xếp hạng theo MaGD: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return result;
     }
 }

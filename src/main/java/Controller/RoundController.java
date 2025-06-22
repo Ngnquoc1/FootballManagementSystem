@@ -1,6 +1,7 @@
 package Controller;
 
 import Model.MODEL_GIAIDAU;
+import Model.MODEL_TRANDAU;
 import Model.MODEL_VONGDAU;
 import Service.Service;
 import Util.AlertUtils;
@@ -223,6 +224,16 @@ public class RoundController {
             endDatePicker.setValue(selectedRound.getNgayKT().toLocalDate());
 
             enableForm(true);
+            // Vô hiệu hóa các nút sửa nếu vòng đấu đã kết thúc hoặc có trận đấu đang diễn ra
+            List<MODEL_TRANDAU> matches = service.getMatchByRound(selectedRound.getMaVD());
+            if (selectedRound.getStatus().equals("Đã kết thúc") || !matches.isEmpty()) {
+                saveButton.setDisable(true);
+                deleteButton.setDisable(true);
+            } else {
+                saveButton.setDisable(false);
+                deleteButton.setDisable(false);
+            }
+            //
         }
     }
 

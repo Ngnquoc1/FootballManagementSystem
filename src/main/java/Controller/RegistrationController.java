@@ -129,7 +129,23 @@ public class RegistrationController implements Initializable {
     private void setupTableView() {
         // Thiết lập các cột
         colChon.setCellValueFactory(cellData -> cellData.getValue().selectedProperty());
-        colChon.setCellFactory(CheckBoxTableCell.forTableColumn(colChon));
+        colChon.setCellFactory(col -> new CheckBoxTableCell<CauThuViewModel, Boolean>() {
+            @Override
+            public void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                if (!empty) {
+                    CauThuViewModel viewModel = getTableView().getItems().get(getIndex());
+                    MODEL_GIAIDAU selectedMuaGiai = cboMuaGiai.getValue();
+                    boolean isRegistered = viewModel.isSelected();
+                    boolean isLocked = selectedMuaGiai != null &&
+                            ("Đang diễn ra".equals(selectedMuaGiai.getStatus()) || "Đã kết thúc".equals(selectedMuaGiai.getStatus())) &&
+                            isRegistered;
+                    this.setDisable(isLocked);
+                } else {
+                    this.setDisable(false);
+                }
+            }
+        });
         colChon.setEditable(true);
 
         colMaCT.setCellValueFactory(cellData -> cellData.getValue().maCTProperty().asObject());

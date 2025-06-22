@@ -233,35 +233,36 @@ public class HomeController implements Initializable {
     }
 
     private void loadTopTeams() {
-    try {
-        // Clear all previous data first
-        team1Name.setText("");
-        team1Points.setText("");
-        team1Image.setImage(null);
-        team1Card.setStyle("-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);");
-        
-        team2Name.setText("");
-        team2Points.setText("");
-        team2Image.setImage(null);
-        team2Card.setStyle("-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);");
-        
-        team3Name.setText("");
-        team3Points.setText("");
-        team3Image.setImage(null);
-        team3Card.setStyle("-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);");
-        
-        // Lấy các đội bóng trong bảng xếp hạng
-        ArrayList<MODEL_BXH_CLB> rankings = service.getAllBxhCLB();
+        try {
+            // Clear all previous data first
+            team1Name.setText("");
+            team1Points.setText("");
+            team1Image.setImage(null);
+            team1Card.setStyle(
+                    "-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);");
 
-        if (rankings == null || rankings.isEmpty()) {
-            System.err.println("Không có dữ liệu bảng xếp hạng");
-            return;
-        }
+            team2Name.setText("");
+            team2Points.setText("");
+            team2Image.setImage(null);
+            team2Card.setStyle(
+                    "-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);");
 
-        // Sắp xếp bằng thứ hạng
-        rankings.sort((a, b) -> Integer.compare(a.getHang(), b.getHang()));
+            team3Name.setText("");
+            team3Points.setText("");
+            team3Image.setImage(null);
+            team3Card.setStyle(
+                    "-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);");
 
-        System.out.println("Số lượng đội trong bảng xếp hạng: " + rankings.size());
+            ArrayList<MODEL_BXH_CLB> rankings = service.getCurrentSeasonBxhCLB();
+
+            if (rankings == null || rankings.isEmpty()) {
+                System.err.println("Không có dữ liệu bảng xếp hạng cho mùa giải hiện tại");
+                return;
+            }
+
+            rankings.sort((a, b) -> Integer.compare(a.getHang(), b.getHang()));
+
+            System.out.println("Số lượng đội trong bảng xếp hạng: " + rankings.size());
 
             if (rankings.size() >= 1) {
                 MODEL_BXH_CLB team1Ranking = rankings.get(0);
@@ -321,87 +322,4 @@ public class HomeController implements Initializable {
             imageView.setImage(new Image(new File("src/main/resources/icons/club.png").toURI().toString()));
         }
     }
-
-    // private void loadDefaultData() {
-    // loadDefaultLatestMatch();
-    // loadDefaultNextMatch();
-    // loadDefaultTopTeams();
-    // }
-    //
-    // private void loadDefaultLatestMatch() {
-    // latestHomeTeam.setText("Manchester United");
-    // latestAwayTeam.setText("Liverpool");
-    // latestScore.setText("2 - 1");
-    // latestDate.setText("15 May 2025");
-    //
-    // try {
-    // latestHomeImage.setImage(new
-    // Image(getClass().getResourceAsStream("/icons/teams/man_united.png")));
-    // latestAwayImage.setImage(new
-    // Image(getClass().getResourceAsStream("/icons/teams/liverpool.png")));
-    // } catch (Exception e) {
-    // latestHomeImage.setImage(new
-    // Image(getClass().getResourceAsStream("/icons/club.png")));
-    // latestAwayImage.setImage(new
-    // Image(getClass().getResourceAsStream("/icons/club.png")));
-    // }
-    // }
-    //
-    // private void loadDefaultNextMatch() {
-    // nextHomeTeam.setText("Liverpool");
-    // nextAwayTeam.setText("Arsenal");
-    // nextTime.setText("19:45");
-    // nextDate.setText("20 May 2025");
-    //// Try catch set logo
-    // try {
-    // nextHomeImage.setImage(new
-    // Image(getClass().getResourceAsStream("/icons/teams/liverpool.png")));
-    // nextAwayImage.setImage(new
-    // Image(getClass().getResourceAsStream("/icons/teams/arsenal.png")));
-    // } catch (Exception e) {
-    // nextHomeImage.setImage(new
-    // Image(getClass().getResourceAsStream("/icons/club.png")));
-    // nextAwayImage.setImage(new
-    // Image(getClass().getResourceAsStream("/icons/club.png")));
-    // }
-    // }
-    //
-    // private void loadDefaultTopTeams() {
-    // team1Name.setText("Manchester City");
-    // team1Points.setText("75");
-    // try {
-    // team1Image.setImage(new
-    // Image(getClass().getResourceAsStream("/icons/teams/man_city.png")));
-    // } catch (Exception e) {
-    // team1Image.setImage(new
-    // Image(getClass().getResourceAsStream("/icons/club.png")));
-    // }
-    // team1Card.setStyle("-fx-background-color: linear-gradient(to bottom, #f9f3ee,
-    // #e6f7ff); -fx-border-color: #991f18; -fx-border-width: 2; -fx-border-radius:
-    // 10;");
-    // team2Name.setText("Arsenal");
-    // team2Points.setText("71");
-    // try {
-    // team2Image.setImage(new
-    // Image(getClass().getResourceAsStream("/icons/teams/arsenal.png")));
-    // } catch (Exception e) {
-    // team2Image.setImage(new
-    // Image(getClass().getResourceAsStream("/icons/club.png")));
-    // }
-    // team2Card.setStyle("-fx-background-color: linear-gradient(to bottom, #f9f3ee,
-    // #ffe6e6); -fx-border-color: #991f18; -fx-border-width: 2; -fx-border-radius:
-    // 10;");
-    // team3Name.setText("Liverpool");
-    // team3Points.setText("68");
-    // try {
-    // team3Image.setImage(new
-    // Image(getClass().getResourceAsStream("/icons/teams/liverpool.png")));
-    // } catch (Exception e) {
-    // team3Image.setImage(new
-    // Image(getClass().getResourceAsStream("/icons/club.png")));
-    // }
-    // team3Card.setStyle("-fx-background-color: linear-gradient(to bottom, #f9f3ee,
-    // #fff2e6); -fx-border-color: #991f18; -fx-border-width: 2; -fx-border-radius:
-    // 10;");
-    // }
 }

@@ -4,7 +4,7 @@ import Model.MODEL_GIAIDAU;
 import Model.MODEL_QUYDINH;
 
 import Model.MODEL_THUTU_UUTIEN;
-import Service.Service;
+import Service.*;
 import Util.AlertUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,8 +21,11 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 
+import java.io.File;
 import java.net.URL;
+
 import java.sql.SQLException;
+
 import java.util.List;
 
 import java.util.ResourceBundle;
@@ -55,15 +58,17 @@ public class RulesManagementController implements Initializable {
 
     private final ObservableList<MODEL_THUTU_UUTIEN> priorityList = FXCollections.observableArrayList();
     private Service service;
+    private ExportService exportService;
+    private EmailService emailService;
 
     private ObservableList<MODEL_GIAIDAU> danhSachMuaGiai;
-    private MODEL_QUYDINH quyDinhHienTai;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Khởi tạo services
         service = new Service();
-
+        exportService = new ExportService();
+        emailService = new EmailService();
         // Thiết lập ComboBox
         setupComboBox();
 
@@ -79,7 +84,7 @@ public class RulesManagementController implements Initializable {
         colTenTTUT.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getTenTTUT()));
         priorityOrderTable.setItems(priorityList);
         // Vô hiệu hóa form ban đầu
-        vohieuhoaForm(true);
+        vohieuhoaForm(true,true);
     }
 
     private void setupComboBox() {
@@ -177,17 +182,19 @@ public class RulesManagementController implements Initializable {
         if (selectedMuaGiai != null) {
             // Hiển thị trạng thái mùa giải
             lblTrangThaiMuaGiai.setText("(" + selectedMuaGiai.getStatus() + ")");
-
+            boolean ok=true,ok1=true;
             // Đặt màu cho trạng thái
             switch (selectedMuaGiai.getStatus()) {
                 case "Đang diễn ra":
                     lblTrangThaiMuaGiai.setTextFill(javafx.scene.paint.Color.GREEN);
+                    ok1=false;
                     break;
                 case "Sắp diễn ra":
                     lblTrangThaiMuaGiai.setTextFill(javafx.scene.paint.Color.BLUE);
                     break;
                 case "Đã kết thúc":
                     lblTrangThaiMuaGiai.setTextFill(javafx.scene.paint.Color.RED);
+                    ok1=false;
                     break;
             }
 
@@ -195,16 +202,16 @@ public class RulesManagementController implements Initializable {
             taiQuyDinhMuaGiai(selectedMuaGiai.getMaGD());
 
             // Kích hoạt form
-            vohieuhoaForm(false);
+            vohieuhoaForm(ok,ok1);
         } else {
             lblTrangThaiMuaGiai.setText("");
             lblTrangThaiQuyDinh.setText("");
-            vohieuhoaForm(true);
+            vohieuhoaForm(true,true);
         }
     }
 
     private void taiQuyDinhMuaGiai(int maMG) {
-        quyDinhHienTai = service.getQDByMaGD(maMG);
+        MODEL_QUYDINH quyDinhHienTai = service.getQDByMaGD(maMG);
 
         if (quyDinhHienTai != null) {
             // Hiển thị quy định hiện có
@@ -307,6 +314,8 @@ public class RulesManagementController implements Initializable {
                         "Quy định đã được cập nhật thành công cho mùa giải: " + selectedMuaGiai.getTenGD());
                 // Tải lại quy định
                 taiQuyDinhMuaGiai(selectedMuaGiai.getMaGD());
+
+                sendRulesUpdateToClub();
             } else {
                 AlertUtils.showError("Lỗi", "Cập nhật quy định thất bại",
                         "Không thể cập nhật quy định cho mùa giải: " + selectedMuaGiai.getTenGD());
@@ -333,17 +342,18 @@ public class RulesManagementController implements Initializable {
         updatePriorityOrder();
     }
 
-    private void vohieuhoaForm(boolean disable) {
+    private void vohieuhoaForm(boolean disable, boolean disable1) {
         spnTuoiToiThieu.setDisable(disable);
         spnTuoiToiDa.setDisable(disable);
         spnSoCTToiThieu.setDisable(disable);
         spnSoCTToiDa.setDisable(disable);
         spnSoCTNuocNgoaiToiDa.setDisable(disable);
-        spnPhutGhiBanToiDa.setDisable(disable);
-        spnSoDiemThang.setDisable(disable);
-        spnSoDiemHoa.setDisable(disable);
-        spnSoDiemThua.setDisable(disable);
+        spnPhutGhiBanToiDa.setDisable(disable1);
+        spnSoDiemThang.setDisable(disable1);
+        spnSoDiemHoa.setDisable(disable1);
+        spnSoDiemThua.setDisable(disable1);
     }
+
 
     private MODEL_QUYDINH layThongTinTuForm() {
         MODEL_QUYDINH quyDinh = new MODEL_QUYDINH();
@@ -433,5 +443,53 @@ public class RulesManagementController implements Initializable {
             System.err.println("Lỗi hiển thị UserPopup: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+    private int okk=0;
+    private void sendRulesUpdateToClub() {
+        // Create a non-blocking alert window
+        Stage sendingStage = new Stage();
+        sendingStage.initStyle(StageStyle.UTILITY);
+        sendingStage.setAlwaysOnTop(true);
+        sendingStage.setResizable(false);
+        sendingStage.setTitle("Sending...");
+        Label label = new Label("Đang gửi thông báo đến các Câu lạc bộ...");
+        label.setStyle("-fx-padding: 20px; -fx-font-size: 14px;");
+        Scene scene = new Scene(label);
+        sendingStage.setScene(scene);
+        sendingStage.show();
+
+        // Run email sending in a background thread to avoid UI freeze
+        new Thread(() -> {
+            List<Integer> clubIDs = service.getRegistedClubIdsByTournament(cboMuaGiai.getValue().getMaGD());
+            okk = 0;
+            for (Integer clubID : clubIDs) {
+                String email = service.getCLBByID(clubID).getEmail();
+                String subject = "Thông báo cập nhật quy định mùa giải";
+                String content = "Chào quý Câu lạc bộ,\n\n" +
+                        "Chúng tôi xin thông báo rằng quy định của mùa giải " + cboMuaGiai.getValue().getTenGD() + " đã được cập nhật.\n" +
+                        "Vui lòng kiểm tra lại các quy định mới để đảm bảo tuân thủ trong quá trình tham gia giải đấu.\n\n" +
+                        "Trân trọng,\n" +
+                        "Ban tổ chức giải đấu";
+                File file = exportService.exportTournamentInfo(cboMuaGiai.getValue().getMaGD());
+                try {
+                    emailService.sendEmail(email, subject, content, file);
+                } catch (Exception e) {
+                    okk=1;
+                    javafx.application.Platform.runLater(() -> {
+                        AlertUtils.showError("Lỗi gửi email", "Không thể gửi email đến Câu lạc bộ",
+                                "Đã xảy ra lỗi khi gửi email đến Câu lạc bộ: " + clubID + ". Vui lòng kiểm tra lại thông tin email hoặc kết nối mạng.");
+                    });
+                    e.printStackTrace();
+                }
+            }
+            // Close the sending alert and show result
+            javafx.application.Platform.runLater(() -> {
+                sendingStage.close();
+                if (okk == 0) {
+                    AlertUtils.showInformation("Thông báo", "Gửi thông báo thành công",
+                            "Đã gửi thông báo cập nhật quy định đến tất cả các Câu lạc bộ đã đăng ký tham gia mùa giải: " + cboMuaGiai.getValue().getTenGD());
+                }
+            });
+        }).start();
     }
 }

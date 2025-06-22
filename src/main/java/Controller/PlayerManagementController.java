@@ -30,6 +30,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -446,32 +448,73 @@ public class PlayerManagementController implements Initializable {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
         File file = fileChooser.showOpenDialog(btnAddFromCSV.getScene().getWindow());
         if (file != null) {
+            StringBuilder errorMsg = new StringBuilder();
+            int addedCount = 0;
             try (BufferedReader br = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
                 String line;
                 boolean isFirstLine = true;
                 while ((line = br.readLine()) != null) {
-                    if (isFirstLine) { // Bỏ qua header nếu có
+                    if (isFirstLine) {
                         isFirstLine = false;
                         if (line.toLowerCase().contains("tên") || line.toLowerCase().contains("name")) continue;
                     }
                     String[] cols = line.split(",");
-                    if (cols.length < 5) continue; // Số cột tối thiểu
-                    MODEL_CAUTHU player = new MODEL_CAUTHU();
-                    player.setSoAo(Integer.parseInt(cols[0].trim()));
-                    player.setTenCT(cols[1].trim());
-                    player.setNgaysinh(java.sql.Date.valueOf(cols[2].trim()));
-                    player.setMaVT(service.getPositionIdByName(cols[3].trim()));
-                    player.setQuocTich(cols[4].trim());
-                    player.setMaCLB(currentClub.getMaCLB());
-                    player.setLoaiCT("Vietnam".equalsIgnoreCase(cols[4].trim()) ? 0 : 1);
-                    player.setAvatar("default_ava.png");
-                    // Thêm vào DB và danh sách
-                    int id = service.addPlayer(player);
-                    player.setMaCT(id);
-                    playersList.add(player);
+                    if (cols.length < 5) {
+                        errorMsg.append("Dòng dữ liệu không đủ cột: ").append(line).append("\n");
+                        continue;
+                    }
+                    try {
+                        int soAo = Integer.parseInt(cols[0].trim());
+                        if (playersList.stream().anyMatch(p -> p.getSoAo() == soAo && p.getMaCLB() == currentClub.getMaCLB())) {
+                            errorMsg.append("Số áo đã tồn tại trong CLB: ").append(soAo).append("\n");
+                            continue;
+                        }
+                        String tenCT = cols[1].trim();
+                        java.sql.Date ngaysinh;
+                        try {
+                            // Try parsing dd/MM/yyyy
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                            java.util.Date utilDate = sdf.parse(cols[2].trim());
+                            ngaysinh = new java.sql.Date(utilDate.getTime());
+                        } catch (Exception ex) {
+                            errorMsg.append("Ngày sinh không hợp lệ: ").append(cols[2].trim()).append("\n");
+                            continue;
+                        }
+                        int maVT = service.getPositionIdByName(cols[3].trim());
+                        if (maVT == -1) {
+                            errorMsg.append("Vị trí không hợp lệ: ").append(cols[3].trim()).append("\n");
+                            continue;
+                        }
+                        String quocTich = cols[4].trim();
+                        if (quocTich.isEmpty()) {
+                            errorMsg.append("Quốc tịch không hợp lệ\n");
+                            continue;
+                        }
+                        MODEL_CAUTHU player = new MODEL_CAUTHU();
+                        player.setSoAo(soAo);
+                        player.setTenCT(tenCT);
+                        player.setNgaysinh(ngaysinh);
+                        player.setMaVT(maVT);
+                        player.setQuocTich(quocTich);
+                        player.setMaCLB(currentClub.getMaCLB());
+                        player.setLoaiCT("Vietnam".equalsIgnoreCase(quocTich) ? 0 : 1);
+                        player.setAvatar("default_ava.png");
+                        int id = service.addPlayer(player);
+                        player.setMaCT(id);
+                        playersList.add(player);
+                        addedCount++;
+                    } catch (Exception ex) {
+                        errorMsg.append("Lỗi không xác định ở dòng: ").append(line).append("\n");
+                    }
                 }
                 playersTableView.refresh();
-                AlertUtils.showInformation("Thành công", "Đã thêm danh sách cầu thủ từ file CSV!", "");
+                String resultMsg = "Đã thêm " + addedCount + " cầu thủ từ file CSV!";
+                if (errorMsg.length() > 0) {
+                    resultMsg += "\nMột số dòng bị bỏ qua:\n" + errorMsg;
+                    AlertUtils.showWarning("Kết quả nhập CSV", "Hoàn thành với cảnh báo", resultMsg);
+                } else {
+                    AlertUtils.showInformation("Thành công", "Đã thêm danh sách cầu thủ từ file CSV!", "");
+                }
             } catch (Exception e) {
                 AlertUtils.showError("Lỗi", "Không thể đọc file CSV", e.getMessage());
             }

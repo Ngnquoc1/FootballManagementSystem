@@ -111,7 +111,14 @@ public class FixtureManagementController implements Initializable {
                 for( Integer clbId : dsClbIds) {
                     MODEL_CLB clb = service.getCLBByID(clbId);
                     if (clb != null) {
-                        clbForm1.getItems().add(clb.getTenCLB());
+                        if (clbForm2.getValue() != null){
+                            if(!clb.getTenCLB().equals(clbForm2.getValue())) {
+                                clbForm1.getItems().add(clb.getTenCLB());
+                            }
+                        }
+                        else {
+                            clbForm1.getItems().add(clb.getTenCLB());
+                        }
                     }
                 }
             }
@@ -122,8 +129,15 @@ public class FixtureManagementController implements Initializable {
                 List<Integer> dsClbIds = service.getRegistedClubIdsByTournament(mg.getMaGD());
                 for( Integer clbId : dsClbIds) {
                     MODEL_CLB clb = service.getCLBByID(clbId);
-                    if (clb != null && (clbForm1.getValue()!=null && !clb.getTenCLB().equals(clbForm1.getValue()))) {
-                        clbForm2.getItems().add(clb.getTenCLB());
+                    if (clb != null) {
+                        if (clbForm1.getValue() != null){
+                            if(!clb.getTenCLB().equals(clbForm1.getValue())) {
+                                clbForm2.getItems().add(clb.getTenCLB());
+                            }
+                        }
+                        else {
+                            clbForm2.getItems().add(clb.getTenCLB());
+                        }
                     }
                 }
             }
