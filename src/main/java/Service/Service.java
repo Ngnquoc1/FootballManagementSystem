@@ -1144,7 +1144,9 @@ public class Service {
                     quyDinh.setSoCTToiDa(rs.getInt("SoCTToiDa"));
                     quyDinh.setSoCTNuocNgoaiToiDa(rs.getInt("SoCTNuocNgoaiToiDa"));
                     quyDinh.setPhutGhiBanToiDa(rs.getInt("PhutGhiBanToiDa"));
-
+                    quyDinh.setDiemThang(rs.getInt("DiemThang"));
+                    quyDinh.setDiemHoa(rs.getInt("DiemHoa"));
+                    quyDinh.setDiemThua(rs.getInt("DiemThua"));
                     return quyDinh;
                 }
             }
@@ -1156,7 +1158,8 @@ public class Service {
     }
 
     public boolean updateQD(MODEL_QUYDINH quyDinh) {
-        String sql = "UPDATE QUYDINH SET TuoiToiThieu = ?, TuoiToiDa = ?, SoCTToiThieu = ?, SoCTToiDa = ?, SoCTNuocNgoaiToiDa = ?, PhutGhiBanToiDa = ?, DiemThang= ?, DiemHoa = ?, DiemThua = ? WHERE MaGD = ?";
+        String sql = "UPDATE QUYDINH SET TuoiToiThieu = ?, TuoiToiDa = ?, SoCTToiThieu = ?, SoCTToiDa = ?, SoCTNuocNgoaiToiDa = ?, PhutGhiBanToiDa = ?,"+
+                " DiemThang= ?, DiemHoa = ?, DiemThua = ? WHERE MaGD = ?";
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -1625,6 +1628,17 @@ public class Service {
         }
     }
 
+    public boolean recalculateRanking(int MaGD) {
+        String sql = "{call RecalculateRankingPositions(?)}";
+        try (CallableStatement cstmt = conn.prepareCall(sql)) {
+            cstmt.setInt(1, MaGD);
+            cstmt.execute();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     public void updateStadium(MODEL_SAN selected) throws SQLException {
         String sql = "UPDATE SAN SET TenSAN = ?, DiaChi = ?, SucChua = ? WHERE MaSan = ?";

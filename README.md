@@ -94,8 +94,8 @@ GRANT ALL PRIVILEGES TO c##QLDB1;
 |--------------------------|----------------------|----------|
 | Admin (Full quyền)       | `0`                  | `0`      |
 | Ban tổ chức giải đấu     | `admin`              | `123`    |
-| Ban quản lý thi đấu      | `admin4`             | `1234`   |
-| Ban quản lý CLB          | `admin45`            | `12345`  |
+| Ban quản lý CLB          | `admin4`             | `1234`   |
+| Ban quản lý thi đấu      | `admin45`            | `12345`  |
 | Ban phân tích & tổng hợp | `admin456`           | `123456` |
 | Khách (Guest)            | Bấm `Login as Guest` |          |
 
@@ -109,7 +109,7 @@ Sau khi đăng nhập, bạn sẽ được chuyển đến giao diện chính c�
 ![homePage](./src/main/resources/Image/feature/homePage.png)
 ### 3️⃣ Tra cứu trận đấu
 Có thể tra cứu thông tin về các trận đấu theo giải đấu và CLB.
-![fixture1](./src/main/resources/Image/feature/fixture1.png)
+![fixture1](C:\STUDY\JAVA\Source%20Code\src\main\resources\Image\feature\fixture1.png)
 ![fixture2](./src/main/resources/Image/feature/fixture2.png)
 ### 4️⃣ Tra cứu kết quả trận đấu
 Có thể tra cứu kết quả của các trận đấu đã diễn ra, bao gồm tỷ số và các thông tin liên quan.

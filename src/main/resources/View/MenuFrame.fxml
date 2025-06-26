@@ -61,35 +61,11 @@
                               <Font name="Arial" size="12.0" />
                            </font>
                         </Button>
-                        <Button id="fixtureMenuBtn" fx:id="fixtureMenuBtn" mnemonicParsing="false" onAction="#clickOnFixtureBtn" prefHeight="35.0" prefWidth="183.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Lịch thi đấu">
+                        <Button fx:id="leagueMenuBtn" mnemonicParsing="false" onAction="#clickOnLeagueBtn" prefHeight="39.0" prefWidth="181.0" styleClass="menuBtn" text="Quản lý giải đấu">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                  <image>
-                                    <Image url="@../icons/calendar.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                           <font>
-                              <Font name="Arial" size="12.0" />
-                           </font>
-                        </Button>
-                        <Button fx:id="resultMenuBtn" mnemonicParsing="false" onAction="#clickOnResultBtn" prefHeight="35.0" prefWidth="182.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Kết quả trận đấu">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
-                                 <image>
-                                    <Image url="@../icons/fixtures.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                           <font>
-                              <Font name="Arial" size="12.0" />
-                           </font>
-                        </Button>
-                        <Button fx:id="tableMenuBtn" mnemonicParsing="false" onAction="#clickOnTableBtn" prefHeight="39.0" prefWidth="182.0" styleClass="menuBtn" text="Bảng xếp hạng">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
-                                 <image>
-                                    <Image url="@../icons/static.png" />
+                                    <Image url="@../icons/trophy.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -121,11 +97,11 @@
                               <Font name="Arial" size="12.0" />
                            </font>
                         </Button>
-                        <Button fx:id="leagueMenuBtn" mnemonicParsing="false" onAction="#clickOnLeagueBtn" prefHeight="39.0" prefWidth="181.0" styleClass="menuBtn" text="Quản lý giải đấu">
+                        <Button fx:id="registryMenuBtn" mnemonicParsing="false" onAction="#clickOnRegistryBtn" prefHeight="39.0" prefWidth="182.0" styleClass="menuBtn" text="Đăng ký thi đấu">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                  <image>
-                                    <Image url="@../icons/trophy.png" />
+                                    <Image url="@../icons/clipboard.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -133,11 +109,35 @@
                               <Font name="Arial" size="12.0" />
                            </font>
                         </Button>
-                        <Button fx:id="registryMenuBtn" mnemonicParsing="false" onAction="#clickOnRegistryBtn" prefHeight="39.0" prefWidth="182.0" styleClass="menuBtn" text="Đăng ký giải đấu">
+                        <Button id="fixtureMenuBtn" fx:id="fixtureMenuBtn" mnemonicParsing="false" onAction="#clickOnFixtureBtn" prefHeight="35.0" prefWidth="183.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Lịch thi đấu">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
                                  <image>
-                                    <Image url="@../icons/clipboard.png" />
+                                    <Image url="@../icons/calendar.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <font>
+                              <Font name="Arial" size="12.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="resultMenuBtn" mnemonicParsing="false" onAction="#clickOnResultBtn" prefHeight="35.0" prefWidth="182.0" styleClass="menuBtn" stylesheets="@../CSS/Fixtures.css" text="Kết quả trận đấu">
+                           <graphic>
+                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
+                                 <image>
+                                    <Image url="@../icons/fixtures.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <font>
+                              <Font name="Arial" size="12.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="tableMenuBtn" mnemonicParsing="false" onAction="#clickOnTableBtn" prefHeight="39.0" prefWidth="182.0" styleClass="menuBtn" text="Bảng xếp hạng">
+                           <graphic>
+                              <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" styleClass="iconBtn">
+                                 <image>
+                                    <Image url="@../icons/static.png" />
                                  </image>
                               </ImageView>
                            </graphic>

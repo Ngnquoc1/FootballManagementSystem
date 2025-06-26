@@ -225,15 +225,32 @@ public class RoundController {
 
             enableForm(true);
             // Vô hiệu hóa các nút sửa nếu vòng đấu đã kết thúc hoặc có trận đấu đang diễn ra
-            List<MODEL_TRANDAU> matches = service.getMatchByRound(selectedRound.getMaVD());
-            if (selectedRound.getStatus().equals("Đã kết thúc") || !matches.isEmpty()) {
+            if (selectedRound.getStatus().equals("Đã kết thúc") ) {
                 saveButton.setDisable(true);
                 deleteButton.setDisable(true);
             } else {
                 saveButton.setDisable(false);
                 deleteButton.setDisable(false);
             }
-            //
+            List<MODEL_TRANDAU> matches = service.getMatchByRound(selectedRound.getMaVD());
+            matches.sort( (m1, m2) -> m1.getThoiGian().compareTo(m2.getThoiGian()));
+            //Giới hạn sửa ngày bắt đầu vòng đấu trước ngày trận đấu đầu tieen.
+            LocalDate dateEnd=null;
+            if (!matches.isEmpty()) {
+                dateEnd= matches.getFirst().getThoiGian().toLocalDate();
+            } else {
+                 dateEnd=tournament.getNgayKT();
+            }
+            LocalDate tournamentStart = tournament.getNgayBD();
+            LocalDate finalDateEnd = dateEnd;
+            startDatePicker.setDayCellFactory(picker -> new DateCell() {
+                @Override
+                public void updateItem(LocalDate date, boolean empty) {
+                    super.updateItem(date, empty);
+                    setDisable(empty || date.isBefore(tournamentStart) || date.isAfter(finalDateEnd));
+                }
+            });
+
         }
     }
 

@@ -156,7 +156,7 @@
                                     <Font size="11.0" />
                                  </font>
                               </Label>
-                              <ComboBox fx:id="clbForm2" minHeight="-Infinity" prefHeight="25.0" prefWidth="166.0" promptText="Đội nhà" style="-fx-border-color: #991f18;" />
+                              <ComboBox fx:id="clbForm2" minHeight="-Infinity" prefHeight="25.0" prefWidth="166.0" promptText="Đội khách" style="-fx-border-color: #991f18;" />
                            </children>
                         </VBox>
                      </children>

@@ -77,7 +77,6 @@ public class FixtureManagementController implements Initializable {
         }
         compeFilter.getItems().addAll(dsMG);
         compeForm.getItems().addAll(dsMG);
-        compeFilter.getSelectionModel().selectFirst();
 
         clubFilter.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             clubFilter.getItems().clear();
@@ -106,6 +105,7 @@ public class FixtureManagementController implements Initializable {
         });
         clbForm1.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             if (compeForm.getValue() != null) {
+                clbForm1.getItems().clear();
                 MODEL_GIAIDAU mg = service.getTournamentByName(compeForm.getValue());
                 List<Integer> dsClbIds = service.getRegistedClubIdsByTournament(mg.getMaGD());
                 for( Integer clbId : dsClbIds) {
@@ -125,6 +125,7 @@ public class FixtureManagementController implements Initializable {
         });
         clbForm2.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             if (compeForm.getValue() != null) {
+                clbForm2.getItems().clear();
                 MODEL_GIAIDAU mg = service.getTournamentByName(compeForm.getValue());
                 List<Integer> dsClbIds = service.getRegistedClubIdsByTournament(mg.getMaGD());
                 for( Integer clbId : dsClbIds) {
@@ -160,16 +161,27 @@ public class FixtureManagementController implements Initializable {
                 MODEL_GIAIDAU mg = service.getTournamentByName(compeForm.getValue());
                 List<Integer> dsClbIds = service.getRegistedClubIdsByTournament(mg.getMaGD());
                 List<String> dsSanNames = new ArrayList<>();
+                // Lấy tên sân từ danh sách trận đấu trong bảng hiện thi
+                List<Match> matches = fixtureTable.getItems();
+
                 for (Integer clbId : dsClbIds) {
                     MODEL_CLB clb = service.getCLBByID(clbId);
                     if (clb != null) {
-
                         String stadiumName = service.getStadiumById(clb.getMaSan()).getTenSan();
                         if (stadiumName != null  && !dsSanNames.contains(stadiumName)) {
                             dsSanNames.add(stadiumName);
                         }
                     }
                 }
+                for (Match match : matches) {
+                    if(match.getNgayThiDau()== dateForm.getValue() && match.getTenGiaiDau().equals(compeForm.getValue())) {
+                        String stadiumName = match.getSanThiDau();
+                        if (stadiumName != null) {
+                            dsSanNames.remove(stadiumName);
+                        }
+                    }
+                }
+                staForm.getItems().clear();
                 staForm.getItems().setAll(dsSanNames);
             }
         });
@@ -217,9 +229,10 @@ public class FixtureManagementController implements Initializable {
 
     @FXML
     private void resetFilter() throws SQLException {
-        Map<LocalDate, List<Match>> matchesByDate = service.getUpcomingMatchs();
         clubFilter.getSelectionModel().clearSelection();
-        compeFilter.getSelectionModel().selectFirst();
+        compeFilter.getSelectionModel().clearSelection();
+        compeFilter.setPromptText("Lọc theo giải đấu");
+        clubFilter.setPromptText("Lọc theo CLB");
         find();
     }
     @FXML

@@ -476,7 +476,17 @@ CREATE OR REPLACE PROCEDURE RecalculateRankingPositions(
 AS
     v_order_by_clause VARCHAR2(1000) := '';
     v_found BOOLEAN := FALSE;
+    v_thang NUMBER;
+    v_hoa NUMBER;
+    v_thua NUMBER;
 BEGIN
+    -- Cap nhat lai diem so dua tren so tran thang,hoa,thua
+    SELECT DiemThang, DiemHoa, DiemThua into v_thang,v_hoa,v_thua from QuyDinh where MaGD= p_MaGD;
+    UPDATE BANGXEPHANG_CLB
+    SET Diem = (Thang * v_thang) +
+               (Hoa * v_hoa) +
+               (Thua * v_thua)
+    WHERE MaGD = p_MaGD;
     -- Kiểm tra xem có dữ liệu trong THUTU_UUTIEN không và xây dựng chuỗi ORDER BY
     FOR priority_rec IN (
         SELECT TieuChi, DoUuTien
@@ -556,7 +566,7 @@ BEGIN
 
     -- Get scoring rules with default values
     BEGIN
-        SELECT NVL(DiemThang, 3), NVL(DiemHoa, 1), NVL(DiemThua, 0)
+        SELECT DiemThang, DiemHoa, DiemThua
         INTO v_diemThang, v_diemHoa, v_diemThua
         FROM QuyDinh
         WHERE MaGD = v_MaGD;
@@ -618,9 +628,9 @@ BEGIN
             Thua = Thua + (CASE WHEN p_action!='DELETE' and v_diem_new_calc(i) < v_diem_new_calc(3-i) THEN 1 ELSE 0 END)
                         - (CASE WHEN p_action !='INSERT' and v_diem_old_calc(i) < v_diem_old_calc(3-i) THEN 1 ELSE 0 END),
             HieuSo = HieuSo + (NVL(v_diem_new(i), 0) - NVL(v_diem_new(3-i), 0)) - (NVL(v_diem_old(i), 0) - NVL(v_diem_old(3-i), 0)),
-            Diem = Diem + (CASE WHEN p_action='INSERT' THEN NVL(v_diem_new_calc(i), 0)
-                                WHEN p_action='DELETE' THEN 0 - NVL(v_diem_old_calc(i), 0)
-                                WHEN p_action='UPDATE' THEN  NVL(v_diem_new_calc(i), 0) - NVL(v_diem_old_calc(i), 0)
+            Diem = Diem + (CASE WHEN p_action='INSERT' THEN v_diem_new_calc(i)
+                                WHEN p_action='DELETE' THEN 0 - v_diem_old_calc(i)
+                                WHEN p_action='UPDATE' THEN  v_diem_new_calc(i) - v_diem_old_calc(i)
                             END)
         WHERE MaGD = v_MaGD AND MaCLB = v_maCLB(i);
     END LOOP;
@@ -672,7 +682,6 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20001, 'Lỗi trong UpdateBXH_OnKetQuaTD trigger: ' || SQLERRM || ' tại MaTD = ' || NVL(v_maTD, 'NULL'));
 END UpdateBXH_OnKetQuaTD;
 /
-
 ----------------------------------------------------MUAGIAI------------------------------
 -----------InsertDefaultRules---------------------------------
 CREATE OR REPLACE PROCEDURE InsertQuyDinhForMuaGiai(
@@ -1099,7 +1108,7 @@ MERGE INTO BANGXEPHANG_BANTHANG bxh
             cclb.MaGD,bt.MaCT,COUNT(*) AS SoBanThang,
             SUM(CASE WHEN lbt.TenLoaiBT LIKE '%Phạt đền%' THEN 1 ELSE 0 END) AS Penalty
         FROM BANTHANG bt
-                 JOIN CAUTHU_THAMGIAMUAGIAI cclb ON bt.MaCT = cclb.MaCT AND cclb.MaGD = 1
+                 JOIN CAUTHU_THAMGIAMUAGIAI cclb ON bt.MaCT = cclb.MaCT AND cclb.MaGD = p_MaGD
                  JOIN LoaiBanThang lbt ON bt.MaLoaiBT = lbt.MaLoaiBT
         GROUP BY cclb.MaGD, bt.MaCT
     ) src
@@ -1146,7 +1155,6 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20007, 'Lỗi khi cập nhật bảng xếp hạng bàn thắng: ' || SQLERRM);
 END UpdateBXH_BanThang;
 /
-
 ----------------------------------------------------GOAL------------------------------
 -----------------InsertGoal--------------
 CREATE OR REPLACE PROCEDURE InsertGoal(
@@ -1547,7 +1555,7 @@ INSERT INTO ViTriTD (MaVT, TenVT) VALUES (4, 'Goalkeeper');
 
 INSERT INTO LoaiCauThu (MaLoaiCT, TenLoaiCT) VALUES (0, 'Cầu thủ nội');
 INSERT INTO LoaiCauThu (MaLoaiCT, TenLoaiCT)VALUES (1, 'Cầu thủ ngoại');
-select * from GiaiDau;
+
 INSERT INTO GiaiDau (MaGD, TenGD, NgayKhaiMac, NgayBeMac, LogoGD)
 VALUES (1, 'V-League 2025', TO_DATE('2025-06-21', 'YYYY-MM-DD'), TO_DATE('2025-12-30', 'YYYY-MM-DD'), 'Vleague2025.png');
 INSERT INTO GiaiDau (MaGD, TenGD, NgayKhaiMac, NgayBeMac, LogoGD)
@@ -1617,7 +1625,6 @@ INSERT INTO CauThu (MaCT, TenCT, NgaySinh, QuocTich, Avatar, SoAo, LoaiCT, MaCLB
 
 
 commit;
-select * from TranDau;
 -- select * from GiaiDau;
 -- select * from QuyDinh;
 -- select * from VongDau ;

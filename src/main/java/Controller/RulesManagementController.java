@@ -182,19 +182,19 @@ public class RulesManagementController implements Initializable {
         if (selectedMuaGiai != null) {
             // Hiển thị trạng thái mùa giải
             lblTrangThaiMuaGiai.setText("(" + selectedMuaGiai.getStatus() + ")");
-            boolean ok=true,ok1=true;
+            boolean ok=false,ok1=false;
             // Đặt màu cho trạng thái
             switch (selectedMuaGiai.getStatus()) {
                 case "Đang diễn ra":
                     lblTrangThaiMuaGiai.setTextFill(javafx.scene.paint.Color.GREEN);
-                    ok1=false;
+                    ok=true;
                     break;
                 case "Sắp diễn ra":
                     lblTrangThaiMuaGiai.setTextFill(javafx.scene.paint.Color.BLUE);
                     break;
                 case "Đã kết thúc":
                     lblTrangThaiMuaGiai.setTextFill(javafx.scene.paint.Color.RED);
-                    ok1=false;
+                    ok=true;
                     break;
             }
 
@@ -308,7 +308,7 @@ public class RulesManagementController implements Initializable {
             ketQua = service.updateQD(quyDinh);
             // Save to DB if a tournament is selected
             service.savePriorityOrder(selectedMuaGiai.getMaGD(), priorityList);
-
+            service.recalculateRanking(selectedMuaGiai.getMaGD());
             if (ketQua) {
                 AlertUtils.showInformation("Thông báo", "Cập nhật quy định thành công",
                         "Quy định đã được cập nhật thành công cho mùa giải: " + selectedMuaGiai.getTenGD());
